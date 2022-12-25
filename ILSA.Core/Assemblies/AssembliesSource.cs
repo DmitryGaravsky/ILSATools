@@ -3,7 +3,7 @@
     using System.IO;
     using System.Reflection;
 
-    sealed class AssembliesSource : IAssembliesSource {
+    public sealed class AssembliesSource : IAssembliesSource {
         readonly Lazy<AppDomain> appDomain;
         Lazy<Assembly[]> assemblies;
         public AssembliesSource() {

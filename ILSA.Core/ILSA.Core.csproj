@@ -18,10 +18,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ILReader.Core" Version="1.0.0.*" />
+    <EmbeddedResource Include="Assets\Svg\*.svg" />
   </ItemGroup>
-
   <ItemGroup>
+    <PackageReference Include="ILReader.Core" Version="1.0.0.*" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
 

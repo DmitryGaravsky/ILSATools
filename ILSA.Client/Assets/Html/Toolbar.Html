@@ -1,0 +1,20 @@
+﻿<template id="viewMode-button-pane-button-template">
+    <div class="button">
+        <img id="icon" class="button-glyph" />
+    </div>
+</template>
+<!--  -->
+<div class='panel'>
+    <div id="search-button" class="button">
+        <img src="Search" class="button-glyph" />
+    </div>
+    <input name="searchControl" class="searchInput">
+    <button-pane id="button-pane" 
+                 class="viewMode-button-pane"
+                 ItemClass="viewMode-button-pane-button"
+                 ItemTemplate="viewMode-button-pane-button-template"
+                 >
+        <button-pane-button id="cards-button" Icon="Cards"></button-pane-button>
+        <button-pane-button id="table-button" Icon="Table"></button-pane-button>
+    </button-pane>
+</div>

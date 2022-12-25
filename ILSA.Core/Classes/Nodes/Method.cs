@@ -11,10 +11,9 @@
             }
             protected sealed override string GetName() {
                 var sb = new StringBuilder(source.ToString());
-                var ns = source.DeclaringType.Namespace;
+                var ns = source.DeclaringType?.Namespace;
                 if(!string.IsNullOrEmpty(ns))
-                    ns += '.';
-                sb.Replace(ns, string.Empty);
+                    sb.Replace(ns + ".", string.Empty);
                 foreach(var item in typeAliases)
                     sb.Replace(item.Key.FullName, item.Value);
                 MethodInfo? mInfo = source as MethodInfo;
@@ -54,6 +53,7 @@
             };
             readonly HashSet<string> standardNamespaces = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
                 typeof(int).Namespace,
+                typeof(System.Collections.ArrayList).Namespace,
                 typeof(List<>).Namespace,
             };
             string TypeToString(Type type) {

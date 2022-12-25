@@ -1,14 +1,16 @@
-﻿using System;
-using System.Windows.Forms;
-using DevExpress.XtraEditors;
+﻿namespace ILSA.Client {
+    using System;
+    using System.Windows.Forms;
+    using DevExpress.XtraEditors;
 
-namespace ILSA.Client {
-    internal static class Program {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
+    internal static class ILSAClient {
+        public static DevExpress.Utils.SvgImageCollection SvgImages {
+            get { return Assets.Style.SvgImages; }
+        }
         [STAThread]
-        static void Main() {
+        public static void Main() {
+            Assets.Style.ResourcesRoot = "ILSA.Client.Assets.";
+            Assets.Style.ResourcesAssembly = typeof(ILSAClient).Assembly;
             WindowsFormsSettings.SetPerMonitorDpiAware();
             WindowsFormsSettings.DefaultLookAndFeel.SetSkinStyle(DevExpress.LookAndFeel.SkinStyle.Office2019Colorful);
             Application.EnableVisualStyles();

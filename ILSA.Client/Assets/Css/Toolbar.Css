@@ -1,0 +1,55 @@
+﻿.panel {
+	font-family: 'Segoe UI';
+	font-size: 14px;
+	height: 40px;
+	color: @ControlText;
+	display: flex;
+	flex-direction: row;
+	padding: 8px 32px 4px 32px;
+	align-items: center;
+	border-bottom: 1px solid @ControlBorder;
+}
+
+.searchInput {
+	padding: 2px 0px 3px 5px;
+	min-width: 117px;
+}
+
+.button {
+	width: 40px;
+	height: 40px;
+	min-width: 40px;
+	min-height: 40px;
+	align-self: center;
+	border-radius: 4px;
+}
+
+	.button:hover {
+		background-color: rgba(80, 80, 80, 0.05);
+	}
+
+	.button:active {
+		background-color: rgba(80, 80, 80, 0.1);
+	}
+
+.button-glyph {
+	width: 24px;
+	height: 24px;
+	min-width: 24px;
+	min-height: 24px;
+	margin: 8px;
+	opacity: 0.5;
+}
+
+.viewMode-button-pane {
+	display: flex;
+}
+
+.viewMode-button-pane-button {
+	display: inline-block;
+	border-radius: 4px;
+}
+
+	.viewMode-button-pane-button:--selected {
+		background-color: rgba(80, 80, 80, 0.1);
+	}
