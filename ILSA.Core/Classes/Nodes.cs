@@ -16,7 +16,8 @@
         ValueType,
         Enumeration,
         Method,
-        MethodPrivate
+        MethodPrivate,
+        MethodAbstract,
     }
     //
     public abstract class Node {
@@ -63,7 +64,7 @@
         protected virtual string GetGroup() {
             return string.Empty;
         }
-        public readonly static Node[] EmptyNodes = new Node[] { };
+        public readonly static Node[] EmptyNodes = new Node[0];
         protected virtual IReadOnlyCollection<Node> GetNodes() {
             return EmptyNodes;
         }

@@ -5,9 +5,16 @@
     using System.Text;
 
     partial class NodesFactory {
+        public static MethodBase? GetMethod(Node node) {
+            var methodNode = node as MethodNode;
+            return (methodNode != null) ? methodNode.GetMethod() : null;
+        } 
         sealed class MethodNode : Node<MethodBase> {
             public MethodNode(INodesFactory factory, MethodBase method)
                 : base(factory, method) {
+            }
+            public MethodBase? GetMethod() {
+                return !source.IsAbstract ? source : null;
             }
             protected sealed override string GetName() {
                 var sb = new StringBuilder(source.ToString());
@@ -36,7 +43,11 @@
                 return EmptyNodes;
             }
             public sealed override NodeType Type {
-                get { return source.IsPrivate ? NodeType.MethodPrivate : NodeType.Method; }
+                get {
+                    if(source.IsAbstract)
+                        return NodeType.MethodAbstract;
+                    return source.IsPrivate ? NodeType.MethodPrivate : NodeType.Method;
+                }
             }
             readonly static Dictionary<Type, string> typeAliases = new Dictionary<Type, string> {
                 { typeof(void), "void" },

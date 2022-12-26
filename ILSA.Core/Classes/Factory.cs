@@ -14,7 +14,6 @@
         Node BaseTypes(Type type);
         Node BaseType(Type type);
     }
-    //
     public partial class NodesFactory : INodesFactory {
         public NodesFactory() {
             assembliesCache = new ConcurrentDictionary<Assembly, AssemblyNode>();

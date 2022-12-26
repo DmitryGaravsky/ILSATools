@@ -12,6 +12,7 @@
             Assets.Style.ResourcesRoot = "ILSA.Client.Assets.";
             Assets.Style.ResourcesAssembly = typeof(ILSAClient).Assembly;
             WindowsFormsSettings.SetPerMonitorDpiAware();
+            WindowsFormsSettings.ScrollUIMode = ScrollUIMode.Fluent;
             WindowsFormsSettings.DefaultLookAndFeel.SetSkinStyle(DevExpress.LookAndFeel.SkinStyle.Office2019Colorful);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

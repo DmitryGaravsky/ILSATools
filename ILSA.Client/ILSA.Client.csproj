@@ -85,6 +85,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; compile; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="ILReader.Core" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
