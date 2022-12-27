@@ -67,7 +67,7 @@
             }
             int strIndex = e.Text.IndexOf('"');
             if(strIndex >= 0)
-                e.HighlightRange(strIndex, e.Text.IndexOf('"', strIndex), Color.DarkRed);
+                e.HighlightRange(strIndex, e.Text.IndexOf('"', strIndex + 1) - strIndex, Color.DarkRed);
         }
         readonly static StringFormat sf = new StringFormat {
             Alignment = StringAlignment.Center,

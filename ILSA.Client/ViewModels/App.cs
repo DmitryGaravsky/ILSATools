@@ -9,15 +9,31 @@
             get { return "IL Static Analysis Client"; }
         }
         IAssembliesSource? assembliesSource;
-        public async Task OnLoad() {
-            var dispatcher = this.GetService<IDispatcherService>();
+        public void OnLoad() {
             if(assembliesSource == null) {
                 assembliesSource = new AssembliesSource();
-
-                await dispatcher.BeginInvoke(() => {
-
-                });
+                ServiceContainer.Default.RegisterService(assembliesSource);
             }
+            ShowAssemblies();
+        }
+        protected IDocumentManagerService DocumentManagerService {
+            get { return this.GetService<IDocumentManagerService>(); }
+        }
+        public void ShowAssemblies() {
+            var assemblies = DocumentManagerService.FindDocumentByIdOrCreate(nameof(ShowAssemblies), x => {
+                var document = x.CreateDocument("ClassesView", null, this);
+                document.Id = nameof(ShowAssemblies);
+                return document;
+            });
+            assemblies.Show();
+        }
+        public void ShowPatterns() {
+            var patterns = DocumentManagerService.FindDocumentByIdOrCreate(nameof(ShowPatterns), x => {
+                var document = x.CreateDocument("PatternsView", null, this);
+                document.Id = nameof(ShowPatterns);
+                return document;
+            });
+            patterns.Show();
         }
     }
 }

@@ -12,7 +12,7 @@
 
 .searchInput {
 	padding: 2px 0px 3px 5px;
-	min-width: 117px;
+	min-width: 120px;
 }
 
 .button {
@@ -41,15 +41,32 @@
 	opacity: 0.5;
 }
 
-.viewMode-button-pane {
+.spacer {
+	flex-grow: 1;
+}
+
+.view-tab-pane {
 	display: flex;
+	margin-bottom: -10px;
 }
 
-.viewMode-button-pane-button {
+.view-tab-pane-button {
 	display: inline-block;
-	border-radius: 4px;
+	border-bottom: 2px solid #00176BD1;
+	margin-bottom: -2px;
 }
 
-	.viewMode-button-pane-button:--selected {
-		background-color: rgba(80, 80, 80, 0.1);
+	.view-tab-pane-button:hover {
+		color: #176BD1;
+		border-bottom: 2px solid #176BD1;
 	}
+
+	.view-tab-pane-button:--selected {
+		border-bottom: 2px solid #176BD1;
+	}
+
+.tab-button-content {
+	display: flex;
+	align-items: center;
+	padding: 2px 20px 0 8px;
+}

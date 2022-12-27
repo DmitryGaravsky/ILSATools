@@ -4,7 +4,9 @@
     using DevExpress.LookAndFeel;
     using DevExpress.Utils.Html;
     using DevExpress.Utils.MVVM;
+    using DevExpress.Utils.MVVM.Services;
     using ILSA.Client.ViewModels;
+    using ILSA.Client.Views;
 
     public partial class MainView : DevExpress.XtraEditors.DirectXForm {
         public MainView() {
@@ -12,7 +14,7 @@
             if(!mvvmContext.IsDesignMode) {
                 InitializeStyles();
                 InitializeBindings();
-                InitializeRelationship();
+                InitializeNavigation();
             }
         }
         void InitializeStyles() {
@@ -27,11 +29,12 @@
             fluent.WithEvent(this, nameof(HandleCreated))
                 .EventToCommand(x => x.OnLoad);
             fluent.SetBinding(this, frm => frm.Text, x => x.Title);
+            fluent.BindCommandToElement(toolbar, "assemblies-button", x => x.ShowAssemblies);
+            fluent.BindCommandToElement(toolbar, "patterns-button", x => x.ShowPatterns);
         }
-        void InitializeRelationship() {
-            var childContext = MVVMContext.FromControl(classesView);
-            childContext.ParentViewModel = mvvmContext.GetViewModel<AppViewModel>();
-            //classesView.AttachToSearchControl(searchControl);
+        void InitializeNavigation() {
+            var viewService = DocumentManagerService.Create(navigationFrame);
+            mvvmContext.RegisterService(viewService);
         }
         protected override void OnHandleCreated(EventArgs e) {
             base.OnHandleCreated(e);
@@ -63,6 +66,9 @@
         #endregion Search Behavior
         #region Theme
         internal sealed class Styles {
+            static Styles() {
+                TabPane.Register();
+            }
             public static Assets.Style App = new AppStyle();
             public static Assets.Style Toolbar = new ToolbarStyle();
             //
