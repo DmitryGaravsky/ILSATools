@@ -37,6 +37,13 @@
         }
         void InitializeNavigation() {
             var viewService = DocumentManagerService.Create(navigationFrame);
+            viewService.QueryView += (s, e) => {
+                if(e.ViewType == nameof(ClassesView)) {
+                    var classesView = new ClassesView();
+                    classesView.AttachToSearchControl(searchControl);
+                    e.Result = classesView;
+                }
+            };
             mvvmContext.RegisterService(viewService);
         }
         protected override void OnHandleCreated(EventArgs e) {

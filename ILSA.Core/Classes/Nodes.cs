@@ -1,4 +1,5 @@
 ﻿namespace ILSA.Core.Hierarchy {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
@@ -20,6 +21,8 @@
     }
     //
     public abstract class Node {
+        public readonly static Node[] EmptyNodes = new Node[0];
+        //
         protected readonly INodesFactory factory;
         protected Node(INodesFactory nodesFactory) {
             this.factory = nodesFactory;
@@ -38,7 +41,11 @@
         public virtual NodeType Type {
             get { return NodeType.None; }
         }
-        public readonly static Node[] EmptyNodes = new Node[0];
+        public void Visit(Action<Node> action) {
+            action(this);
+            foreach(Node child in Nodes) 
+                child.Visit(action);
+        }
     }
     abstract class Node<TSource> : Node {
         protected readonly TSource source;

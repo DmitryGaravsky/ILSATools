@@ -51,6 +51,7 @@
             this.classesTree.MinWidth = 16;
             this.classesTree.Name = "classesTree";
             this.classesTree.OptionsBehavior.Editable = false;
+            this.classesTree.EnableDynamicLoading = false;
             this.classesTree.OptionsFilter.ExpandNodesOnFiltering = true;
             this.classesTree.OptionsSelection.EnableAppearanceFocusedCell = false;
             this.classesTree.OptionsSelection.EnableAppearanceHotTrackedRow = DevExpress.Utils.DefaultBoolean.True;

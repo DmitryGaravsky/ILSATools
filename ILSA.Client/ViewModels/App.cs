@@ -49,7 +49,7 @@
             }
         }
         public async Task RunAnalysis() {
-            await Task.CompletedTask;
+            await Task.Delay(5000);
         }
         public void Reset() {
             assembliesSource.Reset();

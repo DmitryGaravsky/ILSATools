@@ -2,10 +2,12 @@
     using System;
     using System.Drawing;
     using System.Linq;
+    using System.Windows.Forms;
     using DevExpress.LookAndFeel;
     using DevExpress.Mvvm.Native;
     using DevExpress.Utils;
     using DevExpress.XtraEditors;
+    using DevExpress.XtraGrid;
     using DevExpress.XtraTreeList;
     using ILSA.Client.ViewModels;
     using ILSA.Core.Hierarchy;
@@ -28,6 +30,9 @@
             }
             classesTree.StateImageList = svgImages;
         }
+        protected internal void AttachToSearchControl(SearchControl searchControl) {
+            if(searchControl != null) searchControl.Client = classesTree;
+        }
         public bool ShowOffset { get; set; }
         public bool ShowBytes { get; set; }
         void InitializeBindings() {
@@ -41,6 +46,8 @@
             fluent.SetBinding(this, f => f.ShowOffset, x => x.ShowOffset);
             fluent.SetBinding(this, f => f.ShowBytes, x => x.ShowBytes);
             fluent.SetTrigger(x => x.SelectedMethod, m => codeBox.AppendLines(m, ShowOffset, ShowBytes));
+            fluent.WithKey(classesTree, Keys.Delete)
+                .KeyToCommand(x => x.Remove);
         }
         void GetStateImage(object sender, GetStateImageEventArgs e) {
             var node = classesTree.GetRow(e.Node.Id) as Node;
@@ -67,14 +74,14 @@
             }
             int strIndex = e.Text.IndexOf('"');
             if(strIndex >= 0)
-                e.HighlightRange(strIndex, e.Text.IndexOf('"', strIndex + 1) - strIndex, Color.DarkRed);
+                e.HighlightRange(strIndex, e.Text.IndexOf('"', strIndex + 1) - strIndex + 1, Color.DarkRed);
         }
         readonly static StringFormat sf = new StringFormat {
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center,
         };
         readonly string NoCodeMessage =
-            "Either there is no method or abstract method is choosen." + Environment.NewLine +
+            "Either there is no method or abstract method is chosen." + Environment.NewLine +
             "Please choose a method to display.";
         void OnCodeBoxNoCodePaint(object sender, TextEditPaintExEventArgs e) {
             if(string.IsNullOrEmpty(codeBox.Text)) {

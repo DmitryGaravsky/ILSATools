@@ -3,6 +3,8 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using DevExpress.Mvvm;
     using DevExpress.Mvvm.POCO;
     using ILReader.Readers;
@@ -17,12 +19,10 @@
         public void Dispose() {
             Messenger.Default.Unregister(this);
         }
-        void OnReloadAssemblies(IAssembliesSource source) {
-            DoReload(source);
-            SelectedMethod = null;
-            SelectedNode = null;
+        async void OnReloadAssemblies(IAssembliesSource source) {
+            await DoReload(source).ConfigureAwait(false);
         }
-        public virtual IReadOnlyCollection<Node> Nodes {
+        public virtual BindingList<Node> Nodes {
             get;
             protected set;
         }
@@ -42,6 +42,10 @@
             get;
             protected set;
         }
+        protected void OnNodesChanged() {
+            SelectedMethod = null;
+            SelectedNode = null;
+        }
         readonly static IInstruction[] Empty = new IInstruction[0];
         protected void OnSelectedNodeChanged() {
             var method = NodesFactory.GetMethod(SelectedNode);
@@ -54,25 +58,39 @@
             this.RaiseCanExecuteChanged(x => x.Remove());
         }
         INodesFactory factory;
-        public void OnLoad() {
-            DoReload(this.GetService<IAssembliesSource>());
+        public async Task OnLoad() {
+            var source = this.GetService<IAssembliesSource>();
+            await DoReload(source).ConfigureAwait(false);
         }
-        void DoReload(IAssembliesSource assembliesSource) {
+        async Task DoReload(IAssembliesSource assembliesSource) {
             factory = factory ?? new NodesFactory();
             var prevNodes = Nodes;
             try {
                 var assemblies = assembliesSource.Assemblies;
-                Nodes = new BindingList<Node>(assemblies
-                    .OrderBy(x => x.GetName().Name)
-                    .Select(factory.Create).ToList());
+                var nodes = assemblies.OrderBy(x => x.GetName().Name)
+                    .Select(factory.Create).ToList();
+                Nodes = new BindingList<Node>(await StartAsyncNodesLoading(nodes));
             }
             catch { Nodes = prevNodes; }
         }
+        static int count = 0;
+        static async Task<IList<Node>> StartAsyncNodesLoading(IList<Node> nodes) {
+            count = 0;
+            Action<Node> counter = (x) => Interlocked.Increment(ref count);
+            Task[] visits = new Task[nodes.Count];
+            for(int i = 0; i < visits.Length; i++) {
+                var node = nodes[i];
+                visits[i] = Task.Run(() => node.Visit(counter));
+            }
+            await Task.WhenAll(visits);
+            return nodes;
+        }
         public bool CanRemove() {
-            return SelectedNode != null && NodesFactory.GetAssembly(SelectedNode) != null;
+            return (SelectedNode != null) && NodesFactory.GetAssembly(SelectedNode) != null;
         }
         public void Remove() {
-            ((BindingList<Node>)Nodes).Remove(SelectedNode);
+            Nodes.Remove(SelectedNode);
+            SelectedNode = null;
         }
     }
 }
