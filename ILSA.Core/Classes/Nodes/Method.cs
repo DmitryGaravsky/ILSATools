@@ -2,7 +2,6 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using System.Text;
 
     partial class NodesFactory {
         public static MethodBase? GetMethod(Node node) {
@@ -17,7 +16,7 @@
                 return !source.IsAbstract ? source : null;
             }
             protected sealed override string GetName() {
-                var sb = new StringBuilder(source.ToString());
+                var sb = new System.Text.StringBuilder(source.ToString());
                 var ns = source.DeclaringType?.Namespace;
                 if(!string.IsNullOrEmpty(ns))
                     sb.Replace(ns + ".", string.Empty);
@@ -63,9 +62,9 @@
                 { typeof(double), "double" },
             };
             readonly HashSet<string> standardNamespaces = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-                typeof(int).Namespace,
+                typeof(System.Int32).Namespace,
                 typeof(System.Collections.ArrayList).Namespace,
-                typeof(List<>).Namespace,
+                typeof(System.Collections.Generic.List<>).Namespace,
             };
             string TypeToString(Type type) {
                 return typeAliases.TryGetValue(type, out string alias) ? alias : TypeToStringCore(type);

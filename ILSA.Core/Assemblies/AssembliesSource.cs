@@ -4,11 +4,11 @@
     using System.Reflection;
 
     public sealed class AssembliesSource : IAssembliesSource {
-        readonly Lazy<AppDomain> appDomain;
+        Lazy<AppDomain> appDomain;
         Lazy<Assembly[]> assemblies;
         public AssembliesSource() {
             appDomain = new Lazy<AppDomain>(CreateDomain);
-            assemblies = new Lazy<Assembly[]>(appDomain.Value.ReflectionOnlyGetAssemblies);
+            assemblies = new Lazy<Assembly[]>(GetAssemblies);
         }
         public void Load(string path) {
             var command = new LoadCommand(path);
@@ -16,22 +16,31 @@
             ResetAssemblies();
         }
         public void Reset() {
-            if(appDomain.IsValueCreated)
+            if(appDomain.IsValueCreated) {
+                appDomain.Value.ReflectionOnlyAssemblyResolve -= OnReflectionOnlyAssemblyResolve;
                 AppDomain.Unload(appDomain.Value);
+                appDomain = new Lazy<AppDomain>(CreateDomain);
+            }
             ResetAssemblies();
         }
         void ResetAssemblies() {
             if(assemblies.IsValueCreated)
-                assemblies = new Lazy<Assembly[]>(appDomain.Value.ReflectionOnlyGetAssemblies);
+                assemblies = new Lazy<Assembly[]>(GetAssemblies);
+        }
+        Assembly[] GetAssemblies() {
+            return appDomain.Value.ReflectionOnlyGetAssemblies();
         }
         Assembly[] IAssembliesSource.Assemblies {
             get { return assemblies.Value; }
         }
-        AppDomain CreateDomain() {
-            var startupArgs = Environment.GetCommandLineArgs();
-            return AppDomain.CreateDomain("ReflectionOnlyLoadContext", null, new AppDomainSetup {
-                // TODO BaseDir from args
-            });
+        static AppDomain CreateDomain() {
+            var appDomain = AppDomain.CreateDomain("ReflectionOnlyLoadContext");
+            appDomain.ReflectionOnlyAssemblyResolve += OnReflectionOnlyAssemblyResolve;
+            return appDomain;
+        }
+        static Assembly OnReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args) {
+            // TODO
+            return args.RequestingAssembly;
         }
         [Serializable]
         sealed class LoadCommand {

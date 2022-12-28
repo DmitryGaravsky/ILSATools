@@ -5,9 +5,16 @@
     using System.Reflection;
 
     partial class NodesFactory {
+        public static Assembly? GetAssembly(Node node) {
+            var assemblyNode = node as AssemblyNode;
+            return (assemblyNode != null) ? assemblyNode.GetAssembly() : null;
+        }
         sealed class AssemblyNode : Node<Assembly> {
             public AssemblyNode(INodesFactory factory, Assembly assembly)
                 : base(factory, assembly) {
+            }
+            public Assembly? GetAssembly() {
+                return source;
             }
             protected sealed override string GetName() {
                 return source.GetName().Name;

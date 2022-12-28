@@ -81,6 +81,7 @@
       <Project>{dfd88bdb-b347-48d6-a72f-f5499ee74614}</Project>
       <Name>ILSA.Core</Name>
     </ProjectReference>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Costura.Fody" Version="5.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; compile; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

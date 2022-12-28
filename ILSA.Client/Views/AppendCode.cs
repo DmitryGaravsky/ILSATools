@@ -2,6 +2,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection.Emit;
     using System.Text;
     using DevExpress.XtraEditors;
     using ILReader.Readers;
@@ -19,16 +20,16 @@
         }
         static void AppendLines(StringBuilder code, IEnumerable<IInstruction> instructions,
             bool showOffset = true, bool showBytes = false) {
-            var ILReader = instructions as IILReader;
-            if(ILReader != null && ILReader.Metadata.Any()) {
-                AppendLines(code, ILReader.Metadata);
+            var reader = instructions as IILReader;
+            if(reader != null && reader.Metadata.Any()) {
+                AppendLines(code, reader.Metadata);
                 code.AppendLine();
             }
-            int bytesLength = instructions.Any() && showBytes ? instructions.Max(i => i.Bytes.Length) : 0;
+            int bytesLength = (instructions != null) && instructions.Any() && showBytes ? instructions.Max(i => i.Bytes.Length) : 0;
             Dictionary<int, string> exceptionBlocks = new Dictionary<int, string>();
-            if(ILReader != null) {
-                for(int i = 0; i < ILReader.ExceptionHandlers.Length; i++) {
-                    var eh = ILReader.ExceptionHandlers[i];
+            if(reader != null) {
+                for(int i = 0; i < reader.ExceptionHandlers.Length; i++) {
+                    var eh = reader.ExceptionHandlers[i];
                     PrepareExceptionBlockLine(exceptionBlocks, eh.TryStart.Index, ".try {", i, bytesLength);
                     PrepareExceptionBlockLine(exceptionBlocks, eh.TryEnd.Index, "}  // end .try", i, bytesLength);
                     if(eh.IsFinally)
@@ -42,14 +43,16 @@
                     PrepareExceptionBlockLine(exceptionBlocks, eh.HandlerEnd.Index, "} // end handler", i, bytesLength);
                 }
             }
-            foreach(var instruction in instructions) {
-                string ebLines;
-                if(exceptionBlocks.TryGetValue(instruction.Index, out ebLines))
-                    AppendExceptionBlockLines(code, ebLines, instruction.Depth - 1);
-                if(instruction.OpCode == System.Reflection.Emit.OpCodes.Ldstr)
-                    AppendLdSrtLine(code, instruction, bytesLength, showOffset, showBytes);
-                else
-                    AppendLine(code, instruction, bytesLength, showOffset, showBytes);
+            if(instructions != null) {
+                foreach(var instruction in instructions) {
+                    string ebLines;
+                    if(exceptionBlocks.TryGetValue(instruction.Index, out ebLines))
+                        AppendExceptionBlockLines(code, ebLines, instruction.Depth - 1);
+                    if(instruction.OpCode == System.Reflection.Emit.OpCodes.Ldstr)
+                        AppendLdSrtLine(code, instruction, bytesLength, showOffset, showBytes);
+                    else
+                        AppendLine(code, instruction, bytesLength, showOffset, showBytes);
+                }
             }
         }
         static readonly string[] splitLines = new string[] { Environment.NewLine };
@@ -103,7 +106,7 @@
             }
             if(instruction.Depth > 0)
                 code.Append(' ', instruction.Depth * 2);
-            code.Append("Ldstr");
+            code.Append(nameof(OpCodes.Ldstr));
             string value = (string)instruction.Operand;
             code.Append(" \"").Append(value).Append("\"");
             code.AppendLine();

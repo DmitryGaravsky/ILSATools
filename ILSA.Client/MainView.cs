@@ -31,6 +31,9 @@
             fluent.SetBinding(this, frm => frm.Text, x => x.Title);
             fluent.BindCommandToElement(toolbar, "assemblies-button", x => x.ShowAssemblies);
             fluent.BindCommandToElement(toolbar, "patterns-button", x => x.ShowPatterns);
+            fluent.BindCommandToElement(toolbar, "add-assembly", x => x.AddAssembly);
+            fluent.BindCommandToElement(toolbar, "run-analysis", x => x.RunAnalysis);
+            fluent.BindCommandToElement(toolbar, "reset", x => x.Reset);
         }
         void InitializeNavigation() {
             var viewService = DocumentManagerService.Create(navigationFrame);

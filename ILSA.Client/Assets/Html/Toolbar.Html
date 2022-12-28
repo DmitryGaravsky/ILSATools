@@ -10,12 +10,22 @@
         <img src="Search" class="button-glyph" />
     </div>
     <input name="searchControl" class="searchInput">
+    <div id="add-assembly" class="action">
+        Add Assembly
+    </div>
+    <div class="separator"></div>
+    <div id="run-analysis" class="action call-to-action">
+        Run Analysis
+    </div>
+    <div class="divider"></div>
+    <div id="reset" class="action">
+        Reset
+    </div>
     <div class="spacer"></div>
-    <tab-pane id="tab-pane" 
-                 class="view-tab-pane"
-                 ItemClass="view-tab-pane-button"
-                 ItemTemplate="view-tab-pane-button-template"
-                 >
+    <tab-pane id="tab-pane"
+              class="view-tab-pane"
+              ItemClass="view-tab-pane-button"
+              ItemTemplate="view-tab-pane-button-template">
         <tab-pane-button id="assemblies-button" Icon="Assemblies" Caption="Assemblies"></tab-pane-button>
         <tab-pane-button id="patterns-button" Icon="Patterns" Caption="Patterns"></tab-pane-button>
     </tab-pane>

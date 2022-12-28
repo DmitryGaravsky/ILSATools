@@ -12,7 +12,7 @@
 
 .searchInput {
 	padding: 2px 0px 3px 5px;
-	min-width: 120px;
+	min-width: 199px;
 }
 
 .button {
@@ -41,8 +41,45 @@
 	opacity: 0.5;
 }
 
+.action {
+	min-width: 80px;
+	padding: 8px 20px;
+	border-radius: 4px;
+	color: @ControlText;
+	background-color: #F2F2F2;
+	text-align: center;
+	font-weight: bold;
+	font-size: 14px;
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+	.action:hover {
+		background-color: @Window;
+		color: @WindowText;
+		box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	.action:active {
+		color: @WindowText/0.75;
+	}
+
+.call-to-action {
+	background-color: @#176BD1;
+	color: @Window;
+}
+
 .spacer {
 	flex-grow: 1;
+}
+.separator {
+	align-self: stretch;
+	border-left: 1px solid @DisabledText/0.5;
+	margin: 4px 12px;
+}
+
+.divider {
+	align-self: stretch;
+	margin: 4px 6px;
 }
 
 .view-tab-pane {

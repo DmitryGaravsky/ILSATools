@@ -56,7 +56,7 @@
             this.classesTree.OptionsSelection.EnableAppearanceHotTrackedRow = DevExpress.Utils.DefaultBoolean.True;
             this.classesTree.OptionsView.FocusRectStyle = DevExpress.XtraTreeList.DrawFocusRectStyle.None;
             this.classesTree.OptionsView.RowImagesShowMode = DevExpress.XtraTreeList.RowImagesShowMode.InCell;
-            this.classesTree.Size = new System.Drawing.Size(299, 600);
+            this.classesTree.Size = new System.Drawing.Size(194, 600);
             this.classesTree.TabIndex = 1;
             this.classesTree.TreeLevelWidth = 12;
             this.classesTree.TreeViewColumn = this.colName;
@@ -87,16 +87,16 @@
             this.sidePanel1.Controls.Add(this.classesTree);
             this.sidePanel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.sidePanel1.Location = new System.Drawing.Point(0, 0);
-            this.sidePanel1.MinimumSize = new System.Drawing.Size(200, 0);
+            this.sidePanel1.MinimumSize = new System.Drawing.Size(110, 0);
             this.sidePanel1.Name = "sidePanel1";
-            this.sidePanel1.Size = new System.Drawing.Size(300, 600);
+            this.sidePanel1.Size = new System.Drawing.Size(195, 600);
             this.sidePanel1.TabIndex = 2;
             this.sidePanel1.Text = "sidePanel1";
             // 
             // codeBox
             // 
             this.codeBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.codeBox.Location = new System.Drawing.Point(300, 0);
+            this.codeBox.Location = new System.Drawing.Point(195, 0);
             this.codeBox.Name = "codeBox";
             this.codeBox.Properties.Appearance.Font = new System.Drawing.Font("Cascadia Code", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.codeBox.Properties.Appearance.Options.UseFont = true;
@@ -104,15 +104,15 @@
             this.codeBox.Properties.ReadOnly = true;
             this.codeBox.Properties.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.codeBox.Properties.WordWrap = false;
-            this.codeBox.Size = new System.Drawing.Size(600, 600);
+            this.codeBox.Size = new System.Drawing.Size(705, 600);
             this.codeBox.TabIndex = 3;
             this.codeBox.CustomHighlightText += new DevExpress.XtraEditors.TextEditCustomHighlightTextEventHandler(OnCodeBoxCustomHighlightText);
             this.codeBox.PaintEx += new DevExpress.XtraEditors.TextEditPaintExEventHandler(OnCodeBoxNoCodePaint);
             // 
             // ClassesView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.Controls.Add(this.codeBox);
             this.Controls.Add(this.sidePanel1);
             this.Name = "ClassesView";

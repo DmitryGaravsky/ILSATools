@@ -1,5 +1,4 @@
 ﻿namespace ILSA.Core.Hierarchy {
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
@@ -39,32 +38,30 @@
         public virtual NodeType Type {
             get { return NodeType.None; }
         }
+        public readonly static Node[] EmptyNodes = new Node[0];
     }
     abstract class Node<TSource> : Node {
         protected readonly TSource source;
-        readonly Lazy<string> name;
-        readonly Lazy<string> group;
-        readonly Lazy<IReadOnlyCollection<Node>> nodes;
+        readonly string name;
+        string? group;
+        IReadOnlyCollection<Node>? nodes;
         protected Node(INodesFactory factory, TSource source)
             : base(factory) {
             this.source = source;
-            this.name = new Lazy<string>(GetName);
-            this.group = new Lazy<string>(GetGroup);
-            this.nodes = new Lazy<IReadOnlyCollection<Node>>(GetNodes);
+            this.name = GetName();
         }
         public sealed override string Name {
-            get { return name.Value; }
+            get { return name; }
         }
         public sealed override string Group {
-            get { return group.Value; }
-        }
-        public sealed override IReadOnlyCollection<Node> Nodes {
-            get { return nodes.Value; }
+            get { return group ?? (group = GetGroup()); }
         }
         protected virtual string GetGroup() {
             return string.Empty;
         }
-        public readonly static Node[] EmptyNodes = new Node[0];
+        public sealed override IReadOnlyCollection<Node> Nodes {
+            get { return nodes ?? (nodes = GetNodes()); }
+        }
         protected virtual IReadOnlyCollection<Node> GetNodes() {
             return EmptyNodes;
         }

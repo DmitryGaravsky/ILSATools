@@ -22,24 +22,24 @@
                 var methods = source.GetMethods(flags);
                 var ctors = source.GetConstructors(flags);
                 var nestedTypes = source.GetNestedTypes(BF.Public | BF.NonPublic);
-                var nodes = new List<Node>(nestedTypes.Length + ctors.Length + methods.Length + 1);
-                if(source.BaseType != null && source.BaseType != typeof(object))
-                    nodes.Insert(0, factory.BaseTypes(source));
+                int methodsCount = nestedTypes.Length + ctors.Length + methods.Length;
+                bool hasBaseTypes = (source.BaseType != null) && (source.BaseType != typeof(object));
+                var nodes = new Node[methodsCount + (hasBaseTypes ? 1 : 0)];
+                int index = 0;
+                if(hasBaseTypes)
+                    nodes[index++] = factory.BaseTypes(source);
                 foreach(var n in nestedTypes)
-                    nodes.Add(factory.Create(n));
+                    nodes[index++] = factory.Create(n);
                 foreach(var c in ctors)
-                    nodes.Add(factory.Create(c));
+                    nodes[index++] = factory.Create(c);
                 foreach(var m in methods)
-                    nodes.Add(factory.Create(m));
-                return nodes.ToArray();
+                    nodes[index++] = factory.Create(m);
+                return nodes;
             }
             public sealed override NodeType Type {
                 get {
-                    if(source.IsValueType) {
-                        if(source.IsEnum)
-                            return NodeType.Enumeration;
-                        return NodeType.ValueType;
-                    }
+                    if(source.IsValueType)
+                        return source.IsEnum ? NodeType.Enumeration : NodeType.ValueType;
                     if(source.IsInterface)
                         return NodeType.Interface;
                     return NodeType.Type;
