@@ -1,4 +1,4 @@
-﻿namespace ILSA.Core.Hierarchy {
+﻿namespace ILSA.Core.Classes {
     using System;
     using System.Collections.Generic;
     using System.Reflection;
@@ -41,11 +41,11 @@
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
                 return EmptyNodes;
             }
-            public sealed override NodeType Type {
+            public sealed override int TypeCode {
                 get {
                     if(source.IsAbstract)
-                        return NodeType.MethodAbstract;
-                    return source.IsPrivate ? NodeType.MethodPrivate : NodeType.Method;
+                        return (int)NodeType.MethodAbstract;
+                    return source.IsPrivate ? (int)NodeType.MethodPrivate : (int)NodeType.Method;
                 }
             }
             readonly static Dictionary<Type, string> typeAliases = new Dictionary<Type, string> {

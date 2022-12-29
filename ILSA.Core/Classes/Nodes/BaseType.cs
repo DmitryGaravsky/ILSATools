@@ -1,4 +1,4 @@
-﻿namespace ILSA.Core.Hierarchy {
+﻿namespace ILSA.Core.Classes {
     using System;
     using System.Collections.Generic;
 
@@ -24,15 +24,15 @@
                     nodes[index++] = factory.BaseType(interfaces[i]);
                 return nodes;
             }
-            public sealed override NodeType Type {
+            public sealed override int TypeCode {
                 get {
                     if(isGroup)
-                        return NodeType.BaseTypes;
+                        return (int)NodeType.BaseTypes;
                     if(source.IsValueType)
-                        return source.IsEnum ? NodeType.Enumeration : NodeType.ValueType;
+                        return source.IsEnum ? (int)NodeType.Enumeration : (int)NodeType.ValueType;
                     if(source.IsInterface)
-                        return NodeType.Interface;
-                    return NodeType.Class;
+                        return (int)NodeType.Interface;
+                    return (int)NodeType.Class;
                 }
             }
         }

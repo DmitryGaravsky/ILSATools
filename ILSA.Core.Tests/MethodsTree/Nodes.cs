@@ -1,5 +1,5 @@
 ﻿namespace ILSA.Core.Tests.MethodsTree {
-    using ILSA.Core.Hierarchy;
+    using ILSA.Core.Classes;
     using NUnit.Framework;
 
     [TestFixture]

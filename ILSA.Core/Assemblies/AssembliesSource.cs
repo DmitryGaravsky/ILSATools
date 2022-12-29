@@ -1,12 +1,14 @@
 ﻿namespace ILSA.Core.Loader {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
 
-    public sealed class AssembliesSource : IAssembliesSource {
+    public sealed class AssembliesSourceForClasses : IAssembliesSource {
         Lazy<AppDomain> appDomain;
         Lazy<Assembly[]> assemblies;
-        public AssembliesSource() {
+        public AssembliesSourceForClasses() {
             appDomain = new Lazy<AppDomain>(CreateDomain);
             assemblies = new Lazy<Assembly[]>(GetAssemblies);
         }
@@ -54,6 +56,45 @@
                 try { Assembly.ReflectionOnlyLoadFrom(path); }
                 catch { }
             }
+        }
+    }
+
+    public sealed class AssembliesSourceForPatterns : IAssembliesSource {
+        readonly HashSet<string> assembliyPaths = new HashSet<string>();
+        readonly HashSet<Assembly> assemblies = new HashSet<Assembly>();
+        public AssembliesSourceForPatterns() {
+            Reset();
+        }
+        public void Reset() {
+            assemblies.Clear();
+            assembliyPaths.Clear(); 
+            assemblies.Add(typeof(IAssembliesSource).Assembly);
+            assembliyPaths.Add(typeof(IAssembliesSource).Assembly.Location);
+        }
+        Assembly[] IAssembliesSource.Assemblies {
+            get { return assemblies.ToArray(); }
+        }
+        public void Load(string path) {
+            if(string.IsNullOrEmpty(path))
+                return;
+            if(!File.Exists(path))
+                return;
+            if(assembliyPaths.Contains(path))
+                return;
+            var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach(var assembly in appDomainAssemblies) {
+                if(assembly.Location == path) {
+                    assemblies.Add(assembly);
+                    assembliyPaths.Add(path);
+                    return;
+                }
+            }
+            try {
+                var assembly = Assembly.LoadFrom(path);
+                assemblies.Add(assembly);
+                assembliyPaths.Add(path);
+            }
+            catch { }
         }
     }
 }

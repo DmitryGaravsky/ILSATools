@@ -1,23 +1,22 @@
-﻿namespace ILSA.Core.Classes {
+﻿namespace ILSA.Core.Patterns {
     using System.Collections.Generic;
     using System.Linq;
 
     partial class NodesFactory {
         sealed class Namespaces : Node<string> {
-            readonly IEnumerable<Node> types;
-            public Namespaces(INodesFactory factory, IGrouping<string, Node> types)
-                : base(factory, types.Key) {
-                this.types = types;
+            readonly IEnumerable<Node> methods;
+            public Namespaces(INodesFactory factory, IGrouping<string, Node> methodNodes)
+                : base(factory, methodNodes.Key) {
+                this.methods = methodNodes;
             }
             protected sealed override string GetName() {
                 return source;
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
-                var typeNodes = types.OfType<TypeNode>();
-                return typeNodes.Where(x => !x.IsNested).ToArray();
+                return methods.ToArray();
             }
             public sealed override int TypeCode {
-                get { return (int)NodeType.Namespace; }
+                get { return (int)NodeType.Pattern; }
             }
         }
     }

@@ -76,7 +76,7 @@
             // 
             // nodeBindingSource
             // 
-            this.nodeBindingSource.DataSource = typeof(ILSA.Core.Hierarchy.Node);
+            this.nodeBindingSource.DataSource = typeof(ILSA.Core.Node);
             // 
             // mvvmContext
             // 

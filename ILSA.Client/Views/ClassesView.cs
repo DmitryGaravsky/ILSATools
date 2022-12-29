@@ -7,10 +7,10 @@
     using DevExpress.Mvvm.Native;
     using DevExpress.Utils;
     using DevExpress.XtraEditors;
-    using DevExpress.XtraGrid;
     using DevExpress.XtraTreeList;
     using ILSA.Client.ViewModels;
-    using ILSA.Core.Hierarchy;
+    using ILSA.Core;
+    using ILSA.Core.Classes;
 
     public partial class ClassesView : XtraUserControl {
         public ClassesView() {
@@ -23,11 +23,7 @@
         void InitializeStyles() {
             var resources = SvgImageCollection.FromResources("ILSA.Core.Assets.Svg", typeof(INodesFactory).Assembly);
             SvgImageCollection svgImages = new SvgImageCollection(components);
-            var nodeTypeValues = typeof(NodeType).GetValues() as NodeType[];
-            for(int i = 0; i < nodeTypeValues.Length; i++) {
-                string key = nodeTypeValues[i].ToString();
-                svgImages.Add(key, resources[key]);
-            }
+            NodesFactory.WithNodeTypes((key, value) => svgImages.Add(key, resources[key]));
             classesTree.StateImageList = svgImages;
         }
         protected internal void AttachToSearchControl(SearchControl searchControl) {
@@ -51,7 +47,7 @@
         }
         void GetStateImage(object sender, GetStateImageEventArgs e) {
             var node = classesTree.GetRow(e.Node.Id) as Node;
-            if(node != null) e.NodeImageIndex = (int)node.Type;
+            if(node != null) e.NodeImageIndex = (int)node.TypeCode;
         }
         void OnCodeBoxCustomHighlightText(object sender, TextEditCustomHighlightTextEventArgs e) {
             if(e.Text.StartsWith(".", StringComparison.Ordinal))

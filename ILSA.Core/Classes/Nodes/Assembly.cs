@@ -1,4 +1,4 @@
-﻿namespace ILSA.Core.Hierarchy {
+﻿namespace ILSA.Core.Classes {
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -13,7 +13,7 @@
             public AssemblyNode(INodesFactory factory, Assembly assembly)
                 : base(factory, assembly) {
             }
-            public Assembly? GetAssembly() {
+            public Assembly GetAssembly() {
                 return source;
             }
             protected sealed override string GetName() {
@@ -28,13 +28,11 @@
                     nodes[i + 1] = namespaces[i];
                 return nodes;
             }
-            public sealed override NodeType Type {
-                get { return NodeType.Assembly; }
+            public sealed override int TypeCode {
+                get { return (int)NodeType.Assembly; }
             }
             static Type[] GetTypes(Assembly assembly) {
-                try {
-                    return assembly.GetTypes();
-                }
+                try { return assembly.GetTypes(); }
                 catch(ReflectionTypeLoadException e) { return e.Types; }
             }
         }

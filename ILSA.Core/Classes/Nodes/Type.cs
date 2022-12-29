@@ -1,4 +1,4 @@
-﻿namespace ILSA.Core.Hierarchy {
+﻿namespace ILSA.Core.Classes {
     using System;
     using System.Collections.Generic;
     using BF = System.Reflection.BindingFlags;
@@ -36,13 +36,13 @@
                     nodes[index++] = factory.Create(m);
                 return nodes;
             }
-            public sealed override NodeType Type {
+            public sealed override int TypeCode {
                 get {
                     if(source.IsValueType)
-                        return source.IsEnum ? NodeType.Enumeration : NodeType.ValueType;
+                        return source.IsEnum ? (int)NodeType.Enumeration : (int)NodeType.ValueType;
                     if(source.IsInterface)
-                        return NodeType.Interface;
-                    return NodeType.Type;
+                        return (int)NodeType.Interface;
+                    return (int)NodeType.Type;
                 }
             }
         }

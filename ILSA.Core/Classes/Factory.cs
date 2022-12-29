@@ -1,4 +1,4 @@
-﻿namespace ILSA.Core.Hierarchy {
+﻿namespace ILSA.Core.Classes {
     using System;
     using System.Collections.Concurrent;
     using System.Linq;
