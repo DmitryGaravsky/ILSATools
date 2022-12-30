@@ -1,7 +1,7 @@
 ﻿namespace ILSA.Core.Classes {
     using System;
 
-    partial class NodesFactory {
+    partial class ClassesFactory {
         public enum NodeType {
             None,
             Assembly,
@@ -20,9 +20,9 @@
         }
         //
         abstract class Node<TSource> : Node {
-            protected readonly INodesFactory factory;
+            protected readonly IClassesFactory factory;
             protected readonly TSource source;
-            protected Node(INodesFactory factory, TSource source) {
+            protected Node(IClassesFactory factory, TSource source) {
                 this.factory = factory;
                 this.source = source;
             }

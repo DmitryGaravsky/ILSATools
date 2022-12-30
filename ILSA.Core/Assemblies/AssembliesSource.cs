@@ -1,4 +1,4 @@
-﻿namespace ILSA.Core.Loader {
+﻿namespace ILSA.Core.Sources {
     using System;
     using System.Collections.Generic;
     using System.IO;

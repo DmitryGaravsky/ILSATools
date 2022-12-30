@@ -2,10 +2,10 @@
     using System;
     using System.Collections.Generic;
 
-    partial class NodesFactory {
+    partial class ClassesFactory {
         sealed class BaseTypes : Node<Type> {
             readonly bool isGroup;
-            public BaseTypes(INodesFactory factory, Type type, bool isRoot)
+            public BaseTypes(IClassesFactory factory, Type type, bool isRoot)
                 : base(factory, type) {
                 this.isGroup = isRoot;
             }

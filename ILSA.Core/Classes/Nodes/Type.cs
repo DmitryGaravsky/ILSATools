@@ -3,9 +3,9 @@
     using System.Collections.Generic;
     using BF = System.Reflection.BindingFlags;
 
-    partial class NodesFactory {
+    partial class ClassesFactory {
         sealed class TypeNode : Node<Type> {
-            public TypeNode(INodesFactory factory, Type type)
+            public TypeNode(IClassesFactory factory, Type type)
                 : base(factory, type) {
             }
             protected sealed override string GetName() {
@@ -13,6 +13,9 @@
             }
             protected override string GetGroup() {
                 return source.Namespace ?? string.Empty;
+            }
+            public Type GetSource() {
+                return source;
             }
             public bool IsNested {
                 get { return source.IsNested; }

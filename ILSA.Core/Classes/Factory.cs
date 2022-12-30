@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Reflection;
 
-    public interface INodesFactory {
+    public interface IClassesFactory {
         Node Create(Assembly assembly);
         Node Create(AssemblyName assemblyName);
         Node Create(Type type);
@@ -15,8 +15,8 @@
         Node Namespaces<TNode>(IGrouping<string, TNode> types) where TNode : Node;
     }
     //
-    public partial class NodesFactory : INodesFactory {
-        public NodesFactory() {
+    public partial class ClassesFactory : IClassesFactory {
+        public ClassesFactory() {
             createAssemblyNode = x => new AssemblyNode(this, x);
             assembliesCache = new ConcurrentDictionary<Assembly, AssemblyNode>();
             createReference = x => new Reference(this, x);
@@ -32,38 +32,38 @@
         }
         readonly ConcurrentDictionary<Assembly, AssemblyNode> assembliesCache;
         readonly Func<Assembly, AssemblyNode> createAssemblyNode;
-        Node INodesFactory.Create(Assembly assembly) {
+        Node IClassesFactory.Create(Assembly assembly) {
             return assembliesCache.GetOrAdd(assembly, createAssemblyNode);
         }
         readonly ConcurrentDictionary<AssemblyName, Reference> referencesCache;
         readonly Func<AssemblyName, Reference> createReference;
-        Node INodesFactory.Create(AssemblyName assemblyName) {
+        Node IClassesFactory.Create(AssemblyName assemblyName) {
             return referencesCache.GetOrAdd(assemblyName, createReference);
         }
         readonly ConcurrentDictionary<Type, TypeNode> typesCache;
         readonly Func<Type, TypeNode> createTypeNode;
-        Node INodesFactory.Create(Type type) {
+        Node IClassesFactory.Create(Type type) {
             return typesCache.GetOrAdd(type, createTypeNode);
         }
         readonly ConcurrentDictionary<MethodBase, MethodNode> methodsCache;
         readonly Func<MethodBase, MethodNode> createMethodNode;
-        Node INodesFactory.Create(MethodBase method) {
+        Node IClassesFactory.Create(MethodBase method) {
             return methodsCache.GetOrAdd(method, createMethodNode);
         }
         readonly ConcurrentDictionary<Type, BaseTypes> baseTypesCache;
         readonly Func<Type, BaseTypes> createBaseTypes;
-        Node INodesFactory.BaseType(Type type) {
+        Node IClassesFactory.BaseType(Type type) {
             return baseTypesCache.GetOrAdd(type, createBaseTypes);
         }
         readonly ConcurrentDictionary<Type, BaseTypes> baseTypesRootsCache;
         readonly Func<Type, BaseTypes> createBaseTypesRoot;
-        Node INodesFactory.BaseTypes(Type type) {
+        Node IClassesFactory.BaseTypes(Type type) {
             return baseTypesRootsCache.GetOrAdd(type, createBaseTypesRoot);
         }
-        Node INodesFactory.Namespaces<TNode>(IGrouping<string, TNode> types) {
+        Node IClassesFactory.Namespaces<TNode>(IGrouping<string, TNode> types) {
             return new Namespaces(this, types);
         }
-        Node INodesFactory.References(Assembly assembly) {
+        Node IClassesFactory.References(Assembly assembly) {
             return new References(this, assembly);
         }
     }

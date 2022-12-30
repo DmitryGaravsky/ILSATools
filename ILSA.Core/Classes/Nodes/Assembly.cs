@@ -4,16 +4,16 @@
     using System.Linq;
     using System.Reflection;
 
-    partial class NodesFactory {
+    partial class ClassesFactory {
         public static Assembly? GetAssembly(Node node) {
             var assemblyNode = node as AssemblyNode;
-            return (assemblyNode != null) ? assemblyNode.GetAssembly() : null;
+            return (assemblyNode != null) ? assemblyNode.GetSource() : null;
         }
         sealed class AssemblyNode : Node<Assembly> {
-            public AssemblyNode(INodesFactory factory, Assembly assembly)
+            public AssemblyNode(IClassesFactory factory, Assembly assembly)
                 : base(factory, assembly) {
             }
-            public Assembly GetAssembly() {
+            public Assembly GetSource() {
                 return source;
             }
             protected sealed override string GetName() {

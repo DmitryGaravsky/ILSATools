@@ -1,23 +1,34 @@
 ﻿namespace ILSA.Core.Patterns {
+    using System;
     using System.Collections.Generic;
     using System.Reflection;
 
-    partial class NodesFactory {
+    partial class PatternsFactory {
         public static Pattern? GetPattern(Node node) {
             var methodNode = node as MethodNode;
             return (methodNode != null) ? methodNode.GetPattern() : null;
         }
         sealed class MethodNode : Node<MethodInfo> {
             readonly Pattern pattern;
-            public MethodNode(INodesFactory factory, MethodInfo method)
+            public MethodNode(IPatternsFactory factory, MethodInfo method, Type argumentType)
                 : base(factory, method) {
-                pattern = new Pattern(method);
+                if(argumentType == typeof(Type))
+                    pattern = new MetadataPattern(method);
+                if(argumentType == typeof(ILReader.Readers.IILReader))
+                    pattern = new MethodBodyPattern(method);
+                pattern = pattern ?? EmptyPattern.Instance;
+            }
+            public MethodBase GetSource() {
+                return source;
             }
             public Pattern GetPattern() {
                 return pattern;
             }
             protected override string GetName() {
                 return pattern.Name;
+            }
+            protected override string GetGroup() {
+                return pattern.Group;
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
                 return EmptyNodes;

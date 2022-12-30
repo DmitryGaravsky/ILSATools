@@ -5,16 +5,22 @@
     using DevExpress.Mvvm;
     using DevExpress.Mvvm.POCO;
     using ILSA.Core;
-    using ILSA.Core.Loader;
+    using ILSA.Core.Classes;
+    using ILSA.Core.Patterns;
+    using ILSA.Core.Sources;
 
     public class AppViewModel {
-        readonly IAssembliesSource assembliesSource = new AssembliesSourceForClasses();
+        readonly IAssembliesSource classesSource = new AssembliesSourceForClasses();
         readonly IAssembliesSource patternsSource = new AssembliesSourceForPatterns();
+        readonly IClassesFactory classesFactory = new ClassesFactory();
+        readonly IPatternsFactory patternsFactory = new PatternsFactory();
         public AppViewModel() {
-            ServiceContainer.Default.RegisterService("assemblies", assembliesSource);
+            ServiceContainer.Default.RegisterService("classes", classesSource);
             ServiceContainer.Default.RegisterService("patterns", patternsSource);
-            Messenger.Default.Register<Core.Classes.NodesFactory.Workload>(this, OnAssembliesWorkload);
-            Messenger.Default.Register<Core.Patterns.NodesFactory.Workload>(this, OnPatternsWorkload);
+            ServiceContainer.Default.RegisterService(classesFactory);
+            ServiceContainer.Default.RegisterService(patternsFactory);
+            Messenger.Default.Register<ClassesFactory.Workload>(this, OnAssembliesWorkload);
+            Messenger.Default.Register<PatternsFactory.Workload>(this, OnPatternsWorkload);
         }
         public void Dispose() {
             Messenger.Default.Unregister(this);
@@ -23,21 +29,31 @@
             get { return "IL Static Analysis Client"; }
         }
         public string AssembliesWorkload {
-            get { return assembliesWorkload?.ToString() ?? "No assemblies loaded."; }
+            get { return classesWorkload?.ToString() ?? "No assemblies loaded."; }
         }
         public string PatternsWorkload {
             get { return patternsWorkload?.ToString() ?? "No patterns loaded."; }
         }
-        public void OnLoad() {
+        public async Task OnLoad() {
             LoadStartupAssemblies();
+            await UpdateWorkloads();
             ShowAssemblies();
+        }
+        async Task UpdateWorkloads() {
+            classesWorkload = await ClassesFactory.Workload.LoadAsync(classesSource, classesFactory);
+            patternsWorkload = await PatternsFactory.Workload.LoadAsync(patternsSource, patternsFactory);
+            this.RaisePropertyChanged(x => x.AssembliesWorkload);
+            this.RaisePropertyChanged(x => x.PatternsWorkload);
+            this.RaiseCanExecuteChanged(x => x.RunAnalysis());
+            this.RaiseCanExecuteChanged(x => x.SaveAssembliesWorkload());
+            this.RaiseCanExecuteChanged(x => x.SavePatternsWorkload());
         }
         void LoadStartupAssemblies() {
             var startupArgs = Environment.GetCommandLineArgs();
             if(startupArgs != null && startupArgs.Length > 0) {
                 Parser.Default.ParseArguments<CommandLineOptions>(startupArgs)
                     .WithParsed(opt => {
-                        var loadAssemblies = new Action<string>(assembliesSource.Load);
+                        var loadAssemblies = new Action<string>(classesSource.Load);
                         if(!opt.IsEmpty) {
                             opt.WithDirectory(loadAssemblies);
                             opt.WithAssemblies(loadAssemblies);
@@ -47,17 +63,19 @@
                     });
             }
         }
-        WorkloadBase assembliesWorkload;
-        void OnAssembliesWorkload(Core.Classes.NodesFactory.Workload workload) {
-            this.assembliesWorkload = workload;
+        WorkloadBase classesWorkload;
+        void OnAssembliesWorkload(ClassesFactory.Workload workload) {
+            this.classesWorkload = workload;
             this.RaisePropertyChanged(x => x.AssembliesWorkload);
             this.RaiseCanExecuteChanged(x => x.SaveAssembliesWorkload());
+            this.RaiseCanExecuteChanged(x => x.RunAnalysis());
         }
         WorkloadBase patternsWorkload;
-        void OnPatternsWorkload(Core.Patterns.NodesFactory.Workload workload) {
+        void OnPatternsWorkload(PatternsFactory.Workload workload) {
             this.patternsWorkload = workload;
             this.RaisePropertyChanged(x => x.PatternsWorkload);
             this.RaiseCanExecuteChanged(x => x.SavePatternsWorkload());
+            this.RaiseCanExecuteChanged(x => x.RunAnalysis());
         }
         public void AddAssembly() {
             bool isAssemblies = GetIsAssembliesPageActive();
@@ -69,21 +87,27 @@
             openFile.CheckFileExists = true;
             openFile.Filter = filter;
             if(openFile.ShowDialog()) {
-                var aSource = isAssemblies ? assembliesSource : patternsSource;
+                var aSource = isAssemblies ? classesSource : patternsSource;
                 var token = isAssemblies ? "assemblies" : "patterns";
                 foreach(var fileInfo in openFile.Files)
                     aSource.Load(fileInfo.GetFullName());
                 Messenger.Default.Send(aSource, token);
             }
         }
-        public async Task RunAnalysis() {
-            await Task.Delay(5000);
+        public bool CanRunAnalysis() {
+            return 
+                (classesWorkload != null) && !classesWorkload.IsEmpty &&
+                (patternsWorkload != null) && !patternsWorkload.IsEmpty;
         }
-        public void Reset() {
-            assembliesSource.Reset();
+        public async Task RunAnalysis() {
+            await WorkloadBase.AnalyzeAsync(classesWorkload, patternsWorkload);
+        }
+        public async Task Reset() {
+            classesSource.Reset();
             patternsSource.Reset();
             LoadStartupAssemblies();
-            Messenger.Default.Send(assembliesSource, "assemblies");
+            await UpdateWorkloads();
+            Messenger.Default.Send(classesSource, "classes");
             Messenger.Default.Send(patternsSource, "patterns");
         }
         protected IDocumentManagerService DocumentManagerService {
@@ -95,7 +119,10 @@
         }
         public void ShowAssemblies() {
             var assemblies = DocumentManagerService.FindDocumentByIdOrCreate(nameof(ShowAssemblies), x => {
-                var document = x.CreateDocument("ClassesView", null, this);
+                var classesViewModel = ViewModelSource.Create<ClassesViewModel>();
+                classesViewModel.SetParentViewModel(this);
+                ((ISupportParameter)classesViewModel).Parameter = classesWorkload;
+                var document = x.CreateDocument("ClassesView", classesViewModel);
                 document.Id = nameof(ShowAssemblies);
                 return document;
             });
@@ -103,14 +130,17 @@
         }
         public void ShowPatterns() {
             var patterns = DocumentManagerService.FindDocumentByIdOrCreate(nameof(ShowPatterns), x => {
-                var document = x.CreateDocument("PatternsView", null, this);
+                var patternsViewModel = ViewModelSource.Create<PatternsViewModel>();
+                patternsViewModel.SetParentViewModel(this);
+                ((ISupportParameter)patternsViewModel).Parameter = patternsWorkload;
+                var document = x.CreateDocument("PatternsView", patternsViewModel);
                 document.Id = nameof(ShowPatterns);
                 return document;
             });
             patterns.Show();
         }
         public bool CanSaveAssembliesWorkload() {
-            return (assembliesWorkload != null) && !assembliesWorkload.IsEmpty;
+            return (classesWorkload != null) && !classesWorkload.IsEmpty;
         }
         public void SaveAssembliesWorkload() {
             // TODO

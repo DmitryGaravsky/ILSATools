@@ -2,10 +2,10 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    partial class NodesFactory {
+    partial class ClassesFactory {
         sealed class Namespaces : Node<string> {
             readonly IEnumerable<Node> types;
-            public Namespaces(INodesFactory factory, IGrouping<string, Node> types)
+            public Namespaces(IClassesFactory factory, IGrouping<string, Node> types)
                 : base(factory, types.Key) {
                 this.types = types;
             }

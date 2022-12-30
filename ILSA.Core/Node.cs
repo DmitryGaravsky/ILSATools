@@ -2,8 +2,8 @@
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using System.Reflection;
-    using System.Threading;
+    using System.Text;
+    using ILSA.Core.Patterns;
 
     public abstract class Node {
         public readonly static Node[] EmptyNodes = new Node[0];
@@ -38,5 +38,8 @@
             foreach(Node child in Nodes)
                 child.Visit(action);
         }
+        protected internal virtual void Reset() { }
+        protected internal virtual void OnPatternMatch(Pattern pattern) { }
+        protected internal virtual void OnPatternMatch(Pattern pattern, int[] captures) { }
     }
 }

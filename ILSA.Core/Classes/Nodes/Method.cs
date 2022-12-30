@@ -3,17 +3,17 @@
     using System.Collections.Generic;
     using System.Reflection;
 
-    partial class NodesFactory {
+    partial class ClassesFactory {
         public static MethodBase? GetMethod(Node node) {
             var methodNode = node as MethodNode;
-            return (methodNode != null) ? methodNode.GetMethod() : null;
+            return (methodNode != null) ? methodNode.GetSource() : null;
         } 
         sealed class MethodNode : Node<MethodBase> {
-            public MethodNode(INodesFactory factory, MethodBase method)
+            public MethodNode(IClassesFactory factory, MethodBase method)
                 : base(factory, method) {
             }
-            public MethodBase? GetMethod() {
-                return !source.IsAbstract ? source : null;
+            public MethodBase GetSource() {
+                return source;
             }
             protected sealed override string GetName() {
                 var sb = new System.Text.StringBuilder(source.ToString());

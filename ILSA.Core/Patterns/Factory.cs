@@ -4,30 +4,30 @@
     using System.Linq;
     using System.Reflection;
 
-    public interface INodesFactory {
+    public interface IPatternsFactory {
         Node Create(Assembly assembly);
-        Node Create(MethodInfo method);
+        Node Create(Tuple<MethodInfo, Type> methodInfo);
         Node Namespaces<TNode>(IGrouping<string, TNode> types) where TNode : Node;
     }
     //
-    public partial class NodesFactory : INodesFactory {
-        public NodesFactory() {
+    public partial class PatternsFactory : IPatternsFactory {
+        public PatternsFactory() {
             createAssemblyNode = x => new AssemblyNode(this, x);
             assembliesCache = new ConcurrentDictionary<Assembly, AssemblyNode>();
-            createMethodNode = x => new MethodNode(this, x);
-            methodsCache = new ConcurrentDictionary<MethodInfo, MethodNode>();
+            createMethodNode = x => new MethodNode(this, x.Item1, x.Item2);
+            methodsCache = new ConcurrentDictionary<Tuple<MethodInfo, Type>, MethodNode>();
         }
         readonly ConcurrentDictionary<Assembly, AssemblyNode> assembliesCache;
         readonly Func<Assembly, AssemblyNode> createAssemblyNode;
-        Node INodesFactory.Create(Assembly assembly) {
+        Node IPatternsFactory.Create(Assembly assembly) {
             return assembliesCache.GetOrAdd(assembly, createAssemblyNode);
         }
-        readonly ConcurrentDictionary<MethodInfo, MethodNode> methodsCache;
-        readonly Func<MethodInfo, MethodNode> createMethodNode;
-        Node INodesFactory.Create(MethodInfo method) {
-            return methodsCache.GetOrAdd(method, createMethodNode);
+        readonly ConcurrentDictionary<Tuple<MethodInfo, Type>, MethodNode> methodsCache;
+        readonly Func<Tuple<MethodInfo, Type>, MethodNode> createMethodNode;
+        Node IPatternsFactory.Create(Tuple<MethodInfo, Type> methodInfo) {
+            return methodsCache.GetOrAdd(methodInfo, createMethodNode);
         }
-        Node INodesFactory.Namespaces<TNode>(IGrouping<string, TNode> types) {
+        Node IPatternsFactory.Namespaces<TNode>(IGrouping<string, TNode> types) {
             return new Namespaces(this, types);
         }
     }

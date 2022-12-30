@@ -18,9 +18,9 @@
             }
         }
         void InitializeStyles() {
-            this.IconOptions.SvgImage = ILSAClient.SvgImages["Class"];
-            this.HtmlImages = ILSAClient.SvgImages;
-            toolbar.HtmlImages = ILSAClient.SvgImages;
+            this.IconOptions.SvgImage = Assets.Style.SvgImages["Class"];
+            this.HtmlImages = Assets.Style.SvgImages;
+            toolbar.HtmlImages = Assets.Style.SvgImages;
             Styles.Toolbar.Apply(toolbar.HtmlTemplate);
         }
         void InitializeBindings() {

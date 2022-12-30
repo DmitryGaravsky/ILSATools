@@ -2,10 +2,10 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    partial class NodesFactory {
+    partial class PatternsFactory {
         sealed class Namespaces : Node<string> {
             readonly IEnumerable<Node> methods;
-            public Namespaces(INodesFactory factory, IGrouping<string, Node> methodNodes)
+            public Namespaces(IPatternsFactory factory, IGrouping<string, Node> methodNodes)
                 : base(factory, methodNodes.Key) {
                 this.methods = methodNodes;
             }
@@ -16,7 +16,7 @@
                 return methods.ToArray();
             }
             public sealed override int TypeCode {
-                get { return (int)NodeType.Pattern; }
+                get { return (int)NodeType.Namespace; }
             }
         }
     }

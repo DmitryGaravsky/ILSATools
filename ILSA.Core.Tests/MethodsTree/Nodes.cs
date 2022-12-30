@@ -4,7 +4,7 @@
 
     [TestFixture]
     public class Nodes {
-        readonly static INodesFactory factory = new NodesFactory();
+        readonly static IClassesFactory factory = new ClassesFactory();
         //
         class A {
             public override string ToString() {

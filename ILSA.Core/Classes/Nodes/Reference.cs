@@ -3,9 +3,9 @@
     using System.Linq;
     using System.Reflection;
 
-    partial class NodesFactory {
+    partial class ClassesFactory {
         sealed class Reference : Node<AssemblyName> {
-            public Reference(INodesFactory factory, AssemblyName assemblyName)
+            public Reference(IClassesFactory factory, AssemblyName assemblyName)
                 : base(factory, assemblyName) {
             }
             protected sealed override string GetName() {
@@ -16,7 +16,7 @@
             }
         }
         sealed class References : Node<Assembly> {
-            public References(INodesFactory factory, Assembly assembly)
+            public References(IClassesFactory factory, Assembly assembly)
                 : base(factory, assembly) {
             }
             protected sealed override string GetName() {

@@ -21,9 +21,9 @@
             }
         }
         void InitializeStyles() {
-            var resources = SvgImageCollection.FromResources("ILSA.Core.Assets.Svg", typeof(INodesFactory).Assembly);
+            var resources = SvgImageCollection.FromResources("ILSA.Core.Assets.Svg", typeof(IClassesFactory).Assembly);
             SvgImageCollection svgImages = new SvgImageCollection(components);
-            NodesFactory.WithNodeTypes((key, value) => svgImages.Add(key, resources[key]));
+            ClassesFactory.WithNodeTypes((key, value) => svgImages.Add(key, resources[key]));
             classesTree.StateImageList = svgImages;
         }
         protected internal void AttachToSearchControl(SearchControl searchControl) {
@@ -33,8 +33,6 @@
         public bool ShowBytes { get; set; }
         void InitializeBindings() {
             var fluent = mvvmContext.OfType<ClassesViewModel>();
-            fluent.WithEvent<EventArgs>(this, nameof(Load))
-                .EventToCommand(x => x.OnLoad);
             fluent.SetBinding(classesTree, tl => tl.DataSource, x => x.Nodes);
             fluent.WithEvent<TreeList, FocusedNodeChangedEventArgs>(classesTree, "FocusedNodeChanged")
                 .SetBinding(x => x.SelectedNode, args => classesTree.GetDataRecordByNode(args.Node) as Node,
@@ -47,7 +45,7 @@
         }
         void GetStateImage(object sender, GetStateImageEventArgs e) {
             var node = classesTree.GetRow(e.Node.Id) as Node;
-            if(node != null) e.NodeImageIndex = (int)node.TypeCode;
+            if(node != null) e.NodeImageIndex = node.TypeCode;
         }
         void OnCodeBoxCustomHighlightText(object sender, TextEditCustomHighlightTextEventArgs e) {
             if(e.Text.StartsWith(".", StringComparison.Ordinal))
