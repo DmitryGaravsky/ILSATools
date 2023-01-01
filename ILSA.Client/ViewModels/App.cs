@@ -3,6 +3,7 @@
     using System.Threading.Tasks;
     using CommandLine;
     using DevExpress.Mvvm;
+    using DevExpress.Mvvm.DataAnnotations;
     using DevExpress.Mvvm.POCO;
     using ILSA.Core;
     using ILSA.Core.Classes;
@@ -47,6 +48,8 @@
             this.RaiseCanExecuteChanged(x => x.RunAnalysis());
             this.RaiseCanExecuteChanged(x => x.SaveAssembliesWorkload());
             this.RaiseCanExecuteChanged(x => x.SavePatternsWorkload());
+            this.RaiseCanExecuteChanged(x => x.NavigateNext());
+            this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
         }
         void LoadStartupAssemblies() {
             var startupArgs = Environment.GetCommandLineArgs();
@@ -69,6 +72,8 @@
             this.RaisePropertyChanged(x => x.AssembliesWorkload);
             this.RaiseCanExecuteChanged(x => x.SaveAssembliesWorkload());
             this.RaiseCanExecuteChanged(x => x.RunAnalysis());
+            this.RaiseCanExecuteChanged(x => x.NavigateNext());
+            this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
         }
         WorkloadBase patternsWorkload;
         void OnPatternsWorkload(PatternsFactory.Workload workload) {
@@ -76,6 +81,8 @@
             this.RaisePropertyChanged(x => x.PatternsWorkload);
             this.RaiseCanExecuteChanged(x => x.SavePatternsWorkload());
             this.RaiseCanExecuteChanged(x => x.RunAnalysis());
+            this.RaiseCanExecuteChanged(x => x.NavigateNext());
+            this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
         }
         public void AddAssembly() {
             bool isAssemblies = GetIsAssembliesPageActive();
@@ -88,19 +95,21 @@
             openFile.Filter = filter;
             if(openFile.ShowDialog()) {
                 var aSource = isAssemblies ? classesSource : patternsSource;
-                var token = isAssemblies ? "assemblies" : "patterns";
+                var token = isAssemblies ? "classes" : "patterns";
                 foreach(var fileInfo in openFile.Files)
                     aSource.Load(fileInfo.GetFullName());
                 Messenger.Default.Send(aSource, token);
             }
         }
         public bool CanRunAnalysis() {
-            return 
+            return
                 (classesWorkload != null) && !classesWorkload.IsEmpty &&
                 (patternsWorkload != null) && !patternsWorkload.IsEmpty;
         }
         public async Task RunAnalysis() {
             await WorkloadBase.AnalyzeAsync(classesWorkload, patternsWorkload);
+            this.RaiseCanExecuteChanged(x => x.NavigateNext());
+            this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
         }
         public async Task Reset() {
             classesSource.Reset();
@@ -150,6 +159,26 @@
         }
         public void SavePatternsWorkload() {
             // TODO
+        }
+        public bool CanNavigate() {
+            return (classesWorkload != null) && classesWorkload.CanNavigate;
+        }
+        [Command(CanExecuteMethodName = nameof(CanNavigate))]
+        public void NavigateNext() {
+            var classesViewModel = EnsureAssembliesPageIsActive();
+            if(classesViewModel != null)
+                classesViewModel.SelectedNode = classesWorkload.Next(classesViewModel.SelectedNode, classesFactory);
+        }
+        [Command(CanExecuteMethodName = nameof(CanNavigate))]
+        public void NavigatePrevious() {
+            var classesViewModel = EnsureAssembliesPageIsActive();
+            if(classesViewModel != null)
+                classesViewModel.SelectedNode = classesWorkload.Previous(classesViewModel.SelectedNode, classesFactory);
+        }
+        NodesViewModel EnsureAssembliesPageIsActive() {
+            if(!GetIsAssembliesPageActive())
+                ShowAssemblies();
+            return DocumentManagerService.ActiveDocument.Content as NodesViewModel;
         }
     }
 }

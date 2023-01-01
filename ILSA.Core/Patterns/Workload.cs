@@ -41,24 +41,30 @@
                         break;
                 }
             }
-            protected sealed override void Advance(Node node, WorkloadBase effects) {
+            protected sealed override void Advance(Node node, AdvanceContext context) {
                 throw new NotImplementedException();
             }
-            protected internal sealed override void Apply(Node node, Type type) {
+            protected internal sealed override bool Apply(Node node, Type type) {
+                var errors = node.GetErrorsBuilder();
+                bool hasMatches = false;
                 foreach(var pattern in metadataPatterns) {
-                    if(pattern.Match(type, ErrorsBuilder)) 
+                    if(hasMatches |= pattern.Match(type, errors))
                         node.OnPatternMatch(pattern);
                 }
+                return hasMatches;
             }
-            protected internal sealed override void Apply(Node node, MethodBase method) {
+            protected internal sealed override bool Apply(Node node, MethodBase method) {
                 if(method.IsAbstract)
-                    return;
+                    return false;
                 var cfg = ILReader.Configuration.Resolve(method);
                 var reader = cfg.GetReader(method);
+                var errors = node.GetErrorsBuilder();
+                bool hasMatches = false;
                 foreach(var pattern in methodBodyPatterns) {
-                    if(pattern.Match(reader, ErrorsBuilder, out int[] captures)) 
+                    if(hasMatches |= pattern.Match(reader, errors, out int[] captures))
                         node.OnPatternMatch(pattern, captures);
                 }
+                return hasMatches;
             }
             public sealed override string ToString() {
                 return $"Patterns: {methods} patterns from {assemblies} assemblies";

@@ -27,6 +27,10 @@
             get;
             protected set;
         }
+        public virtual string SelectedNodeErrors {
+            get;
+            protected set;
+        }
         public virtual Dictionary<string, ProcessingSeverity> SeverityMap {
             get;
             protected set;
@@ -46,10 +50,12 @@
             if(method == null || method.IsAbstract) {
                 SeverityMap = null;
                 SelectedMethod = Empty;
+                SelectedNodeErrors = ClassesFactory.GetErrors(SelectedNode);
             }
             else {
                 var cfg = ILReader.Configuration.Resolve(method);
                 var reader = cfg.GetReader(method);
+                SelectedNodeErrors = string.Empty;
                 SeverityMap = ClassesFactory.GetSeverityMap(SelectedNode, reader);
                 SelectedMethod = reader;
             }

@@ -35,11 +35,20 @@
             var fluent = mvvmContext.OfType<ClassesViewModel>();
             fluent.SetBinding(classesTree, tl => tl.DataSource, x => x.Nodes);
             fluent.WithEvent<TreeList, FocusedNodeChangedEventArgs>(classesTree, "FocusedNodeChanged")
-                .SetBinding(x => x.SelectedNode, args => classesTree.GetDataRecordByNode(args.Node) as Node,
-                    (tree, entity) => { });
+                .SetBinding<Node>(x => x.SelectedNode, args => classesTree.GetDataRecordByNode(args.Node) as Node,
+                    SynchronizeFocusedNode);
             fluent.SetTrigger(x => x.SelectedMethod, codeBox.AppendLines);
+            fluent.SetTrigger(x => x.SelectedNodeErrors, codeBox.AppendErrors);
             fluent.WithKey(classesTree, Keys.Delete)
                 .KeyToCommand(x => x.Remove);
+        }
+        void SynchronizeFocusedNode(TreeList treeList, Node node) {
+            if(node == null)
+                treeList.SetFocusedNode(null);
+            else {
+                var targetNode = treeList.FindNodeByFieldValue("NodeID", node.NodeID);
+                treeList.FocusedNode = targetNode ?? treeList.FocusedNode;
+            }
         }
         void GetStateImage(object sender, GetStateImageEventArgs e) {
             var node = classesTree.GetRow(e.Node.Id) as Node;
@@ -48,14 +57,17 @@
         void OnCodeBoxCustomHighlightText(object sender, TextEditCustomHighlightTextEventArgs e) {
             if(e.Text.StartsWith(".", StringComparison.Ordinal))
                 e.HighlightRange(0, e.Text.IndexOf(' '), Color.Green);
-            if(e.Text.StartsWith("IL_", StringComparison.OrdinalIgnoreCase)) {
-                int endOffset = e.Text.IndexOf(':', 3) + 1;
+            if(e.Text.StartsWith("#", StringComparison.Ordinal))
+                e.HighlightRange(0, e.Text.Length, Color.Green);
+            int offsetStart = e.Text.IndexOf("IL_", StringComparison.Ordinal);
+            if(offsetStart >= 0) {
+                int endOffset = e.Text.IndexOf(':', offsetStart + 3) + 1;
                 e.HighlightRange(0, endOffset, Color.Gray);
                 int startOpcode = endOffset + e.Text.Skip(endOffset).IndexOf(x => !char.IsWhiteSpace(x));
                 int endOpcode = e.Text.IndexOf(' ', startOpcode);
                 if(endOpcode < 0) endOpcode = e.Text.Length;
                 var fluent = mvvmContext.OfType<ClassesViewModel>();
-                var severity = fluent.ViewModel.GetSeverity(e.Text.Substring(3, endOffset - 4));
+                var severity = fluent.ViewModel.GetSeverity(e.Text.Substring(offsetStart + 3, endOffset - (offsetStart + 4)));
                 e.HighlightRange(startOpcode - 1, 1, x => SetSeverity(x, severity));
                 e.HighlightRange(startOpcode, endOpcode - startOpcode, Color.Blue);
             }
@@ -94,7 +106,6 @@
         }
         sealed class SeverityPainter : TextEdit.TextEditBlockPainter {
             public readonly static SeverityPainter Instance = new SeverityPainter();
-            //
             readonly static SvgBitmap Error = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Error)]);
             readonly static SvgBitmap Warning = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Warning)]);
             readonly static SvgBitmap Information = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Information)]);

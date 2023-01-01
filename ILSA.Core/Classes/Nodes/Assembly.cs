@@ -1,8 +1,10 @@
 ﻿namespace ILSA.Core.Classes {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Reflection;
+    using System.Text;
 
     partial class ClassesFactory {
         public static Assembly? GetAssembly(Node node) {
@@ -13,15 +15,41 @@
             public AssemblyNode(IClassesFactory factory, Assembly assembly)
                 : base(factory, assembly) {
             }
-            public Assembly GetSource() {
-                return source;
-            }
             protected sealed override string GetName() {
                 return source.GetName().Name;
             }
+            readonly StringBuilder ErrorsBuilder = new StringBuilder();
+            protected internal override StringBuilder GetErrorsBuilder() {
+                return ErrorsBuilder;
+            }
+            string? errors;
+            [Display(AutoGenerateField = false)]
+            public string Errors {
+                get { return errors ?? (errors = ErrorsBuilder.ToString()); }
+            }
+            protected override void OnVisited() {
+                Action<Node> collectErrors = x => CollectTypeErrors(ErrorsBuilder, x);
+                foreach(var child in Nodes)
+                    child.Visit(collectErrors);
+            }
+            static void CollectTypeErrors(StringBuilder errors, Node node) {
+                if(node is TypeNode t) {
+                    if(t.HasErrors) {
+                        var typeName = t.GetSource().FullName;
+                        errors.Append("# ").AppendLine(typeName)
+                            .Append(t.Errors);
+                    }
+                }
+            }
+            protected internal override void Reset() {
+                errors = null;
+                ErrorsBuilder.Clear();
+            }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
                 var types = GetTypes(source).OfType<Type>().Select(factory.Create);
-                var namespaces = types.GroupBy(x => x.Group).Select(factory.Namespaces).ToArray();
+                var namespaces = types.GroupBy(x => x.Group)
+                    .Select(x=> Tuple.Create(x.Key,source, (IEnumerable<Node>)x))
+                    .Select(factory.Namespaces).ToArray();
                 var nodes = new Node[namespaces.Length + 1];
                 nodes[0] = factory.References(source);
                 for(int i = 0; i < namespaces.Length; i++)

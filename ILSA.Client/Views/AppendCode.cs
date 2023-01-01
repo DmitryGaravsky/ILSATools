@@ -17,6 +17,13 @@
             codeBox.ScrollToCaret();
             codeBox.Refresh();
         }
+        public static void AppendErrors(this MemoEdit codeBox, string errors) {
+            codeBox.Clear();
+            codeBox.AppendText(errors);
+            codeBox.Select(0, 0);
+            codeBox.ScrollToCaret();
+            codeBox.Refresh();
+        }
         static void AppendLines(StringBuilder code, IEnumerable<IInstruction> instructions) {
             var reader = instructions as IILReader;
             if(reader != null && reader.Metadata.Any()) {

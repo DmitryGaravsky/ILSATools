@@ -2,6 +2,7 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using System.Text;
     using ILReader.Readers;
     using ILSA.Core.Patterns;
 
@@ -18,11 +19,8 @@
             public MethodNode(IClassesFactory factory, MethodBase method)
                 : base(factory, method) {
             }
-            public MethodBase GetSource() {
-                return source;
-            }
             protected sealed override string GetName() {
-                var sb = new System.Text.StringBuilder(source.ToString());
+                var sb = new StringBuilder(source.ToString());
                 var ns = source.DeclaringType?.Namespace;
                 if(!string.IsNullOrEmpty(ns))
                     sb.Replace(ns + ".", string.Empty);
@@ -35,8 +33,7 @@
                         if(char.IsWhiteSpace(sb[i])) {
                             sb.Remove(0, i + 1);
                             if(mInfo != null) {
-                                sb.Append(" : ");
-                                sb.Append(TypeToString(mInfo.ReturnType));
+                                sb.Append(" : ").Append(TypeToString(mInfo.ReturnType));
                             }
                             break;
                         }
@@ -46,6 +43,13 @@
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
                 return EmptyNodes;
+            }
+            protected internal sealed override StringBuilder GetErrorsBuilder() {
+                var typeNode = factory.Create(source.DeclaringType);
+                return typeNode.GetErrorsBuilder();
+            }
+            protected internal sealed override bool HasErrors {
+                get { return (patternMatches != null) && patternMatches.Count > 0; }
             }
             List<Tuple<Pattern, HashSet<int>>>? patternMatches;
             protected internal sealed override void Reset() {

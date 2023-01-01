@@ -26,6 +26,7 @@
             this.components = new System.ComponentModel.Container();
             this.classesTree = new DevExpress.XtraTreeList.TreeList();
             this.colName = new DevExpress.XtraTreeList.Columns.TreeListColumn();
+            this.colNodeID = new DevExpress.XtraTreeList.Columns.TreeListColumn();
             this.nodeBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mvvmContext = new DevExpress.Utils.MVVM.MVVMContext(this.components);
             this.sidePanel1 = new DevExpress.XtraEditors.SidePanel();
@@ -42,7 +43,8 @@
             this.classesTree.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.classesTree.ChildListFieldName = "Nodes";
             this.classesTree.Columns.AddRange(new DevExpress.XtraTreeList.Columns.TreeListColumn[] {
-            this.colName});
+            this.colName,
+            this.colNodeID});
             this.classesTree.DataSource = this.nodeBindingSource;
             this.classesTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.classesTree.EnableDynamicLoading = false;
@@ -67,12 +69,17 @@
             // colName
             // 
             this.colName.FieldName = "Name";
-            this.colName.MinWidth = 16;
             this.colName.Name = "colName";
             this.colName.OptionsColumn.ReadOnly = true;
             this.colName.Visible = true;
             this.colName.VisibleIndex = 0;
-            this.colName.Width = 37;
+            // 
+            // colNodeID
+            // 
+            this.colNodeID.FieldName = "NodeID";
+            this.colNodeID.Name = "colNodeID";
+            this.colNodeID.OptionsColumn.ReadOnly = true;
+            this.colNodeID.Visible = false;
             // 
             // nodeBindingSource
             // 
@@ -131,6 +138,7 @@
 
         private DevExpress.XtraTreeList.TreeList classesTree;
         private DevExpress.XtraTreeList.Columns.TreeListColumn colName;
+        private DevExpress.XtraTreeList.Columns.TreeListColumn colNodeID;
         private System.Windows.Forms.BindingSource nodeBindingSource;
         private DevExpress.Utils.MVVM.MVVMContext mvvmContext;
         private DevExpress.XtraEditors.SidePanel sidePanel1;

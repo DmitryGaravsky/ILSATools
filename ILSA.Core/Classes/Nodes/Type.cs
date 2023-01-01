@@ -1,6 +1,8 @@
 ﻿namespace ILSA.Core.Classes {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Text;
     using BF = System.Reflection.BindingFlags;
 
     partial class ClassesFactory {
@@ -14,11 +16,24 @@
             protected override string GetGroup() {
                 return source.Namespace ?? string.Empty;
             }
-            public Type GetSource() {
-                return source;
-            }
             public bool IsNested {
                 get { return source.IsNested; }
+            }
+            readonly StringBuilder ErrorsBuilder = new StringBuilder();
+            protected internal override StringBuilder GetErrorsBuilder() {
+                return ErrorsBuilder;
+            }
+            string? errors;
+            [Display(AutoGenerateField = false)]
+            public string Errors {
+                get { return errors ?? (errors = ErrorsBuilder.ToString()); }
+            }
+            protected internal override bool HasErrors {
+                get { return ErrorsBuilder.Length > 0; }
+            }
+            protected internal override void Reset() {
+                errors = null;
+                ErrorsBuilder.Clear();
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
                 var flags = BF.Instance | BF.Static | BF.Public | BF.NonPublic | BF.DeclaredOnly;

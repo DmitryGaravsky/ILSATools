@@ -1,18 +1,18 @@
 ﻿namespace ILSA.Core.Classes {
     using System;
     using System.Collections.Concurrent;
-    using System.Linq;
+    using System.Collections.Generic;
     using System.Reflection;
 
     public interface IClassesFactory {
         Node Create(Assembly assembly);
-        Node Create(AssemblyName assemblyName);
+        Node Create(Tuple<AssemblyName, Assembly> reference);
         Node Create(Type type);
         Node Create(MethodBase method);
         Node BaseTypes(Type type);
         Node BaseType(Type type);
         Node References(Assembly assembly);
-        Node Namespaces<TNode>(IGrouping<string, TNode> types) where TNode : Node;
+        Node Namespaces(Tuple<string, Assembly, IEnumerable<Node>> types);
     }
     //
     public partial class ClassesFactory : IClassesFactory {
@@ -20,7 +20,7 @@
             createAssemblyNode = x => new AssemblyNode(this, x);
             assembliesCache = new ConcurrentDictionary<Assembly, AssemblyNode>();
             createReference = x => new Reference(this, x);
-            referencesCache = new ConcurrentDictionary<AssemblyName, Reference>();
+            referencesCache = new ConcurrentDictionary<Tuple<AssemblyName, Assembly>, Reference>();
             createTypeNode = x => new TypeNode(this, x);
             typesCache = new ConcurrentDictionary<Type, TypeNode>();
             createMethodNode = x => new MethodNode(this, x);
@@ -35,10 +35,10 @@
         Node IClassesFactory.Create(Assembly assembly) {
             return assembliesCache.GetOrAdd(assembly, createAssemblyNode);
         }
-        readonly ConcurrentDictionary<AssemblyName, Reference> referencesCache;
-        readonly Func<AssemblyName, Reference> createReference;
-        Node IClassesFactory.Create(AssemblyName assemblyName) {
-            return referencesCache.GetOrAdd(assemblyName, createReference);
+        readonly ConcurrentDictionary<Tuple<AssemblyName, Assembly>, Reference> referencesCache;
+        readonly Func<Tuple<AssemblyName, Assembly>, Reference> createReference;
+        Node IClassesFactory.Create(Tuple<AssemblyName, Assembly> reference) {
+            return referencesCache.GetOrAdd(reference, createReference);
         }
         readonly ConcurrentDictionary<Type, TypeNode> typesCache;
         readonly Func<Type, TypeNode> createTypeNode;
@@ -60,11 +60,41 @@
         Node IClassesFactory.BaseTypes(Type type) {
             return baseTypesRootsCache.GetOrAdd(type, createBaseTypesRoot);
         }
-        Node IClassesFactory.Namespaces<TNode>(IGrouping<string, TNode> types) {
+        Node IClassesFactory.Namespaces(Tuple<string, Assembly, IEnumerable<Node>> types) {
             return new Namespaces(this, types);
         }
         Node IClassesFactory.References(Assembly assembly) {
             return new References(this, assembly);
+        }
+        public static string GetErrors(Node node) {
+            if(node is AssemblyNode a)
+                return a.Errors;
+            if(node is TypeNode t)
+                return t.Errors;
+            return string.Empty;
+        }
+        public int? GetAssemblyNodeID(Node node, out Node? assemblyNode) {
+            assemblyNode = node as AssemblyNode;
+            if(assemblyNode != null)
+                return assemblyNode.NodeID;
+            Assembly? assembly = null;
+            if(node is References rs)
+                assembly = rs.GetSource();
+            if(node is Reference r)
+                assembly = r.GetAssembly();
+            if(node is Namespaces ns)
+                assembly = ns.GetAssembly();
+            if(node is TypeNode t)
+                assembly = t.GetSource().Assembly;
+            if(node is MethodNode m)
+                assembly = m.GetSource().DeclaringType.Assembly;
+            if(assembly == null)
+                return null;
+            AssemblyNode aNode;
+            if(!assembliesCache.TryGetValue(assembly, out aNode))
+                return null;
+            assemblyNode = aNode;
+            return aNode.NodeID;
         }
     }
 }

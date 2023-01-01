@@ -38,6 +38,8 @@
             fluent.BindCommandToElement(toolbar, "add-assembly", x => x.AddAssembly);
             fluent.BindCommandToElement(toolbar, "run-analysis", x => x.RunAnalysis);
             fluent.BindCommandToElement(toolbar, "reset", x => x.Reset);
+            fluent.BindCommandToElement(toolbar, "navigate-prev", x => x.NavigatePrevious);
+            fluent.BindCommandToElement(toolbar, "navigate-next", x => x.NavigateNext);
         }
         void InitializeNavigation() {
             var viewService = DocumentManagerService.Create(navigationFrame);

@@ -50,7 +50,7 @@
                     }
                     errors
                         .Append(' ', 4)
-                        .AppendLine(instructions[i].ToString());
+                        .AppendLine(instructions[captures[i]].ToString());
                 }
             }
             else captures = NoCaptures;

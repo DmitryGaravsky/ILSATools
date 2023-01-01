@@ -3,6 +3,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.IO;
     using System.Reflection;
+    using System.Text;
 
     public enum ProcessingTarget {
         None,
@@ -21,9 +22,21 @@
         protected Pattern(MethodInfo match) {
             this.match = match;
             var sourceType = match.DeclaringType;
-            var display = sourceType.GetCustomAttribute<DisplayAttribute>();
-            this.Name = display?.GetName() ?? sourceType.Name;
+            var display = match.GetCustomAttribute<DisplayAttribute>();
+            this.Name = display?.GetName() ?? GetName(sourceType.Name);
             this.Group = display?.GetGroupName() ?? GetGroup(sourceType.Namespace);
+            int? order = display?.GetOrder();
+            if(order.HasValue)
+                this.severityCore = (ProcessingSeverity)order.GetValueOrDefault();
+        }
+        static string GetName(string name) {
+            var camelCaseSplit = new StringBuilder(name.Length);
+            foreach(char c in name) {
+                if(char.IsUpper(c) && camelCaseSplit.Length > 0)
+                    camelCaseSplit.Append(' ');
+                camelCaseSplit.Append(c);
+            }
+            return camelCaseSplit.ToString();
         }
         static string GetGroup(string @namespace) {
             if(string.IsNullOrEmpty(@namespace))
@@ -54,7 +67,7 @@
         //
         sealed class EmptyPattern : Pattern {
             internal EmptyPattern()
-                : base(new Func<string, Type>(System.Type.GetType).Method) {
+                : base(new Func<string, Type>(Type.GetType).Method) {
             }
             public sealed override ProcessingTarget Target {
                 get { return ProcessingTarget.None; }
