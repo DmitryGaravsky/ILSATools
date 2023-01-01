@@ -2,7 +2,6 @@
   <defs>
     <style>.canvas{fill: none; opacity: 0;}.light-yellow-10{fill: #996f00; opacity: 0.1;}.light-yellow{fill: #996f00; opacity: 1;}</style>
   </defs>
-  <title>Class</title>
   <g id="canvas">
     <path class="canvas" d="M16,16H0V0H16Z" />
   </g>

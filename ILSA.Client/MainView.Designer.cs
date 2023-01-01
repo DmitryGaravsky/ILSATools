@@ -37,7 +37,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.searchControl.Properties)).BeginInit();
             this.rootContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.navigationFrame)).BeginInit();
-            this.navigationFrame.SuspendLayout();
             this.SuspendLayout();
             // 
             // mvvmContext
@@ -57,9 +56,8 @@
             this.toolbar.Location = new System.Drawing.Point(0, 0);
             this.toolbar.Margin = new System.Windows.Forms.Padding(0);
             this.toolbar.Name = "toolbar";
-            this.toolbar.Size = new System.Drawing.Size(1196, 53);
+            this.toolbar.Size = new System.Drawing.Size(1198, 53);
             this.toolbar.TabIndex = 0;
-            this.toolbar.ElementMouseClick += OnToolbarElementClick;
             // 
             // searchControl
             // 
@@ -71,10 +69,10 @@
             new DevExpress.XtraEditors.Repository.ClearButton()});
             this.searchControl.Properties.NullValuePrompt = " ";
             this.searchControl.Properties.ShowSearchButton = false;
-            this.searchControl.Size = new System.Drawing.Size(201, 20);
+            this.searchControl.Size = new System.Drawing.Size(201, 18);
             this.searchControl.TabIndex = 0;
-            this.searchControl.GotFocus += OnSearchControlGotFocus;
-            this.searchControl.LostFocus += OnSearchControlLostFocus;
+            this.searchControl.GotFocus += new System.EventHandler(OnSearchControlGotFocus);
+            this.searchControl.LostFocus += new System.EventHandler(OnSearchControlLostFocus);
             // 
             // rootContainer
             // 
@@ -82,15 +80,16 @@
             this.rootContainer.Controls.Add(this.toolbar);
             this.rootContainer.Location = new System.Drawing.Point(1, 31);
             this.rootContainer.Name = "rootContainer";
-            this.rootContainer.Size = new System.Drawing.Size(1196, 768);
+            this.rootContainer.Size = new System.Drawing.Size(1198, 768);
             this.rootContainer.TabIndex = 1;
             // 
-            // navigationFrame1
+            // navigationFrame
             // 
             this.navigationFrame.Dock = System.Windows.Forms.DockStyle.Fill;
             this.navigationFrame.Location = new System.Drawing.Point(0, 53);
-            this.navigationFrame.Name = "navigationFrame1";
-            this.navigationFrame.Size = new System.Drawing.Size(1196, 715);
+            this.navigationFrame.Name = "navigationFrame";
+            this.navigationFrame.SelectedPage = null;
+            this.navigationFrame.Size = new System.Drawing.Size(1198, 715);
             this.navigationFrame.TabIndex = 1;
             this.navigationFrame.Text = "navigationFrame1";
             // 
@@ -99,10 +98,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ChildControls.Add(this.rootContainer);
-            this.ClientSize = new System.Drawing.Size(1198, 800);
+            this.ClientSize = new System.Drawing.Size(1200, 800);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(1198, 650);
+            this.MinimumSize = new System.Drawing.Size(1000, 650);
             this.Name = "MainView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "{Title}";
@@ -113,7 +112,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.searchControl.Properties)).EndInit();
             this.rootContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.navigationFrame)).EndInit();
-            this.navigationFrame.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

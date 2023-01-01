@@ -45,19 +45,19 @@
             this.colName});
             this.classesTree.DataSource = this.nodeBindingSource;
             this.classesTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.classesTree.EnableDynamicLoading = false;
             this.classesTree.FixedLineWidth = 1;
             this.classesTree.HorzScrollStep = 1;
             this.classesTree.Location = new System.Drawing.Point(0, 0);
             this.classesTree.MinWidth = 16;
             this.classesTree.Name = "classesTree";
             this.classesTree.OptionsBehavior.Editable = false;
-            this.classesTree.EnableDynamicLoading = false;
             this.classesTree.OptionsFilter.ExpandNodesOnFiltering = true;
             this.classesTree.OptionsSelection.EnableAppearanceFocusedCell = false;
             this.classesTree.OptionsSelection.EnableAppearanceHotTrackedRow = DevExpress.Utils.DefaultBoolean.True;
             this.classesTree.OptionsView.FocusRectStyle = DevExpress.XtraTreeList.DrawFocusRectStyle.None;
-            this.classesTree.OptionsView.RowImagesShowMode = DevExpress.XtraTreeList.RowImagesShowMode.InCell;
-            this.classesTree.Size = new System.Drawing.Size(194, 600);
+            this.classesTree.OptionsView.RowImagesShowMode = DevExpress.XtraTreeList.RowImagesShowMode.InIndent;
+            this.classesTree.Size = new System.Drawing.Size(299, 715);
             this.classesTree.TabIndex = 1;
             this.classesTree.TreeLevelWidth = 12;
             this.classesTree.TreeViewColumn = this.colName;
@@ -90,14 +90,14 @@
             this.sidePanel1.Location = new System.Drawing.Point(0, 0);
             this.sidePanel1.MinimumSize = new System.Drawing.Size(110, 0);
             this.sidePanel1.Name = "sidePanel1";
-            this.sidePanel1.Size = new System.Drawing.Size(195, 600);
+            this.sidePanel1.Size = new System.Drawing.Size(300, 715);
             this.sidePanel1.TabIndex = 2;
             this.sidePanel1.Text = "sidePanel1";
             // 
             // codeBox
             // 
             this.codeBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.codeBox.Location = new System.Drawing.Point(195, 0);
+            this.codeBox.Location = new System.Drawing.Point(300, 0);
             this.codeBox.Name = "codeBox";
             this.codeBox.Properties.Appearance.Font = new System.Drawing.Font("Cascadia Code", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.codeBox.Properties.Appearance.Options.UseFont = true;
@@ -105,10 +105,10 @@
             this.codeBox.Properties.ReadOnly = true;
             this.codeBox.Properties.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.codeBox.Properties.WordWrap = false;
-            this.codeBox.Size = new System.Drawing.Size(705, 600);
+            this.codeBox.Size = new System.Drawing.Size(898, 715);
             this.codeBox.TabIndex = 3;
-            this.codeBox.CustomHighlightText += new DevExpress.XtraEditors.TextEditCustomHighlightTextEventHandler(OnCodeBoxCustomHighlightText);
-            this.codeBox.PaintEx += new DevExpress.XtraEditors.TextEditPaintExEventHandler(OnCodeBoxNoCodePaint);
+            this.codeBox.CustomHighlightText += new DevExpress.XtraEditors.TextEditCustomHighlightTextEventHandler(this.OnCodeBoxCustomHighlightText);
+            this.codeBox.PaintEx += new DevExpress.XtraEditors.TextEditPaintExEventHandler(this.OnCodeBoxNoCodePaint);
             // 
             // ClassesView
             // 
@@ -117,7 +117,7 @@
             this.Controls.Add(this.codeBox);
             this.Controls.Add(this.sidePanel1);
             this.Name = "ClassesView";
-            this.Size = new System.Drawing.Size(900, 600);
+            this.Size = new System.Drawing.Size(1198, 715);
             ((System.ComponentModel.ISupportInitialize)(this.classesTree)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nodeBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mvvmContext)).EndInit();

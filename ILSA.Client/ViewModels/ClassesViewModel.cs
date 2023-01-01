@@ -6,11 +6,11 @@
     using ILReader.Readers;
     using ILSA.Core;
     using ILSA.Core.Classes;
+    using ILSA.Core.Patterns;
     using ILSA.Core.Sources;
 
     public class ClassesViewModel : NodesViewModel {
         public ClassesViewModel() {
-            ShowOffset = true;
             Messenger.Default.Register<IAssembliesSource>(this, "classes", OnReloadClasses);
         }
         async void OnReloadClasses(IAssembliesSource source) {
@@ -27,13 +27,14 @@
             get;
             protected set;
         }
-        public virtual bool ShowOffset {
+        public virtual Dictionary<string, ProcessingSeverity> SeverityMap {
             get;
             protected set;
         }
-        public virtual bool ShowBytes {
-            get;
-            protected set;
+        protected internal ProcessingSeverity GetSeverity(string offset) {
+            if(SeverityMap == null)
+                return ProcessingSeverity.Ignore;
+            return SeverityMap.TryGetValue(offset, out ProcessingSeverity severity) ? severity : ProcessingSeverity.Ignore;
         }
         protected override void OnNodesChanged() {
             SelectedMethod = null;
@@ -42,11 +43,15 @@
         readonly static IInstruction[] Empty = new IInstruction[0];
         protected override void OnSelectedNodeChanged() {
             var method = ClassesFactory.GetMethod(SelectedNode);
-            if(method == null || method.IsAbstract)
+            if(method == null || method.IsAbstract) {
+                SeverityMap = null;
                 SelectedMethod = Empty;
+            }
             else {
                 var cfg = ILReader.Configuration.Resolve(method);
-                SelectedMethod = cfg.GetReader(method);
+                var reader = cfg.GetReader(method);
+                SeverityMap = ClassesFactory.GetSeverityMap(SelectedNode, reader);
+                SelectedMethod = reader;
             }
             base.OnSelectedNodeChanged();
         }

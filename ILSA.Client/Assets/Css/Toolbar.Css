@@ -12,8 +12,8 @@
 
 .searchInput {
 	padding: 2px 0px 3px 5px;
-	min-width: 160px;
-	margin-right: 39px;
+	min-width: 144px;
+	margin-right: 22px;
 }
 
 .button {
@@ -43,7 +43,6 @@
 }
 
 .action {
-	min-width: 80px;
 	padding: 8px 20px;
 	border-radius: 4px;
 	color: @ControlText;
@@ -69,6 +68,27 @@
 		background-color: #C0C0C0;
 	}
 
+.no-text {
+	padding: 8px;
+}
+
+.no-right-border {
+	padding-left: 12px;
+	border-radius: 4px 0 0 4px;
+}
+
+.no-left-border {
+	padding-right: 12px;
+	border-radius: 0 4px 4px 0;
+}
+
+.action-glyph {
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
+	min-height: 16px;
+}
+
 .call-to-action {
 	background-color: @#176BD1;
 	color: @Window;
@@ -77,6 +97,7 @@
 .spacer {
 	flex-grow: 1;
 }
+
 .separator {
 	align-self: stretch;
 	border-left: 1px solid @DisabledText/0.5;

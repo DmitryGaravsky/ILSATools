@@ -16,7 +16,7 @@
             }
         }
         void InitializeStyles() {
-            var resources = SvgImageCollection.FromResources("ILSA.Core.Assets.Svg", typeof(IPatternsFactory).Assembly);
+            var resources = CoreSvgImages.SvgImages;
             SvgImageCollection svgImages = new SvgImageCollection(components);
             PatternsFactory.WithNodeTypes((key, value) => svgImages.Add(key, resources[key]));
             patternsTree.StateImageList = svgImages;

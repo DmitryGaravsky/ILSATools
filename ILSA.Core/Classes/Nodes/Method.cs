@@ -2,12 +2,18 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using ILReader.Readers;
+    using ILSA.Core.Patterns;
 
     partial class ClassesFactory {
         public static MethodBase? GetMethod(Node node) {
             var methodNode = node as MethodNode;
             return (methodNode != null) ? methodNode.GetSource() : null;
-        } 
+        }
+        public static Dictionary<string, ProcessingSeverity>? GetSeverityMap(Node node, IILReader instructions) {
+            var methodNode = node as MethodNode;
+            return (methodNode != null) ? methodNode.GetSeverityMap(instructions) : null;
+        }
         sealed class MethodNode : Node<MethodBase> {
             public MethodNode(IClassesFactory factory, MethodBase method)
                 : base(factory, method) {
@@ -40,6 +46,28 @@
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
                 return EmptyNodes;
+            }
+            List<Tuple<Pattern, HashSet<int>>>? patternMatches;
+            protected internal sealed override void Reset() {
+                patternMatches = null;
+            }
+            protected internal sealed override void OnPatternMatch(Pattern pattern, int[] captures) {
+                patternMatches = patternMatches ?? new List<Tuple<Pattern, HashSet<int>>>();
+                patternMatches.Add(Tuple.Create(pattern, new HashSet<int>(captures)));
+            }
+            internal Dictionary<string, ProcessingSeverity>? GetSeverityMap(IILReader instructions) {
+                if(patternMatches == null)
+                    return null;
+                Dictionary<string, ProcessingSeverity>? map = null;
+                foreach(IInstruction instruction in instructions) {
+                    foreach(var match in patternMatches) {
+                        if(match.Item2.Contains(instruction.Index)) {
+                            map = map ?? new Dictionary<string, ProcessingSeverity>();
+                            map.Add(instruction.Offset.ToString("X4"), match.Item1.Severity);
+                        }
+                    }
+                }
+                return map;
             }
             public sealed override int TypeCode {
                 get {

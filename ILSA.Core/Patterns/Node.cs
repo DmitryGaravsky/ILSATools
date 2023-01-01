@@ -6,7 +6,10 @@
             None,
             Assembly,
             Namespace,
-            Pattern
+            Pattern,
+            PatternInformational,
+            PatternWarning,
+            PatternError,
         }
         //
         abstract class Node<TSource> : Node {

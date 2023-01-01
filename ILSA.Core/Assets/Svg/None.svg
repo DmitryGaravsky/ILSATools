@@ -2,7 +2,6 @@
   <defs>
     <style>.canvas{fill: none; opacity: 0;}.light-defaultgrey-10{fill: #212121; opacity: 0.1;}.light-defaultgrey{fill: #212121; opacity: 1;}</style>
   </defs>
-  <title>IconLightNone</title>
   <g id="canvas">
     <path class="canvas" d="M16,0V16H0V0Z" />
   </g>

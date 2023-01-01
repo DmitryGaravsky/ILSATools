@@ -43,19 +43,19 @@
             this.colName});
             this.patternsTree.DataSource = this.nodeBindingSource;
             this.patternsTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.patternsTree.EnableDynamicLoading = false;
             this.patternsTree.FixedLineWidth = 1;
             this.patternsTree.HorzScrollStep = 1;
             this.patternsTree.Location = new System.Drawing.Point(0, 0);
             this.patternsTree.MinWidth = 16;
             this.patternsTree.Name = "patternsTree";
             this.patternsTree.OptionsBehavior.Editable = false;
-            this.patternsTree.EnableDynamicLoading = false;
             this.patternsTree.OptionsFilter.ExpandNodesOnFiltering = true;
             this.patternsTree.OptionsSelection.EnableAppearanceFocusedCell = false;
             this.patternsTree.OptionsSelection.EnableAppearanceHotTrackedRow = DevExpress.Utils.DefaultBoolean.True;
             this.patternsTree.OptionsView.FocusRectStyle = DevExpress.XtraTreeList.DrawFocusRectStyle.None;
-            this.patternsTree.OptionsView.RowImagesShowMode = DevExpress.XtraTreeList.RowImagesShowMode.InCell;
-            this.patternsTree.Size = new System.Drawing.Size(194, 600);
+            this.patternsTree.OptionsView.RowImagesShowMode = DevExpress.XtraTreeList.RowImagesShowMode.InIndent;
+            this.patternsTree.Size = new System.Drawing.Size(299, 715);
             this.patternsTree.TabIndex = 1;
             this.patternsTree.TreeLevelWidth = 12;
             this.patternsTree.TreeViewColumn = this.colName;
@@ -86,19 +86,19 @@
             this.sidePanel1.Controls.Add(this.patternsTree);
             this.sidePanel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.sidePanel1.Location = new System.Drawing.Point(0, 0);
-            this.sidePanel1.MinimumSize = new System.Drawing.Size(110, 0);
+            this.sidePanel1.MinimumSize = new System.Drawing.Size(150, 0);
             this.sidePanel1.Name = "sidePanel1";
-            this.sidePanel1.Size = new System.Drawing.Size(195, 600);
+            this.sidePanel1.Size = new System.Drawing.Size(300, 715);
             this.sidePanel1.TabIndex = 2;
             this.sidePanel1.Text = "sidePanel1";
             // 
-            // ClassesView
+            // PatternsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.Controls.Add(this.sidePanel1);
-            this.Name = "ClassesView";
-            this.Size = new System.Drawing.Size(900, 600);
+            this.Name = "PatternsView";
+            this.Size = new System.Drawing.Size(1198, 715);
             ((System.ComponentModel.ISupportInitialize)(this.patternsTree)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nodeBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mvvmContext)).EndInit();

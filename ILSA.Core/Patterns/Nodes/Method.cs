@@ -16,7 +16,7 @@
                     pattern = new MetadataPattern(method);
                 if(argumentType == typeof(ILReader.Readers.IILReader))
                     pattern = new MethodBodyPattern(method);
-                pattern = pattern ?? EmptyPattern.Instance;
+                pattern = pattern ?? Pattern.Empty;
             }
             public MethodBase GetSource() {
                 return source;
@@ -34,7 +34,7 @@
                 return EmptyNodes;
             }
             public sealed override int TypeCode {
-                get { return (int)NodeType.Pattern; }
+                get { return (int)NodeType.Pattern + (int)pattern.Severity; }
             }
         }
     }
