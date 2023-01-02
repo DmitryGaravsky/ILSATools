@@ -67,7 +67,11 @@
                     foreach(var match in patternMatches) {
                         if(match.Item2.Contains(instruction.Index)) {
                             map = map ?? new Dictionary<string, ProcessingSeverity>();
-                            map.Add(instruction.Offset.ToString("X4"), match.Item1.Severity);
+                            string offset = instruction.Offset.ToString("X4");
+                            ProcessingSeverity severity;
+                            if(!map.TryGetValue(offset, out severity))
+                                map.Add(offset, match.Item1.Severity);
+                            else map[offset] = (ProcessingSeverity)Math.Max((int)severity, (int)match.Item1.Severity);
                         }
                     }
                 }

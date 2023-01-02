@@ -26,7 +26,8 @@
             }
         }
         //
-        abstract class Node<TSource> : Node {
+        abstract class Node<TSource> : Node
+            where TSource : class {
             protected readonly IClassesFactory factory;
             protected readonly TSource source;
             protected Node(IClassesFactory factory, TSource source) {

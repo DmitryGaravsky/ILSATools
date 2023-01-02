@@ -24,12 +24,27 @@
             get;
             protected set;
         }
+        public string SelectedNodeTOC {
+            get;
+            private set;
+        }
         protected override void OnNodesChanged() {
+            SelectedNodeTOC = string.Empty;
             SelectedPattern = null;
             base.OnNodesChanged();
         }
         protected override void OnSelectedNodeChanged() {
-            SelectedPattern = PatternsFactory.GetPattern(SelectedNode);
+            var pattern = PatternsFactory.GetPattern(SelectedNode);
+            if(pattern != null) {
+                SelectedNodeTOC = string.Empty;
+                SelectedPattern = pattern;
+            }
+            else {
+                SelectedPattern = null;
+                var factory = this.GetService<IPatternsFactory>();
+                SelectedNodeTOC = ((PatternsFactory)factory).GetTOC(SelectedNode);
+                this.RaisePropertyChanged(x => x.SelectedNodeTOC);
+            }
             base.OnSelectedNodeChanged();
         }
         public override bool CanRemove() {

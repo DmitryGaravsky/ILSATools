@@ -18,6 +18,10 @@
             public Assembly GetSource() {
                 return source;
             }
+            internal void BuildTOC(StringBuilder toc) {
+                foreach(Namespaces ns in Nodes)
+                    ns.BuildTOC(toc);
+            }
             protected sealed override string GetName() {
                 return source.GetName().Name;
             }
@@ -30,6 +34,7 @@
                     .Select(factory.Create);
                 var namespaces = matchMethods
                     .GroupBy(x => x.Group)
+                    .Select(g => Tuple.Create(g.Key, source, (IEnumerable<Node>)g))
                     .Select(factory.Namespaces).ToArray();
                 var nodes = new Node[namespaces.Length];
                 for(int i = 0; i < namespaces.Length; i++)

@@ -1,16 +1,34 @@
 ﻿namespace ILSA.Core.Patterns {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
+    using System.Text;
 
     partial class PatternsFactory {
         sealed class Namespaces : Node<string> {
             readonly IEnumerable<Node> methods;
-            public Namespaces(IPatternsFactory factory, IGrouping<string, Node> methodNodes)
-                : base(factory, methodNodes.Key) {
-                this.methods = methodNodes;
+            readonly Assembly assembly;
+            public Namespaces(IPatternsFactory factory, Tuple<string, Assembly, IEnumerable<Node>> methods)
+                : base(factory, methods.Item1) {
+                this.assembly = methods.Item2;
+                this.methods = methods.Item3;
             }
             protected sealed override string GetName() {
                 return source;
+            }
+            internal void BuildTOC(StringBuilder toc) {
+                toc.Append("## ").AppendLine(Name).AppendLine();
+                foreach(MethodNode m in Nodes) {
+                    var pattern = m.GetPattern();
+                    toc.Append("- ")
+                      .Append('[').Append(pattern.Name).Append(']')
+                      .Append('(').Append(m.NodeID).AppendLine(") ");
+                }
+                toc.AppendLine();
+            }
+            internal Assembly GetAssembly() {
+                return assembly;
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
                 return methods.ToArray();

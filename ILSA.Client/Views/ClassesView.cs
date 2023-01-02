@@ -27,9 +27,7 @@
             SvgImageCollection svgImages = new SvgImageCollection(components);
             ClassesFactory.WithNodeTypes((key, value) => svgImages.Add(key, resources[key]));
             classesTree.StateImageList = svgImages;
-        }
-        protected internal void AttachToSearchControl(SearchControl searchControl) {
-            if(searchControl != null) searchControl.Client = classesTree;
+            codeBox.Properties.MaskBoxPadding = new Padding(24);
         }
         void InitializeBindings() {
             var fluent = mvvmContext.OfType<ClassesViewModel>();
@@ -41,6 +39,10 @@
             fluent.SetTrigger(x => x.SelectedNodeErrors, codeBox.AppendErrors);
             fluent.WithKey(classesTree, Keys.Delete)
                 .KeyToCommand(x => x.Remove);
+        }
+        internal void AttachToSearchControl(SearchControl searchControl) {
+            if(searchControl != null) 
+                searchControl.Client = classesTree;
         }
         void SynchronizeFocusedNode(TreeList treeList, Node node) {
             if(node == null)
@@ -89,7 +91,7 @@
             block.Painter = SeverityPainter.Instance;
             block.AllowNavigation = false;
         }
-        readonly static StringFormat sf = new StringFormat {
+        readonly static StringFormat NoCodeMessageFormat = new StringFormat {
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center,
         };
@@ -101,7 +103,7 @@
                 int margin = ScaleDPI.ScaleHorizontal(-40);
                 Rectangle client = Rectangle.Inflate(codeBox.ClientRectangle, margin, margin);
                 var color = LookAndFeelHelper.GetSystemColor(LookAndFeel, SystemColors.GrayText);
-                e.Cache.DrawString(NoCodeMessage, codeBox.Font, e.Cache.GetSolidBrush(color), client, sf);
+                e.Cache.DrawString(NoCodeMessage, codeBox.Font, e.Cache.GetSolidBrush(color), client, NoCodeMessageFormat);
             }
         }
         sealed class SeverityPainter : TextEdit.TextEditBlockPainter {

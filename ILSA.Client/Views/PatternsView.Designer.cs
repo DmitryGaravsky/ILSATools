@@ -62,6 +62,7 @@
             this.patternsTree.TreeViewColumn = this.colName;
             this.patternsTree.ViewStyle = DevExpress.XtraTreeList.TreeListViewStyle.TreeView;
             this.patternsTree.GetStateImage += new DevExpress.XtraTreeList.GetStateImageEventHandler(this.GetStateImage);
+            this.patternsTree.PopupMenuShowing += new DevExpress.XtraTreeList.PopupMenuShowingEventHandler(this.OnNodeMenu);
             // 
             // colName
             // 

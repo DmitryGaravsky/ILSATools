@@ -70,6 +70,9 @@
             get { return severityCore.GetValueOrDefault(GetDefaultSeverity()); }
             set { severityCore = value; }
         }
+        public void ResetSeverity() {
+            severityCore = null;
+        }
         protected virtual ProcessingSeverity GetDefaultSeverity() {
             return ProcessingSeverity.Ignore;
         }

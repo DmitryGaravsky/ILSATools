@@ -12,12 +12,14 @@
             PatternError,
         }
         //
-        abstract class Node<TSource> : Node {
+        abstract class Node<TSource> : Node
+            where TSource : class {
             protected readonly IPatternsFactory factory;
             protected readonly TSource source;
             protected Node(IPatternsFactory factory, TSource source) {
                 this.factory = factory;
                 this.source = source;
+                NodeID = Murmur<TSource>.Calc(source);
             }
         }
         public static void WithNodeTypes(Action<string, int> action) {
@@ -26,6 +28,16 @@
                 string key = nodeTypeValues[i].ToString();
                 action(key, (int)nodeTypeValues[i]);
             }
+        }
+        public static void SetSeverity(Node node, ProcessingSeverity? value) {
+            node.Visit(x => {
+                if(x is MethodNode m) {
+                    var pattern = m.GetPattern();
+                    if(value.HasValue)
+                        pattern.Severity = value.Value;
+                    else pattern.ResetSeverity();
+                }
+            });
         }
     }
 }

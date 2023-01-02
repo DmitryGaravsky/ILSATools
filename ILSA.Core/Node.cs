@@ -65,11 +65,13 @@
             get { return false; }
         }
         //
-        protected static class Murmur<TSource> {
+        protected static class Murmur<TSource> where TSource : class {
+            readonly static int Seed = Compress(448839895, typeof(TSource).GetHashCode());
+            //
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static int Calc(TSource source) {
-                int start = Compress(448839895, typeof(TSource).GetHashCode());
-                return Finalization(Compress(start, source?.GetHashCode() ?? 62043647));
+                int sourceHash = (source != null) ? source.GetHashCode() : 62043647;
+                return Finalization(Compress(Seed, sourceHash));
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static int Compress(int prev, int next) {

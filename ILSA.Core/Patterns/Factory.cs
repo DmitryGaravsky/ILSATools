@@ -1,13 +1,14 @@
 ﻿namespace ILSA.Core.Patterns {
     using System;
     using System.Collections.Concurrent;
-    using System.Linq;
+    using System.Collections.Generic;
     using System.Reflection;
+    using System.Text;
 
     public interface IPatternsFactory {
         Node Create(Assembly assembly);
         Node Create(Tuple<MethodInfo, Type> methodInfo);
-        Node Namespaces<TNode>(IGrouping<string, TNode> types) where TNode : Node;
+        Node Namespaces(Tuple<string, Assembly, IEnumerable<Node>> methods);
     }
     //
     public partial class PatternsFactory : IPatternsFactory {
@@ -27,8 +28,16 @@
         Node IPatternsFactory.Create(Tuple<MethodInfo, Type> methodInfo) {
             return methodsCache.GetOrAdd(methodInfo, createMethodNode);
         }
-        Node IPatternsFactory.Namespaces<TNode>(IGrouping<string, TNode> types) {
-            return new Namespaces(this, types);
+        Node IPatternsFactory.Namespaces(Tuple<string, Assembly, IEnumerable<Node>> methods) {
+            return new Namespaces(this, methods);
+        }
+        public string GetTOC(Node node) {
+            var toc = new StringBuilder();
+            if(node is AssemblyNode a)
+                a.BuildTOC(toc);
+            if(node is Namespaces ns) 
+                ns.BuildTOC(toc);
+            return toc.ToString();
         }
     }
 }
