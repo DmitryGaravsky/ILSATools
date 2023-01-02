@@ -26,17 +26,29 @@
             }
         }
         //
-        abstract class Node<TSource> : Node
+        abstract class Node<TSource> : Node, 
+            IEquatable<Node<TSource>>
             where TSource : class {
             protected readonly IClassesFactory factory;
             protected readonly TSource source;
             protected Node(IClassesFactory factory, TSource source) {
                 this.factory = factory;
                 this.source = source;
-                NodeID = Murmur<TSource>.Calc(source);
+                NodeID = Murmur<TSource>.Calc(source, GetType().GetHashCode());
             }
             internal TSource GetSource() {
                 return source;
+            }
+            public bool Equals(Node<TSource> node) {
+                return (source == node.source) && (node.GetType() == GetType());
+            }
+            public sealed override bool Equals(object obj) {
+                if(ReferenceEquals(obj, this))
+                    return true;
+                return (obj is Node<TSource> node) && Equals(node);
+            }
+            public sealed override int GetHashCode() {
+                return NodeID;
             }
         }
     }

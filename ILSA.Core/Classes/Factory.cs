@@ -13,7 +13,7 @@
         Node BaseTypes(Type type);
         Node BaseType(Type type);
         Node References(Assembly assembly);
-        Node Namespaces(Tuple<string, Assembly, IEnumerable<Node>> types);
+        Node Namespace(Tuple<string, Assembly, IEnumerable<Node>> types);
         int? GetRootNodeID(Node node, out Node? navigationNode);
     }
     //
@@ -62,8 +62,8 @@
         Node IClassesFactory.BaseTypes(Type type) {
             return baseTypesRootsCache.GetOrAdd(type, createBaseTypesRoot);
         }
-        Node IClassesFactory.Namespaces(Tuple<string, Assembly, IEnumerable<Node>> types) {
-            return new Namespaces(this, types);
+        Node IClassesFactory.Namespace(Tuple<string, Assembly, IEnumerable<Node>> types) {
+            return new Namespace(this, types);
         }
         Node IClassesFactory.References(Assembly assembly) {
             return new References(this, assembly);
@@ -77,7 +77,7 @@
                 assembly = rs.GetSource();
             if(node is Reference r)
                 assembly = r.GetAssembly();
-            if(node is Namespaces ns) {
+            if(node is Namespace ns) {
                 navigationNode = ns.Nodes.FirstOrDefault();
                 assembly = ns.GetAssembly();
             }
@@ -97,6 +97,8 @@
         public static string GetErrors(Node node) {
             if(node is AssemblyNode a)
                 return a.Errors;
+            if(node is Namespace ns)
+                return ns.Errors;
             if(node is TypeNode t)
                 return t.Errors;
             return string.Empty;

@@ -8,7 +8,7 @@
     public interface IPatternsFactory {
         Node Create(Assembly assembly);
         Node Create(Tuple<MethodInfo, Type> methodInfo);
-        Node Namespaces(Tuple<string, Assembly, IEnumerable<Node>> methods);
+        Node Namespace(Tuple<string, Assembly, IEnumerable<Node>> methods);
     }
     //
     public partial class PatternsFactory : IPatternsFactory {
@@ -28,14 +28,14 @@
         Node IPatternsFactory.Create(Tuple<MethodInfo, Type> methodInfo) {
             return methodsCache.GetOrAdd(methodInfo, createMethodNode);
         }
-        Node IPatternsFactory.Namespaces(Tuple<string, Assembly, IEnumerable<Node>> methods) {
-            return new Namespaces(this, methods);
+        Node IPatternsFactory.Namespace(Tuple<string, Assembly, IEnumerable<Node>> methods) {
+            return new Namespace(this, methods);
         }
         public string GetTOC(Node node) {
             var toc = new StringBuilder();
             if(node is AssemblyNode a)
                 a.BuildTOC(toc);
-            if(node is Namespaces ns) 
+            if(node is Namespace ns) 
                 ns.BuildTOC(toc);
             return toc.ToString();
         }

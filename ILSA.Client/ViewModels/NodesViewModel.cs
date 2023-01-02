@@ -34,7 +34,12 @@
             return SelectedNode != null;
         }
         public void Remove() {
-            if(Nodes.Remove(SelectedNode)) SelectedNode = null;
+            int index = Nodes.IndexOf(SelectedNode);
+            if(Nodes.Remove(SelectedNode))
+                OnRemoveComplete(index);
+        }
+        protected virtual void OnRemoveComplete(int index) {
+            SelectedNode = (index < Nodes.Count) ? Nodes[index] : null;
         }
     }
 }

@@ -26,8 +26,9 @@
             patternsTree.StateImageList = svgImages;
         }
         void InitializeBindings() {
+            nodeBindingSource.ListChanged += OnNodeBindingSourceListChanged;
             var fluent = mvvmContext.OfType<PatternsViewModel>();
-            fluent.SetBinding(patternsTree, tl => tl.DataSource, x => x.Nodes);
+            fluent.SetBinding(nodeBindingSource, tl => tl.DataSource, x => x.Nodes);
             fluent.WithEvent<TreeList, FocusedNodeChangedEventArgs>(patternsTree, "FocusedNodeChanged")
                 .SetBinding(x => x.SelectedNode, args => patternsTree.GetDataRecordByNode(args.Node) as Node,
                     (tree, entity) => { });
@@ -38,6 +39,10 @@
                 descriptionBox.Markdown = p?.Description ?? string.Empty;
             });
             fluent.SetTrigger(x => x.SelectedNodeTOC, toc => descriptionBox.Markdown = toc);
+        }
+        void OnNodeBindingSourceListChanged(object sender, System.ComponentModel.ListChangedEventArgs e) {
+            if(e.ListChangedType == System.ComponentModel.ListChangedType.Reset)
+                patternsTree.ExpandAll();
         }
         void OnCopyClick(object sender, DxHtmlElementMouseEventArgs args) {
             this.descriptionBox.PerformClick(args);

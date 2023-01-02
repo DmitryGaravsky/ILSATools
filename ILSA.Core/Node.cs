@@ -2,7 +2,6 @@
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    using System.Runtime.CompilerServices;
     using System.Text;
     using ILSA.Core.Patterns;
 
@@ -64,32 +63,8 @@
         protected internal virtual bool HasErrors {
             get { return false; }
         }
-        //
-        protected static class Murmur<TSource> where TSource : class {
-            readonly static int Seed = Compress(448839895, typeof(TSource).GetHashCode());
-            //
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static int Calc(TSource source) {
-                int sourceHash = (source != null) ? source.GetHashCode() : 62043647;
-                return Finalization(Compress(Seed, sourceHash));
-            }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static int Compress(int prev, int next) {
-                uint num = (uint)prev;
-                uint num2 = (uint)next;
-                num2 *= 1540483477;
-                num2 ^= num2 >> 24;
-                num2 *= 1540483477;
-                num *= 1540483477;
-                return (int)(num ^ num2);
-            }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static int Finalization(int hashState) {
-                uint num = (uint)hashState;
-                num ^= num >> 13;
-                num *= 1540483477;
-                return (int)(num ^ (num >> 15));
-            }
+        public override int GetHashCode() {
+            return NodeID;
         }
     }
 }

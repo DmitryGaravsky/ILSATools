@@ -85,7 +85,7 @@
             readonly Node root;
             readonly WorkloadBase effects;
             readonly List<Node> nodesInNavigationOrder = new List<Node>();
-            readonly Dictionary<int, int> nodeIdToIndex = new Dictionary<int, int>();
+            readonly Dictionary<Node, int> nodeIdToIndex = new Dictionary<Node, int>();
             readonly HashSet<int> matchedNodeIndices = new HashSet<int>();
             public Branch(Node root, WorkloadBase effects) {
                 this.root = root;
@@ -108,7 +108,7 @@
             }
             int EnsureNodeIndexAndNavigationOrder(Node node) {
                 int index = nodesInNavigationOrder.Count;
-                nodeIdToIndex.Add(node.NodeID, index);
+                nodeIdToIndex.Add(node, index);
                 nodesInNavigationOrder.Add(node);
                 return index;
             }
@@ -119,7 +119,7 @@
                 get { return matchedNodeIndices.Count > 0; }
             }
             public Node? NextMatch(Node node) {
-                var currentIndex = nodeIdToIndex[node.NodeID];
+                int currentIndex = nodeIdToIndex[node];
                 for(int i = currentIndex + 1; i < nodesInNavigationOrder.Count; i++) {
                     if(matchedNodeIndices.Contains(i))
                         return nodesInNavigationOrder[i];
@@ -131,7 +131,7 @@
                 return null;
             }
             public Node? PrevMatch(Node node) {
-                var currentIndex = nodeIdToIndex[node.NodeID];
+                int currentIndex = nodeIdToIndex[node];
                 for(int i = currentIndex - 1; i > 0; i--) {
                     if(matchedNodeIndices.Contains(i))
                         return nodesInNavigationOrder[i];

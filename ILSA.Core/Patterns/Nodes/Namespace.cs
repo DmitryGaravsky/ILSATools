@@ -6,10 +6,10 @@
     using System.Text;
 
     partial class PatternsFactory {
-        sealed class Namespaces : Node<string> {
+        sealed class Namespace : Node<string> {
             readonly IEnumerable<Node> methods;
             readonly Assembly assembly;
-            public Namespaces(IPatternsFactory factory, Tuple<string, Assembly, IEnumerable<Node>> methods)
+            public Namespace(IPatternsFactory factory, Tuple<string, Assembly, IEnumerable<Node>> methods)
                 : base(factory, methods.Item1) {
                 this.assembly = methods.Item2;
                 this.methods = methods.Item3;

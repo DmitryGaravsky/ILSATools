@@ -62,7 +62,6 @@
                             opt.WithAssemblies(loadAssemblies);
                             opt.WithPatterns(patternsSource.Load);
                         }
-                        else CommandLineOptions.WithDirectory(startupArgs, loadAssemblies);
                     });
             }
         }

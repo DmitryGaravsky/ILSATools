@@ -19,7 +19,7 @@
             protected Node(IPatternsFactory factory, TSource source) {
                 this.factory = factory;
                 this.source = source;
-                NodeID = Murmur<TSource>.Calc(source);
+                NodeID = Murmur<TSource>.Calc(source, GetType().GetHashCode());
             }
         }
         public static void WithNodeTypes(Action<string, int> action) {
