@@ -2,6 +2,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
 
     public interface IClassesFactory {
@@ -13,6 +14,7 @@
         Node BaseType(Type type);
         Node References(Assembly assembly);
         Node Namespaces(Tuple<string, Assembly, IEnumerable<Node>> types);
+        int? GetRootNodeID(Node node, out Node? navigationNode);
     }
     //
     public partial class ClassesFactory : IClassesFactory {
@@ -66,35 +68,38 @@
         Node IClassesFactory.References(Assembly assembly) {
             return new References(this, assembly);
         }
+        int? IClassesFactory.GetRootNodeID(Node node, out Node? navigationNode) {
+            navigationNode = node as AssemblyNode;
+            if(navigationNode != null)
+                return navigationNode.NodeID;
+            Assembly? assembly = null;
+            if(node is References rs)
+                assembly = rs.GetSource();
+            if(node is Reference r)
+                assembly = r.GetAssembly();
+            if(node is Namespaces ns) {
+                navigationNode = ns.Nodes.FirstOrDefault();
+                assembly = ns.GetAssembly();
+            }
+            if(node is TypeNode t) {
+                navigationNode = node;
+                assembly = t.GetSource().Assembly;
+            }
+            if(node is MethodNode m) {
+                navigationNode = node;
+                assembly = m.GetSource().DeclaringType.Assembly;
+            }
+            if(assembly == null || !assembliesCache.TryGetValue(assembly, out AssemblyNode aNode))
+                return null;
+            navigationNode = navigationNode ?? aNode;
+            return aNode.NodeID;
+        }
         public static string GetErrors(Node node) {
             if(node is AssemblyNode a)
                 return a.Errors;
             if(node is TypeNode t)
                 return t.Errors;
             return string.Empty;
-        }
-        public int? GetAssemblyNodeID(Node node, out Node? assemblyNode) {
-            assemblyNode = node as AssemblyNode;
-            if(assemblyNode != null)
-                return assemblyNode.NodeID;
-            Assembly? assembly = null;
-            if(node is References rs)
-                assembly = rs.GetSource();
-            if(node is Reference r)
-                assembly = r.GetAssembly();
-            if(node is Namespaces ns)
-                assembly = ns.GetAssembly();
-            if(node is TypeNode t)
-                assembly = t.GetSource().Assembly;
-            if(node is MethodNode m)
-                assembly = m.GetSource().DeclaringType.Assembly;
-            if(assembly == null)
-                return null;
-            AssemblyNode aNode;
-            if(!assembliesCache.TryGetValue(assembly, out aNode))
-                return null;
-            assemblyNode = aNode;
-            return aNode.NodeID;
         }
     }
 }

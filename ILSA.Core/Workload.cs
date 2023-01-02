@@ -45,25 +45,25 @@
         }
         public static async Task AnalyzeAsync(WorkloadBase target, WorkloadBase effects) {
             Task[] visits = new Task[target.nodesCore.Count];
-            var contexts = target.BeforeAnalyze(effects);
+            var branches = target.BeforeAnalyze(effects);
             for(int i = 0; i < visits.Length; i++) {
                 var node = target.nodesCore[i];
-                var context = contexts[i];
-                Action<Node> advance = x => target.Advance(x, context);
+                var branch = branches[i];
+                Action<Node> advance = x => target.Advance(x, branch);
                 visits[i] = Task.Run(() => node.Visit(advance));
             }
             await Task.WhenAll(visits);
-            target.EndAnalyze(contexts);
+            target.EndAnalyze(branches);
         }
-        protected virtual AdvanceContext[] BeforeAnalyze(WorkloadBase effects) {
-            var contexts = new AdvanceContext[nodesCore.Count];
-            for(int i = 0; i < contexts.Length; i++)
-                contexts[i] = new AdvanceContext(nodesCore[i], effects);
-            return contexts;
+        protected virtual Branch[] BeforeAnalyze(WorkloadBase effects) {
+            var branches = new Branch[nodesCore.Count];
+            for(int i = 0; i < branches.Length; i++)
+                branches[i] = new Branch(nodesCore[i], effects);
+            return branches;
         }
-        protected virtual void EndAnalyze(AdvanceContext[] contexts) { }
+        protected virtual void EndAnalyze(Branch[] brunches) { }
         protected abstract void Advance(Node node);
-        protected abstract void Advance(Node node, AdvanceContext context);
+        protected abstract void Advance(Node node, Branch branch);
         // Effects
         protected internal virtual bool Apply(Node node, Assembly assembly) {
             return false;
@@ -80,34 +80,67 @@
         public virtual Node Previous(Node node, IClassesFactory factory) {
             return node;
         }
-        public sealed class AdvanceContext {
+        //
+        public sealed class Branch {
             readonly Node root;
             readonly WorkloadBase effects;
-            readonly List<Node> navigation = new List<Node>();
-            public AdvanceContext(Node root, WorkloadBase effects) {
+            readonly List<Node> nodesInNavigationOrder = new List<Node>();
+            readonly Dictionary<int, int> nodeIdToIndex = new Dictionary<int, int>();
+            readonly HashSet<int> matchedNodeIndices = new HashSet<int>();
+            public Branch(Node root, WorkloadBase effects) {
                 this.root = root;
                 this.effects = effects;
             }
             public void Apply(Node node, Assembly assembly) {
+                int index = EnsureNodeIndexAndNavigationOrder(node);
                 if(effects.Apply(node, assembly))
-                    navigation.Add(node);
+                    matchedNodeIndices.Add(index);
             }
             public void Apply(Node node, Type type) {
+                int index = EnsureNodeIndexAndNavigationOrder(node);
                 if(effects.Apply(node, type))
-                    navigation.Add(node);
+                    matchedNodeIndices.Add(index);
             }
             public void Apply(Node node, MethodBase method) {
+                int index = EnsureNodeIndexAndNavigationOrder(node);
                 if(effects.Apply(node, method))
-                    navigation.Add(node);
+                    matchedNodeIndices.Add(index);
+            }
+            int EnsureNodeIndexAndNavigationOrder(Node node) {
+                int index = nodesInNavigationOrder.Count;
+                nodeIdToIndex.Add(node.NodeID, index);
+                nodesInNavigationOrder.Add(node);
+                return index;
             }
             public int GetID() {
                 return root.NodeID;
             }
-            public bool HasNavigation {
-                get { return navigation.Count > 0; }
+            public bool HasMatches {
+                get { return matchedNodeIndices.Count > 0; }
             }
-            public List<Node> GetNavigation() {
-                return navigation;
+            public Node? NextMatch(Node node) {
+                var currentIndex = nodeIdToIndex[node.NodeID];
+                for(int i = currentIndex + 1; i < nodesInNavigationOrder.Count; i++) {
+                    if(matchedNodeIndices.Contains(i))
+                        return nodesInNavigationOrder[i];
+                }
+                for(int i = 0; i < currentIndex; i++) {
+                    if(matchedNodeIndices.Contains(i))
+                        return nodesInNavigationOrder[i];
+                }
+                return null;
+            }
+            public Node? PrevMatch(Node node) {
+                var currentIndex = nodeIdToIndex[node.NodeID];
+                for(int i = currentIndex - 1; i > 0; i--) {
+                    if(matchedNodeIndices.Contains(i))
+                        return nodesInNavigationOrder[i];
+                }
+                for(int i = nodesInNavigationOrder.Count - 1; i > currentIndex; i--) {
+                    if(matchedNodeIndices.Contains(i))
+                        return nodesInNavigationOrder[i];
+                }
+                return null;
             }
         }
     }

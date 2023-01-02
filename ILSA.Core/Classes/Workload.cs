@@ -34,69 +34,51 @@
                 }
             }
             public override bool CanNavigate {
-                get { return !IsEmpty && navigationBranches.Count > 0; }
+                get { return !IsEmpty && branchesCore.Count > 0; }
             }
-            readonly ConcurrentDictionary<int, NavigationBranch> navigationBranches = new ConcurrentDictionary<int, NavigationBranch>();
-            protected override AdvanceContext[] BeforeAnalyze(WorkloadBase effects) {
-                navigationBranches.Clear();
+            readonly ConcurrentDictionary<int, Branch> branchesCore = new ConcurrentDictionary<int, Branch>();
+            protected override Branch[] BeforeAnalyze(WorkloadBase effects) {
+                branchesCore.Clear();
                 return base.BeforeAnalyze(effects);
             }
-            protected override void Advance(Node node, AdvanceContext context) {
+            protected override void Advance(Node node, Branch branch) {
                 node.Reset();
                 switch(node) {
                     case AssemblyNode a:
-                        context.Apply(a, a.GetSource());
+                        branch.Apply(a, a.GetSource());
                         break;
                     case TypeNode t:
-                        context.Apply(t, t.GetSource());
+                        branch.Apply(t, t.GetSource());
                         break;
                     case MethodNode m:
-                        context.Apply(m, m.GetSource());
+                        branch.Apply(m, m.GetSource());
                         break;
                 }
             }
-            protected override void EndAnalyze(AdvanceContext[] contexts) {
-                foreach(var context in contexts) {
-                    if(context.HasNavigation)
-                        navigationBranches.AddOrUpdate(context.GetID(), x => new NavigationBranch(context.GetNavigation()), (x, b) => b);
-                }
+            protected override void EndAnalyze(Branch[] branches) {
+                branchesCore.Clear();
+                var effectiveBranches = branches.Where(x => x.HasMatches);
+                foreach(var branch in effectiveBranches)
+                    branchesCore.GetOrAdd(branch.GetID(), x => branch);
             }
             public override Node Next(Node node, IClassesFactory factory) {
-                Node? assemblyNode;
-                int? assemblyNodeId = ((ClassesFactory)factory).GetAssemblyNodeID(node, out assemblyNode);
-                if(assemblyNodeId.HasValue && assemblyNode != null) {
-                    if(navigationBranches.TryGetValue(assemblyNodeId.Value, out var branch)) {
-                        branch.Reset();
-                        if(assemblyNode.Visit(branch.Next))
-                            return branch.Result ?? branch.First;
-                    }
+                int? rootId = factory.GetRootNodeID(node, out Node? navigationOrigin);
+                if(rootId.HasValue && navigationOrigin != null) {
+                    if(branchesCore.TryGetValue(rootId.Value, out var branch))
+                        return branch.NextMatch(navigationOrigin) ?? node;
+                }
+                return node;
+            }
+            public override Node Previous(Node node, IClassesFactory factory) {
+                int? rootId = factory.GetRootNodeID(node, out Node? navigationOrigin);
+                if(rootId.HasValue && navigationOrigin != null) {
+                    if(branchesCore.TryGetValue(rootId.Value, out var branch))
+                        return branch.PrevMatch(navigationOrigin) ?? node;
                 }
                 return node;
             }
             public override string ToString() {
                 return $"Assemblies: {methods} methods and {types} types from {assemblies} assemblies";
-            }
-            sealed class NavigationBranch {
-                readonly HashSet<int> matches = new HashSet<int>();
-                readonly Dictionary<int, Node> nextNodes = new Dictionary<int, Node>();
-                public NavigationBranch(List<Node> navigation) {
-                    First = navigation[0];
-                    var prev = navigation[navigation.Count - 1];
-                    foreach(var node in navigation) {
-                        matches.Add(node.NodeID);
-                        nextNodes.Add(prev.NodeID, prev = node);
-                    }
-                }
-                public readonly Node First;
-                public void Reset() {
-                    Result = null;
-                }
-                public bool Next(Node node) {
-                    if(matches.Contains(node.NodeID))
-                        Result = nextNodes[node.NodeID];
-                    return (Result != null);
-                }
-                public Node? Result;
             }
         }
     }

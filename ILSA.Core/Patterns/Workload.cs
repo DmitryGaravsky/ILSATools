@@ -41,7 +41,7 @@
                         break;
                 }
             }
-            protected sealed override void Advance(Node node, AdvanceContext context) {
+            protected sealed override void Advance(Node node, Branch branch) {
                 throw new NotImplementedException();
             }
             protected internal sealed override bool Apply(Node node, Type type) {
