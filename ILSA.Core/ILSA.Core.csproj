@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\Svg\*.svg" />
+    <EmbeddedResource Include="Assets\MD\*.md" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ILReader.Core" Version="1.0.0.*" />

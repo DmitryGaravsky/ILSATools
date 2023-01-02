@@ -28,11 +28,12 @@
             this.colName = new DevExpress.XtraTreeList.Columns.TreeListColumn();
             this.nodeBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.mvvmContext = new DevExpress.Utils.MVVM.MVVMContext(this.components);
-            this.sidePanel1 = new DevExpress.XtraEditors.SidePanel();
+            this.descriptionBox = new MarkdownViewer();
+            this.sidePanel = new DevExpress.XtraEditors.SidePanel();
             ((System.ComponentModel.ISupportInitialize)(this.patternsTree)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nodeBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mvvmContext)).BeginInit();
-            this.sidePanel1.SuspendLayout();
+            this.sidePanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // patternsTree
@@ -81,28 +82,36 @@
             this.mvvmContext.ContainerControl = this;
             this.mvvmContext.ViewModelType = typeof(ILSA.Client.ViewModels.PatternsViewModel);
             // 
-            // sidePanel1
+            // sidePanel
             // 
-            this.sidePanel1.Controls.Add(this.patternsTree);
-            this.sidePanel1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.sidePanel1.Location = new System.Drawing.Point(0, 0);
-            this.sidePanel1.MinimumSize = new System.Drawing.Size(150, 0);
-            this.sidePanel1.Name = "sidePanel1";
-            this.sidePanel1.Size = new System.Drawing.Size(300, 715);
-            this.sidePanel1.TabIndex = 2;
-            this.sidePanel1.Text = "sidePanel1";
+            this.sidePanel.Controls.Add(this.patternsTree);
+            this.sidePanel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.sidePanel.Location = new System.Drawing.Point(0, 0);
+            this.sidePanel.MinimumSize = new System.Drawing.Size(150, 0);
+            this.sidePanel.Name = "sidePanel";
+            this.sidePanel.Size = new System.Drawing.Size(300, 715);
+            this.sidePanel.TabIndex = 2;
+            // 
+            // descriptionBox
+            // 
+            this.descriptionBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.descriptionBox.Location = new System.Drawing.Point(300, 0);
+            this.descriptionBox.Name = "descriptionBox";
+            this.descriptionBox.Size = new System.Drawing.Size(898, 715);
+            this.descriptionBox.TabIndex = 3;
             // 
             // PatternsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.Controls.Add(this.sidePanel1);
+            this.Controls.Add(this.descriptionBox);
+            this.Controls.Add(this.sidePanel);
             this.Name = "PatternsView";
             this.Size = new System.Drawing.Size(1198, 715);
             ((System.ComponentModel.ISupportInitialize)(this.patternsTree)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nodeBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mvvmContext)).EndInit();
-            this.sidePanel1.ResumeLayout(false);
+            this.sidePanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -113,6 +122,7 @@
         private DevExpress.XtraTreeList.Columns.TreeListColumn colName;
         private System.Windows.Forms.BindingSource nodeBindingSource;
         private DevExpress.Utils.MVVM.MVVMContext mvvmContext;
-        private DevExpress.XtraEditors.SidePanel sidePanel1;
+        private DevExpress.XtraEditors.SidePanel sidePanel;
+        private MarkdownViewer descriptionBox;
     }
 }

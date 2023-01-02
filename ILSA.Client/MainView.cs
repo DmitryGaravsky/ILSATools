@@ -2,8 +2,6 @@
     using System;
     using System.Drawing;
     using DevExpress.LookAndFeel;
-    using DevExpress.Utils;
-    using DevExpress.Utils.DPI;
     using DevExpress.Utils.Html;
     using DevExpress.Utils.MVVM.Services;
     using DevExpress.XtraBars.Navigation;

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<versionStorage>
+  <auxPath value="net.tcp://vcsservice.devexpress.devx:9091/DXVCSService">
+    <projectPath value="$/2022.1/Win/DevExpress.BloXX/DevExpress.BloXX.Collection.Win/Controls/MarkDown/Blocks" date="0">
+      <fileName value="Blockquote.cs" version="1" time="5249680326384370283" hash="wc0/Y+ffwWG0+pm1xTJptg==" writeTime="5249680326384370283" />
+      <fileName value="Code.cs" version="1" time="5249680326384370283" hash="g1reGEx88uiG9OHUIcopNA==" writeTime="5249680326384370283" />
+      <fileName value="CodeBlock.cs" version="1" time="5249680326384370283" hash="uI4FhGyyWYU92hwMY2G6eQ==" writeTime="5249680326384370283" />
+      <fileName value="Emphasis.cs" version="1" time="5249680326384370283" hash="7A+BmjFxX6kPFuRkFfZygQ==" writeTime="5249680326384370283" />
+      <fileName value="Heading.cs" version="1" time="5249680326384370283" hash="Wd4wEkcyMnUluZpZ4OkDzg==" writeTime="5249680326384370283" />
+      <fileName value="List.cs" version="1" time="5249680326384370283" hash="WJ6R2Ex1A+6BJdMT+L9NUQ==" writeTime="5249680326384370283" />
+      <fileName value="Paragraphcs.cs" version="1" time="5249680326384370283" hash="UhxDccDdL/1XTaz8IsK+SQ==" writeTime="5249680326384370283" />
+    </projectPath>
+  </auxPath>
+</versionStorage>

@@ -1,5 +1,6 @@
 ﻿namespace ILSA.Core.Patterns {
     using System;
+    using System.Collections.Concurrent;
     using System.ComponentModel.DataAnnotations;
     using System.IO;
     using System.Reflection;
@@ -28,6 +29,9 @@
             int? order = display?.GetOrder();
             if(order.HasValue)
                 this.severityCore = (ProcessingSeverity)order.GetValueOrDefault();
+            var descriptionResource = display?.GetDescription() ?? 
+                GetDescriptionResource(sourceType.FullName);
+            Description = ReadText(descriptionResource, sourceType.Assembly);
         }
         static string GetName(string name) {
             var camelCaseSplit = new StringBuilder(name.Length);
@@ -44,11 +48,18 @@
             var extension = Path.GetExtension(@namespace);
             return extension?.Replace(".", string.Empty) ?? string.Empty;
         }
+        static string GetDescriptionResource(string name) {
+            return name + ".md";
+        }
         public string Name {
             get;
             private set;
         }
         public string Group {
+            get;
+            private set;
+        }
+        public string Description {
             get;
             private set;
         }
@@ -62,6 +73,35 @@
         protected virtual ProcessingSeverity GetDefaultSeverity() {
             return ProcessingSeverity.Ignore;
         }
+        public Assembly GetAssembly() {
+            return match.DeclaringType.Assembly;
+        }
+        #region ReadText
+        readonly static ConcurrentDictionary<string, string> texts = new ConcurrentDictionary<string, string>();
+        static string ReadText(string resourceName, Assembly resourcesAssembly) {
+            return texts.GetOrAdd(resourceName, x => {
+                using(var stream = GetResourceStream(x, resourcesAssembly))
+                    return (stream != null) ? new StreamReader(stream).ReadToEnd() : string.Empty;
+            });
+        }
+        readonly static ConcurrentDictionary<string, string> mappings =
+            new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        static Stream? GetResourceStream(string key, Assembly resourcesAssembly) {
+            string resourceName;
+            if(!mappings.TryGetValue(key, out resourceName))
+                TryAddResourceNameMappings(resourcesAssembly.GetManifestResourceNames(), key, out resourceName);
+            return !string.IsNullOrEmpty(resourceName) ? resourcesAssembly.GetManifestResourceStream(resourceName) : null;
+        }
+        static void TryAddResourceNameMappings(string[] names, string key, out string resourceName) {
+            resourceName = string.Empty;
+            for(int i = 0; i < names.Length; i++) {
+                if(names[i].EndsWith(".md", StringComparison.OrdinalIgnoreCase)) {
+                    if(mappings.TryAdd(names[i], names[i]) && StringComparer.OrdinalIgnoreCase.Compare(key, names[i]) == 0)
+                        resourceName = names[i];
+                }
+            }
+        }
+        #endregion
         #region Empty
         public readonly static Pattern Empty = new EmptyPattern();
         //
