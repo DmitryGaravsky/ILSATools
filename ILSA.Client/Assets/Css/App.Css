@@ -31,10 +31,15 @@
 	flex-grow: 1;
 }
 
-.footer {
+.horz-separator {
 	border-top: 1px solid @ControlBorder;
+	border-bottom: 1px solid @Control;
+}
+
+.footer {
 	padding: 8px;
 	display: flex;
+	align-items: center;
 }
 
 .button {

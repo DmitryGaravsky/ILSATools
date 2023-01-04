@@ -2,6 +2,7 @@
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using ILSA.Core.Sources;
 
@@ -37,8 +38,13 @@
                 get { return !IsEmpty && branchesCore.Count > 0; }
             }
             readonly ConcurrentDictionary<int, Branch> branchesCore = new ConcurrentDictionary<int, Branch>();
+            int? analysisCompletion;
+            int methodsProcessed;
             protected override Branch[] BeforeAnalyze(WorkloadBase effects) {
+                analysisCompletion = 0;
+                methodsProcessed = 0;
                 branchesCore.Clear();
+                RaiseAnalysisProgress(0);
                 return base.BeforeAnalyze(effects);
             }
             protected override void Advance(Node node, Branch branch) {
@@ -52,14 +58,23 @@
                         break;
                     case MethodNode m:
                         branch.Apply(m, m.GetSource());
+                        UpdateProgress();
                         break;
                 }
+            }
+            void UpdateProgress() {
+                int progress = (Interlocked.Increment(ref methodsProcessed) * 100) / methods;
+                if(progress != analysisCompletion.GetValueOrDefault())
+                    RaiseAnalysisProgress((analysisCompletion = progress).Value);
             }
             protected override void EndAnalyze(Branch[] branches) {
                 branchesCore.Clear();
                 var effectiveBranches = branches.Where(x => x.HasMatches);
                 foreach(var branch in effectiveBranches)
                     branchesCore.GetOrAdd(branch.GetID(), x => branch);
+                methodsProcessed = 0;
+                analysisCompletion = null;
+                RaiseAnalysisProgress(100);
             }
             public override Node Next(Node node, IClassesFactory factory) {
                 int? rootId = factory.GetRootNodeID(node, out Node? navigationOrigin);

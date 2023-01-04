@@ -1,5 +1,6 @@
 ﻿namespace ILSA.Client.ViewModels {
     using System;
+    using System.ComponentModel;
     using System.Threading.Tasks;
     using CommandLine;
     using DevExpress.Mvvm;
@@ -24,10 +25,12 @@
             Messenger.Default.Register<PatternsFactory.Workload>(this, OnPatternsWorkload);
         }
         public void Dispose() {
+            SetClassesWorkloadCore(null);
             Messenger.Default.Unregister(this);
+            GC.SuppressFinalize(this);
         }
         public string Title {
-            get { return "IL Static Analysis Client"; }
+            get { return "IL Static Analysis Tool"; }
         }
         public string AssembliesWorkload {
             get { return classesWorkload?.ToString() ?? "No assemblies loaded."; }
@@ -35,13 +38,15 @@
         public string PatternsWorkload {
             get { return patternsWorkload?.ToString() ?? "No patterns loaded."; }
         }
+        IDispatcherService dispatcher;
         public async Task OnLoad() {
+            dispatcher = this.GetRequiredService<IDispatcherService>();
             LoadStartupAssemblies();
             await UpdateWorkloads();
             ShowAssemblies();
         }
         async Task UpdateWorkloads() {
-            classesWorkload = await ClassesFactory.Workload.LoadAsync(classesSource, classesFactory);
+            SetClassesWorkloadCore(await ClassesFactory.Workload.LoadAsync(classesSource, classesFactory));
             patternsWorkload = await PatternsFactory.Workload.LoadAsync(patternsSource, patternsFactory);
             this.RaisePropertyChanged(x => x.AssembliesWorkload);
             this.RaisePropertyChanged(x => x.PatternsWorkload);
@@ -67,12 +72,19 @@
         }
         WorkloadBase classesWorkload;
         void OnAssembliesWorkload(ClassesFactory.Workload workload) {
-            this.classesWorkload = workload;
+            SetClassesWorkloadCore(workload);
             this.RaisePropertyChanged(x => x.AssembliesWorkload);
             this.RaiseCanExecuteChanged(x => x.SaveAssembliesWorkload());
             this.RaiseCanExecuteChanged(x => x.RunAnalysis());
             this.RaiseCanExecuteChanged(x => x.NavigateNext());
             this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
+        }
+        void SetClassesWorkloadCore(ClassesFactory.Workload workload) {
+            if(classesWorkload != null)
+                classesWorkload.AnalysisProgress -= OnClassesAnalysisProgress;
+            this.classesWorkload = workload;
+            if(classesWorkload != null)
+                classesWorkload.AnalysisProgress += OnClassesAnalysisProgress;
         }
         WorkloadBase patternsWorkload;
         void OnPatternsWorkload(PatternsFactory.Workload workload) {
@@ -107,8 +119,18 @@
         }
         public async Task RunAnalysis() {
             await WorkloadBase.AnalyzeAsync(classesWorkload, patternsWorkload);
-            this.RaiseCanExecuteChanged(x => x.NavigateNext());
-            this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
+            await dispatcher.BeginInvoke(() => {
+                this.RaiseCanExecuteChanged(x => x.NavigateNext());
+                this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
+                AnalysisProgress = 0;
+            });
+        }
+        public virtual int AnalysisProgress {
+            get;
+            protected set;
+        }
+        async void OnClassesAnalysisProgress(object sender, ProgressChangedEventArgs e) {
+            await dispatcher.BeginInvoke(() => AnalysisProgress = e.ProgressPercentage);
         }
         public async Task Reset() {
             classesSource.Reset();
@@ -166,13 +188,13 @@
         public void NavigateNext() {
             var classesViewModel = EnsureAssembliesPageIsActive();
             if(classesViewModel != null)
-                classesViewModel.SelectedNode = classesWorkload.Next(classesViewModel.SelectedNode, classesFactory);
+                classesViewModel.SelectedNode = classesWorkload.Next(classesViewModel.SelectedOrFirstNode, classesFactory);
         }
         [Command(CanExecuteMethodName = nameof(CanNavigate))]
         public void NavigatePrevious() {
             var classesViewModel = EnsureAssembliesPageIsActive();
             if(classesViewModel != null)
-                classesViewModel.SelectedNode = classesWorkload.Previous(classesViewModel.SelectedNode, classesFactory);
+                classesViewModel.SelectedNode = classesWorkload.Previous(classesViewModel.SelectedOrFirstNode, classesFactory);
         }
         NodesViewModel EnsureAssembliesPageIsActive() {
             if(!GetIsAssembliesPageActive())

@@ -1,6 +1,7 @@
 ﻿namespace ILSA.Client.ViewModels {
     using System;
     using System.ComponentModel;
+    using System.Linq;
     using DevExpress.Mvvm;
     using DevExpress.Mvvm.POCO;
     using ILSA.Core;
@@ -12,8 +13,9 @@
         object ISupportParameter.Parameter {
             get { return null; }
             set {
-                if(value is WorkloadBase workload)
+                if(value is WorkloadBase workload) {
                     Nodes = new BindingList<Node>(workload.Nodes);
+                }
             }
         }
         public virtual BindingList<Node> Nodes {
@@ -23,6 +25,9 @@
         public virtual Node SelectedNode {
             get;
             set;
+        }
+        public Node SelectedOrFirstNode {
+            get { return SelectedNode ?? Nodes.FirstOrDefault(); }
         }
         protected virtual void OnNodesChanged() {
             SelectedNode = null;

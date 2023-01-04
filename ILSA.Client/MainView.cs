@@ -31,6 +31,7 @@
             fluent.SetBinding(this, frm => frm.Text, x => x.Title);
             fluent.SetBinding(this, frm => frm.AssembliesWorkload, x => x.AssembliesWorkload);
             fluent.SetBinding(this, frm => frm.PatternsWorkload, x => x.PatternsWorkload);
+            fluent.SetBinding(this, frm => frm.AnalysisProgress, x => x.AnalysisProgress);
             fluent.BindCommandToElement(toolbar, "assemblies-button", x => x.ShowAssemblies);
             fluent.BindCommandToElement(toolbar, "patterns-button", x => x.ShowPatterns);
             fluent.BindCommandToElement(toolbar, "add-assembly", x => x.AddAssembly);
@@ -38,6 +39,8 @@
             fluent.BindCommandToElement(toolbar, "reset", x => x.Reset);
             fluent.BindCommandToElement(toolbar, "navigate-prev", x => x.NavigatePrevious);
             fluent.BindCommandToElement(toolbar, "navigate-next", x => x.NavigateNext);
+            fluent.BindCommandToElement(this, "assemblies-workload-button", x => x.SaveAssembliesWorkload);
+            fluent.BindCommandToElement(this, "patterns-workload-button", x => x.SavePatternsWorkload);
         }
         void InitializeNavigation() {
             var viewService = DocumentManagerService.Create(navigationFrame);
@@ -54,11 +57,10 @@
                 }
             };
             mvvmContext.RegisterService(viewService);
-            navigationFrame.SelectedPageChanged += OnSelectedPageChanged;
         }
         void OnSelectedPageChanged(object sender, SelectedPageChangedEventArgs e) {
             var view = ((NavigationPage)e.Page).Controls[0];
-            if(view is ClassesView classesView) 
+            if(view is ClassesView classesView)
                 classesView.AttachToSearchControl(searchControl);
             if(view is PatternsView patternsView)
                 patternsView.AttachToSearchControl(searchControl);
@@ -70,7 +72,7 @@
                 if(assembliesWorkloadCore == value)
                     return;
                 assembliesWorkloadCore = value;
-                OnWorkLoadChanged();
+                OnFooterLayoutChanged();
             }
         }
         string patternsWorkloadCore;
@@ -80,15 +82,42 @@
                 if(patternsWorkloadCore == value)
                     return;
                 patternsWorkloadCore = value;
-                OnWorkLoadChanged();
+                OnFooterLayoutChanged();
             }
         }
-        void OnWorkLoadChanged() {
+        int analysisProgressCore;
+        public int AnalysisProgress {
+            get { return analysisProgressCore; }
+            set {
+                if(analysisProgressCore == value)
+                    return;
+                analysisProgressCore = value;
+                if(FormPainter != null) {
+                    var root = ((IDxHtmlClient)FormPainter).Element;
+                    var progress = root?.FindElementById("progress");
+                    progress?.SetAttribute("value", value);
+                }
+                OnFooterLayoutChanged();
+            }
+        }
+        void OnFooterLayoutChanged() {
             if(IsHandleCreated) {
+                var root = ((IDxHtmlClient)FormPainter).Element;
+                root?.LayoutChanged(DevExpress.Utils.Html.Base.DxHtmlLayoutChangeActions.BindingDataChanged);
                 FormPainter.UpdateHtmlTemplate();
                 DevExpress.Skins.XtraForm.FormPainter.InvalidateNC(this);
                 Update();
             }
+        }
+        protected override void OnLoad(EventArgs e) {
+            base.OnLoad(e);
+            var root = ((IDxHtmlClient)FormPainter).Element;
+            var progress = root.FindElementsByTag("progress-indicator");
+        }
+        protected override object GetHtmlValue(string fieldName, DxHtmlElementBase element) {
+            if(fieldName == nameof(AnalysisProgress))
+                return AnalysisProgress;
+            return base.GetHtmlValue(fieldName, element);
         }
         protected override string GetHtmlText(string fieldName, DxHtmlElementBase element) {
             if(fieldName == nameof(AssembliesWorkload))
@@ -110,10 +139,8 @@
         }
         #region Search Behavior
         void OnToolbarElementClick(object sender, DxHtmlElementMouseEventArgs e) {
-            if(e.ElementId == "search-button" || e.ParentHasId("search-button")) {
+            if(e.ElementId == "search-button" || e.ParentHasId("search-button"))
                 this.searchControl.Focus();
-                return;
-            }
         }
         void OnSearchControlGotFocus(object sender, EventArgs e) {
             this.searchControl.Properties.NullValuePrompt = "Type keywords here...";
@@ -128,6 +155,7 @@
         #region Theme
         internal sealed class Styles {
             static Styles() {
+                Views.ProgressIndicator.Register();
                 Views.TabPane.Register();
             }
             public static Assets.Style App = new AppStyle();

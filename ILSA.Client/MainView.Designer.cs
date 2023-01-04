@@ -92,6 +92,7 @@
             this.navigationFrame.Size = new System.Drawing.Size(1198, 715);
             this.navigationFrame.TabIndex = 1;
             this.navigationFrame.Text = "navigationFrame1";
+            this.navigationFrame.SelectedPageChanged += new DevExpress.XtraBars.Navigation.SelectedPageChangedEventHandler(OnSelectedPageChanged);
             // 
             // MainView
             // 

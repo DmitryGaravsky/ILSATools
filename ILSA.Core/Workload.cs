@@ -1,6 +1,7 @@
 ﻿namespace ILSA.Core {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
@@ -60,6 +61,14 @@
             for(int i = 0; i < branches.Length; i++)
                 branches[i] = new Branch(nodesCore[i], effects);
             return branches;
+        }
+        EventHandler<ProgressChangedEventArgs>? AnalysisProgressCore;
+        public event EventHandler<ProgressChangedEventArgs> AnalysisProgress {
+            add { AnalysisProgressCore += value; }
+            remove { AnalysisProgressCore -= value; }
+        }
+        protected void RaiseAnalysisProgress(int percent) {
+            AnalysisProgressCore?.Invoke(this, new ProgressChangedEventArgs(percent, null));
         }
         protected virtual void EndAnalyze(Branch[] brunches) { }
         protected abstract void Advance(Node node);

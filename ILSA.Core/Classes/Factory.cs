@@ -18,6 +18,9 @@
     }
     //
     public partial class ClassesFactory : IClassesFactory {
+        static ClassesFactory() {
+            ILReader.Configuration.DisableUsingRuntimeHelpersPrepareMethod();
+        }
         public ClassesFactory() {
             createAssemblyNode = x => new AssemblyNode(this, x);
             assembliesCache = new ConcurrentDictionary<Assembly, AssemblyNode>();
