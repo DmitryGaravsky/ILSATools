@@ -2,7 +2,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection.Emit;
     using System.Text;
     using DevExpress.XtraEditors;
     using ILReader.Readers;
@@ -11,15 +10,14 @@
         public static void AppendLines(this MemoEdit codeBox, IEnumerable<IInstruction> instructions) {
             StringBuilder code = new StringBuilder(1024);
             AppendLines(code, instructions);
-            codeBox.Clear();
-            codeBox.AppendText(code.ToString());
-            codeBox.Select(0, 0);
-            codeBox.ScrollToCaret();
-            codeBox.Refresh();
+            AppendCore(codeBox, code.ToString());
         }
         public static void AppendErrors(this MemoEdit codeBox, string errors) {
+            AppendCore(codeBox, errors);
+        }
+        static void AppendCore(MemoEdit codeBox, string codeOrErrors) {
             codeBox.Clear();
-            codeBox.AppendText(errors);
+            codeBox.AppendText(codeOrErrors);
             codeBox.Select(0, 0);
             codeBox.ScrollToCaret();
             codeBox.Refresh();
@@ -52,10 +50,7 @@
                     string ebLines;
                     if(exceptionBlocks.TryGetValue(instruction.Index, out ebLines))
                         AppendExceptionBlockLines(code, ebLines, instruction.Depth - 1);
-                    if(instruction.OpCode == OpCodes.Ldstr)
-                        AppendLdSrtLine(code, instruction);
-                    else
-                        AppendLine(code, instruction);
+                    AppendLine(code, instruction);
                 }
             }
         }
@@ -64,8 +59,7 @@
             var lines = exceptionBlock.Split(splitLines, StringSplitOptions.RemoveEmptyEntries);
             for(int i = 0; i < lines.Length; i++) {
                 code.Append(lines[i], 0, 6);
-                if(depth > 0)
-                    code.Append(' ', depth * 2);
+                if(depth > 0) code.Append(' ', depth * 2);
                 code.Append(lines[i], 6, lines[i].Length - 6);
                 code.AppendLine();
             }
@@ -75,8 +69,7 @@
             string line;
             if(!exceptionBlocks.TryGetValue(index, out line))
                 exceptionBlocks.Add(index, blockLine);
-            else
-                exceptionBlocks[index] = line + blockLine;
+            else exceptionBlocks[index] = line + blockLine;
         }
         static void AppendLines(StringBuilder code, IEnumerable<IMetadataItem> metadata, int offset = 0) {
             foreach(var meta in metadata) {
@@ -98,16 +91,6 @@
                 code.Append(metaValue);
             }
             if(newLine) code.AppendLine();
-        }
-        static void AppendLdSrtLine(StringBuilder code, IInstruction instruction) {
-            string line = instruction.Text;
-            code.Append(line, 0, line.IndexOf(':') + 2);
-            if(instruction.Depth > 0)
-                code.Append(' ', instruction.Depth * 2);
-            code.Append(nameof(OpCodes.Ldstr));
-            string value = (string)instruction.Operand;
-            code.Append(" \"").Append(value).Append("\"");
-            code.AppendLine();
         }
         static void AppendLine(StringBuilder code, IInstruction instruction) {
             string line = instruction.Text;
