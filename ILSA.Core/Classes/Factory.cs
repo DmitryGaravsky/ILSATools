@@ -106,5 +106,15 @@
                 return t.Errors;
             return string.Empty;
         }
+        public static string[] GetAssemblies(WorkloadBase workload) {
+            List<string> assemblies = new List<string>();
+            foreach(AssemblyNode aNode in workload.Nodes) {
+                if(aNode == null)
+                    continue;
+                var asm = aNode.GetSource();
+                assemblies.Add(asm.Location);
+            }
+            return assemblies.ToArray();
+        }
     }
 }

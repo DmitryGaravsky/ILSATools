@@ -28,6 +28,8 @@
             fluent.SetObjectDataSourceBinding(appDataContext);
             fluent.WithEvent(this, nameof(HandleCreated))
                 .EventToCommand(x => x.OnLoad);
+            fluent.WithEvent(this, nameof(FormClosed))
+                .EventToCommand(x => x.OnClose);
             fluent.SetBinding(this, frm => frm.Text, x => x.Title);
             fluent.SetBinding(this, frm => frm.AssembliesWorkload, x => x.AssembliesWorkload);
             fluent.SetBinding(this, frm => frm.PatternsWorkload, x => x.PatternsWorkload);
@@ -108,11 +110,6 @@
                 DevExpress.Skins.XtraForm.FormPainter.InvalidateNC(this);
                 Update();
             }
-        }
-        protected override void OnLoad(EventArgs e) {
-            base.OnLoad(e);
-            var root = ((IDxHtmlClient)FormPainter).Element;
-            var progress = root.FindElementsByTag("progress-indicator");
         }
         protected override object GetHtmlValue(string fieldName, DxHtmlElementBase element) {
             if(fieldName == nameof(AnalysisProgress))

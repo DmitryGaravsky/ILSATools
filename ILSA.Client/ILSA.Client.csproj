@@ -29,8 +29,11 @@
     <EmbeddedResource Include="Assets\Css\*.css" />
     <EmbeddedResource Include="Assets\Html\*.html" />
     <EmbeddedResource Include="Assets\Svg\*.svg" />
+    <EmbeddedResource Include="Settings\Settings.xml" />
   </ItemGroup>
+
   <ItemGroup>
+    <None Remove="Settings\Settings.xml" />
     <None Include="App.config" />
     <None Include="FodyWeavers.xml" />
   </ItemGroup>

@@ -19,7 +19,7 @@
     }
     public abstract class Pattern {
         protected readonly MethodInfo match;
-        ProcessingSeverity? severityCore;
+        ProcessingSeverity? severityCore, defaultSeverityCore;
         protected Pattern(MethodInfo match) {
             this.match = match;
             var sourceType = match.DeclaringType;
@@ -28,7 +28,7 @@
             this.Group = display?.GetGroupName() ?? GetGroup(sourceType.Namespace);
             int? order = display?.GetOrder();
             if(order.HasValue)
-                this.severityCore = (ProcessingSeverity)order.GetValueOrDefault();
+                this.defaultSeverityCore = (ProcessingSeverity)order.GetValueOrDefault();
             var descriptionResource = display?.GetDescription() ?? 
                 GetDescriptionResource(sourceType.FullName);
             Description = ReadText(descriptionResource, sourceType.Assembly);
@@ -67,7 +67,10 @@
             get;
         }
         public ProcessingSeverity Severity {
-            get { return severityCore.GetValueOrDefault(GetDefaultSeverity()); }
+            get {
+                var defaultSeverity = defaultSeverityCore.GetValueOrDefault(GetDefaultSeverity());
+                return severityCore.GetValueOrDefault(defaultSeverity);
+            }
             set { severityCore = value; }
         }
         public void ResetSeverity() {
@@ -78,6 +81,12 @@
         }
         public Assembly GetAssembly() {
             return match.DeclaringType.Assembly;
+        }
+        public string GetNameInAssembly() {
+            return match.DeclaringType.FullName + "." + match.Name;
+        }
+        public string GetSeverity() {
+            return severityCore.HasValue ? severityCore.Value.ToString() : string.Empty;
         }
         #region ReadText
         readonly static ConcurrentDictionary<string, string> texts = new ConcurrentDictionary<string, string>();

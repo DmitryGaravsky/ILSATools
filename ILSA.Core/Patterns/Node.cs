@@ -39,5 +39,22 @@
                 }
             });
         }
+        public static void SetSeverity(WorkloadBase workload, string name, string value) {
+            foreach(var node in workload.Nodes) {
+                node.Visit(x => {
+                    if(x is MethodNode m) {
+                        var pattern = m.GetPattern();
+                        if(pattern.GetNameInAssembly() == name) {
+                            if(!string.IsNullOrEmpty(value)) {
+                                if(Enum.TryParse(value, true, out ProcessingSeverity severity))
+                                    pattern.Severity = severity;
+                                else pattern.ResetSeverity();
+                            }
+                            else pattern.ResetSeverity();
+                        }
+                    }
+                });
+            }
+        }
     }
 }

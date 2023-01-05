@@ -35,9 +35,21 @@
             var toc = new StringBuilder();
             if(node is AssemblyNode a)
                 a.BuildTOC(toc);
-            if(node is Namespace ns) 
+            if(node is Namespace ns)
                 ns.BuildTOC(toc);
             return toc.ToString();
+        }
+        public static Pattern[] GetPatterns(WorkloadBase workload) {
+            List<Pattern> patterns = new List<Pattern>();
+            foreach(AssemblyNode aNode in workload.Nodes) {
+                if(aNode == null)
+                    continue;
+                aNode.Visit(x => {
+                    if(x is MethodNode m)
+                        patterns.Add(m.GetPattern());
+                });
+            }
+            return patterns.ToArray();
         }
     }
 }
