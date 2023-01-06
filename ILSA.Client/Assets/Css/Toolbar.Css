@@ -49,7 +49,6 @@
 	background-color: #F2F2F2;
 	text-align: center;
 	font-weight: bold;
-	font-size: 14px;
 	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -113,23 +112,23 @@
 	margin: 4px 6px;
 }
 
-.view-tab-pane {
+.views-tab-pane {
 	display: flex;
 	margin-bottom: -10px;
 }
 
-.view-tab-pane-button {
+.views-tab-pane-button {
 	display: inline-block;
 	border-bottom: 2px solid #00176BD1;
 	margin-bottom: -2px;
 }
 
-	.view-tab-pane-button:hover {
+	.views-tab-pane-button:hover {
 		color: #176BD1;
 		border-bottom: 2px solid #176BD1;
 	}
 
-	.view-tab-pane-button:--selected {
+	.views-tab-pane-button:--selected {
 		border-bottom: 2px solid #176BD1;
 	}
 
@@ -137,4 +136,61 @@
 	display: flex;
 	align-items: center;
 	padding: 2px 20px 0 8px;
+}
+
+.modes-chip-group {
+	display: flex;
+}
+
+.modes-chip-group-button {
+	display: inline-block;
+	color: @ControlText;
+	background-color: #F2F2F2;
+	text-align: center;
+	padding: 8px 12px;
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+	.modes-chip-group-button:hover {
+		background-color: @Window;
+		color: @WindowText;
+		box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+	}
+
+	.modes-chip-group-button:active {
+		color: #176BD1;
+	}
+
+	.modes-chip-group-button:disabled {
+		color: @DisabledText;
+		background-color: #C0C0C0;
+	}
+
+.check {
+	display: none;
+	height: 16px;
+	width: 16px;
+	min-width: 16px;
+	min-height: 16px;
+	margin-top: 2px;
+	margin-right: 4px;
+}
+
+.modes-chip-group-button:--selected .check {
+	display: inline-block;
+}
+
+.chip-button-content {
+	display: flex;
+	align-items: center;
+	min-height: 16px;
+}
+
+.first {
+	border-radius: 4px 0px 0px 4px;
+}
+
+.last {
+	border-radius: 0px 4px 4px 0px;
+	border-left-width: 0;
 }

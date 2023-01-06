@@ -38,12 +38,17 @@
                 get { return !IsEmpty && branchesCore.Count > 0; }
             }
             readonly ConcurrentDictionary<int, Branch> branchesCore = new ConcurrentDictionary<int, Branch>();
+            readonly List<Node> backTraceCore = new List<Node>();
+            public List<Node> BackTrace {
+                get { return backTraceCore; }
+            }
             int? analysisCompletion;
             int methodsProcessed;
             protected override Branch[] BeforeAnalyze(WorkloadBase effects) {
                 analysisCompletion = 0;
                 methodsProcessed = 0;
                 branchesCore.Clear();
+                backTraceCore.Clear();
                 RaiseAnalysisProgress(0);
                 return base.BeforeAnalyze(effects);
             }
@@ -69,9 +74,12 @@
             }
             protected override void EndAnalyze(Branch[] branches) {
                 branchesCore.Clear();
+                backTraceCore.Clear();
                 var effectiveBranches = branches.Where(x => x.HasMatches);
-                foreach(var branch in effectiveBranches)
+                foreach(var branch in effectiveBranches) {
                     branchesCore.GetOrAdd(branch.GetID(), x => branch);
+                    backTraceCore.Add(CreateBackTrace(branch));
+                }
                 methodsProcessed = 0;
                 analysisCompletion = null;
                 RaiseAnalysisProgress(100);

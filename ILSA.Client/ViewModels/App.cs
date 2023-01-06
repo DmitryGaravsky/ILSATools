@@ -60,6 +60,8 @@
             this.RaiseCanExecuteChanged(x => x.SavePatternsWorkload());
             this.RaiseCanExecuteChanged(x => x.NavigateNext());
             this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
+            this.RaiseCanExecuteChanged(x => x.ShowClasses());
+            this.RaiseCanExecuteChanged(x => x.ShowBackTrace());
         }
         void LoadStartupAssemblies() {
             var startupArgs = Environment.GetCommandLineArgs();
@@ -89,6 +91,8 @@
             this.RaiseCanExecuteChanged(x => x.RunAnalysis());
             this.RaiseCanExecuteChanged(x => x.NavigateNext());
             this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
+            this.RaiseCanExecuteChanged(x => x.ShowClasses());
+            this.RaiseCanExecuteChanged(x => x.ShowBackTrace());
         }
         void SetClassesWorkloadCore(ClassesFactory.Workload workload) {
             if(classesWorkload != null)
@@ -105,6 +109,8 @@
             this.RaiseCanExecuteChanged(x => x.RunAnalysis());
             this.RaiseCanExecuteChanged(x => x.NavigateNext());
             this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
+            this.RaiseCanExecuteChanged(x => x.ShowClasses());
+            this.RaiseCanExecuteChanged(x => x.ShowBackTrace());
         }
         void SetPatternsWorkloadCore(PatternsFactory.Workload workload) {
             this.patternsWorkload = workload;
@@ -141,6 +147,8 @@
             await dispatcher.BeginInvoke(() => {
                 this.RaiseCanExecuteChanged(x => x.NavigateNext());
                 this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
+                this.RaiseCanExecuteChanged(x => x.ShowClasses());
+                this.RaiseCanExecuteChanged(x => x.ShowBackTrace());
                 AnalysisProgress = 0;
             });
         }
@@ -230,6 +238,18 @@
             var classesViewModel = EnsureAssembliesPageIsActive();
             if(classesViewModel != null)
                 classesViewModel.SelectedNode = classesWorkload.Previous(classesViewModel.SelectedOrFirstNode, classesFactory);
+        }
+        public bool CanShowClasses() {
+            return (classesWorkload != null) && !classesWorkload.IsEmpty;
+        }
+        public void ShowClasses() {
+            var message = (ClassesFactory.Workload)classesWorkload;
+            Messenger.Default.Send(message, "classes");
+        }
+        [Command(CanExecuteMethodName = nameof(CanNavigate))]
+        public void ShowBackTrace() {
+            var message = (ClassesFactory.Workload)classesWorkload;
+            Messenger.Default.Send(message, "backtrace");
         }
         NodesViewModel EnsureAssembliesPageIsActive() {
             if(!GetIsAssembliesPageActive())

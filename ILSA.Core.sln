@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILSA.Core.Tests", "ILSA.Cor
 		{DFD88BDB-B347-48D6-A72F-F5499EE74614} = {DFD88BDB-B347-48D6-A72F-F5499EE74614}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ILSA.Client", "ILSA.Client\ILSA.Client.csproj", "{5FCF3F4E-D702-4669-B5E1-AE274896B682}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILSA.Client", "ILSA.Client\ILSA.Client.csproj", "{5FCF3F4E-D702-4669-B5E1-AE274896B682}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

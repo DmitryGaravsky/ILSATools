@@ -19,7 +19,7 @@
                 return source.GetName().Name;
             }
             readonly StringBuilder ErrorsBuilder = new StringBuilder();
-            protected internal override StringBuilder GetErrorsBuilder() {
+            protected internal sealed override StringBuilder GetErrorsBuilder() {
                 return ErrorsBuilder;
             }
             string? errors;
@@ -27,7 +27,7 @@
             public string Errors {
                 get { return errors ?? (errors = ErrorsBuilder.ToString()); }
             }
-            protected override void OnVisited() {
+            protected sealed override void OnVisited() {
                 Action<Node> collectErrors = x => CollectTypeErrors(ErrorsBuilder, x);
                 foreach(var child in Nodes)
                     child.Visit(collectErrors);
@@ -36,19 +36,18 @@
                 if(node is TypeNode t) {
                     if(t.HasErrors) {
                         var typeName = t.GetSource().FullName;
-                        errors.Append("# ").AppendLine(typeName)
-                            .Append(t.Errors);
+                        errors.Append("# ").AppendLine(typeName).Append(t.Errors);
                     }
                 }
             }
-            protected internal override void Reset() {
+            protected internal sealed override void Reset() {
                 errors = null;
                 ErrorsBuilder.Clear();
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
                 var types = GetTypes(source).OfType<Type>().Select(factory.Create);
                 var namespaces = types.GroupBy(x => x.Group)
-                    .Select(x=> Tuple.Create(x.Key,source, (IEnumerable<Node>)x))
+                    .Select(x => Tuple.Create(x.Key, source, (IEnumerable<Node>)x))
                     .Select(factory.Namespace).ToArray();
                 var nodes = new Node[namespaces.Length + 1];
                 nodes[0] = factory.References(source);
@@ -62,6 +61,9 @@
             static Type[] GetTypes(Assembly assembly) {
                 try { return assembly.GetTypes(); }
                 catch(ReflectionTypeLoadException e) { return e.Types; }
+            }
+            public Node BackTrace(WorkloadBase.Branch branch) {
+                return factory.BackTrace(this, branch);
             }
         }
     }

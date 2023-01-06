@@ -96,6 +96,7 @@
             readonly List<Node> nodesInNavigationOrder = new List<Node>();
             readonly Dictionary<Node, int> nodeIdToIndex = new Dictionary<Node, int>();
             readonly HashSet<int> matchedNodeIndices = new HashSet<int>();
+            readonly List<Node> matches = new List<Node>();
             public Branch(Node root, WorkloadBase effects) {
                 this.root = root;
                 this.effects = effects;
@@ -107,13 +108,17 @@
             }
             public void Apply(Node node, Type type) {
                 int index = EnsureNodeIndexAndNavigationOrder(node);
-                if(effects.Apply(node, type))
+                if(effects.Apply(node, type)) {
                     matchedNodeIndices.Add(index);
+                    matches.Add(node);
+                }
             }
             public void Apply(Node node, MethodBase method) {
                 int index = EnsureNodeIndexAndNavigationOrder(node);
-                if(effects.Apply(node, method))
+                if(effects.Apply(node, method)) {
                     matchedNodeIndices.Add(index);
+                    matches.Add(node);
+                }
             }
             int EnsureNodeIndexAndNavigationOrder(Node node) {
                 int index = nodesInNavigationOrder.Count;
@@ -123,6 +128,12 @@
             }
             public int GetID() {
                 return root.NodeID;
+            }
+            public Node GetRoot() {
+                return root;
+            }
+            public IReadOnlyCollection<Node> GetMatches() {
+                return matches;
             }
             public bool HasMatches {
                 get { return matchedNodeIndices.Count > 0; }

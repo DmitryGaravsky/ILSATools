@@ -41,6 +41,8 @@
             fluent.BindCommandToElement(toolbar, "reset", x => x.Reset);
             fluent.BindCommandToElement(toolbar, "navigate-prev", x => x.NavigatePrevious);
             fluent.BindCommandToElement(toolbar, "navigate-next", x => x.NavigateNext);
+            fluent.BindCommandToElement(toolbar, "classes-button", x => x.ShowClasses);
+            fluent.BindCommandToElement(toolbar, "backtrace-button", x => x.ShowBackTrace);
             fluent.BindCommandToElement(this, "assemblies-workload-button", x => x.SaveAssembliesWorkload);
             fluent.BindCommandToElement(this, "patterns-workload-button", x => x.SavePatternsWorkload);
         }
@@ -146,13 +148,15 @@
             this.searchControl.Properties.NullValuePrompt = " ";
         }
         void UpdateSearchBoxBackground() {
-            this.searchControl.Properties.Appearance.BackColor = LookAndFeelHelper.GetSystemColor(LookAndFeel, SystemColors.Control);
+            var controlColor = LookAndFeelHelper.GetSystemColor(LookAndFeel, SystemColors.Control);
+            this.searchControl.Properties.Appearance.BackColor = controlColor;
         }
         #endregion Search Behavior
         #region Theme
         internal sealed class Styles {
             static Styles() {
                 Views.ProgressIndicator.Register();
+                Views.ChipGroup.Register();
                 Views.TabPane.Register();
             }
             public static Assets.Style App = new AppStyle();

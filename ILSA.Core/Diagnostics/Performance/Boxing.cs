@@ -6,14 +6,18 @@
     using System.Runtime.CompilerServices;
 
     static class Boxing {
+        readonly static short box_Value = OpCodes.Box.Value;
+        readonly static short unbox_Value = OpCodes.Unbox.Value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsBoxing(OpCode opcode) {
-            return opcode == OpCodes.Box || opcode == OpCodes.Unbox;
+        public static bool IsBoxing(OpCode opCode) {
+            short opCodeValue = opCode.Value;
+            return opCodeValue == box_Value || opCodeValue == unbox_Value;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValueType(Type? type) {
             return (type != null) && type.IsValueType;
         }
+        //
         public static bool HasBoxingOfKeyParameter(MethodInfo method) {
             var parameters = method.GetParameters();
             if(parameters.Length == 0)
@@ -31,6 +35,7 @@
                 declaringType.IsGenericType &&
                 declaringType.GetGenericTypeDefinition() != genericType;
         }
+        //
         readonly static Type ValueTypeType = typeof(ValueType);
         static bool HasBasicHashCodeImpl(Type type) {
             var hashCodeMethod = type.GetMethod("GetHashCode", Type.EmptyTypes);

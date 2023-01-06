@@ -15,6 +15,7 @@
         Node References(Assembly assembly);
         Node Namespace(Tuple<string, Assembly, IEnumerable<Node>> types);
         int? GetRootNodeID(Node node, out Node? navigationNode);
+        Node BackTrace(Node assembly, WorkloadBase.Branch branch);
     }
     //
     public partial class ClassesFactory : IClassesFactory {
@@ -71,11 +72,16 @@
         Node IClassesFactory.References(Assembly assembly) {
             return new References(this, assembly);
         }
+        Node IClassesFactory.BackTrace(Node assembly, WorkloadBase.Branch branch) {
+            return new BackTrace(this, (assembly as AssemblyNode)!, branch);
+        }
         int? IClassesFactory.GetRootNodeID(Node node, out Node? navigationNode) {
             navigationNode = node as AssemblyNode;
             if(navigationNode != null)
                 return navigationNode.NodeID;
             Assembly? assembly = null;
+            if(node is BackTrace b)
+                assembly = b.GetSource();
             if(node is References rs)
                 assembly = rs.GetSource();
             if(node is Reference r)
@@ -100,6 +106,8 @@
         public static string GetErrors(Node node) {
             if(node is AssemblyNode a)
                 return a.Errors;
+            if(node is BackTrace b)
+                return b.Errors;
             if(node is Namespace ns)
                 return ns.Errors;
             if(node is TypeNode t)
@@ -115,6 +123,13 @@
                 assemblies.Add(asm.Location);
             }
             return assemblies.ToArray();
+        }
+        public static Node CreateBackTrace(WorkloadBase.Branch branch) {
+            var root = branch.GetRoot();
+            if(root is AssemblyNode a) {
+                return a.BackTrace(branch);
+            }
+            return root;
         }
     }
 }

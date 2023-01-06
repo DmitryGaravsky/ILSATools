@@ -1,6 +1,12 @@
-﻿<template id="view-tab-pane-button-template">
+﻿<template id="views-tab-pane-button-template">
     <div class="tab-button-content">
         <img id="icon" class="button-glyph" />
+        <span id="caption"></span>
+    </div>
+</template>
+<template id="modes-chip-group-button-template">
+    <div class="chip-button-content">
+        <img src="Check" class="check"/>
         <span id="caption"></span>
     </div>
 </template>
@@ -28,11 +34,17 @@
     <div id="navigate-next" class="action no-text no-left-border">
         <img src="Next" class="action-glyph" />
     </div>
+    <div class="divider"></div>
+    <chip-group class="modes-chip-group"
+                ItemClass="modes-chip-group-button"
+                ItemTemplate="modes-chip-group-button-template">
+        <chip-group-button id="classes-button" Caption="Classes"></chip-group-button>
+        <chip-group-button id="backtrace-button" Caption="Backtrace"></chip-group-button>
+    </chip-group>
     <div class="spacer"></div>
-    <tab-pane id="tab-pane"
-              class="view-tab-pane"
-              ItemClass="view-tab-pane-button"
-              ItemTemplate="view-tab-pane-button-template">
+    <tab-pane class="views-tab-pane"
+              ItemClass="views-tab-pane-button"
+              ItemTemplate="views-tab-pane-button-template">
         <tab-pane-button id="assemblies-button" Icon="Assemblies" Caption="Assemblies"></tab-pane-button>
         <tab-pane-button id="patterns-button" Icon="Patterns" Caption="Patterns"></tab-pane-button>
     </tab-pane>

@@ -10,8 +10,12 @@
     using ILSA.Core.Sources;
 
     public class ClassesViewModel : NodesViewModel {
+        readonly static IInstruction[] Empty = new IInstruction[0];
+        //
         public ClassesViewModel() {
             Messenger.Default.Register<IAssembliesSource>(this, "classes", OnReloadClasses);
+            Messenger.Default.Register<ClassesFactory.Workload>(this, "classes", OnClasses);
+            Messenger.Default.Register<ClassesFactory.Workload>(this, "backtrace", OnBackTrace);
         }
         async void OnReloadClasses(IAssembliesSource source) {
             var prevNodes = Nodes;
@@ -20,6 +24,20 @@
                 var workload = await ClassesFactory.Workload.LoadAsync(source, factory);
                 Nodes = new BindingList<Node>(workload.Nodes);
                 Messenger.Default.Send(workload);
+            }
+            catch { Nodes = prevNodes; }
+        }
+        void OnClasses(ClassesFactory.Workload workload) {
+            var prevNodes = Nodes;
+            try {
+                Nodes = new BindingList<Node>(workload.Nodes);
+            }
+            catch { Nodes = prevNodes; }
+        }
+        void OnBackTrace(ClassesFactory.Workload workload) {
+            var prevNodes = Nodes;
+            try {
+                Nodes = new BindingList<Node>(workload.BackTrace);
             }
             catch { Nodes = prevNodes; }
         }
@@ -44,7 +62,6 @@
             SelectedMethod = null;
             base.OnNodesChanged();
         }
-        readonly static IInstruction[] Empty = new IInstruction[0];
         protected override void OnSelectedNodeChanged() {
             var method = ClassesFactory.GetMethod(SelectedNode);
             if(method == null || method.IsAbstract) {
