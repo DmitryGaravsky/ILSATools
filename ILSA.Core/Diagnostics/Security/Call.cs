@@ -12,6 +12,16 @@
             short opCodeValue = opCode.Value;
             return opCodeValue == call_Value || opCodeValue == callvirt_Value;
         }
+        readonly static short newobj_Value = OpCodes.Newobj.Value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool InNewObj(OpCode opCode) {
+            return opCode.Value == newobj_Value;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsCallOrIsNewObj(OpCode opCode) {
+            short opCodeValue = opCode.Value;
+            return opCodeValue == call_Value || opCodeValue == callvirt_Value || opCodeValue == newobj_Value;
+        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSameMethod(MethodBase source, MethodBase target) {
             if(source == target)

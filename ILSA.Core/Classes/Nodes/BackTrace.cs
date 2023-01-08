@@ -19,7 +19,14 @@
                 return assembly.Group;
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
-                return branch.GetMatches();
+                var matches = branch.GetMatches();
+                if(matches.Count == 0)
+                    return EmptyNodes;
+                var nodes = new Node[matches.Count];
+                int index = 0;
+                foreach(Node m in matches)
+                    nodes[index++] = factory.Callee(m, branch);
+                return nodes;
             }
             public sealed override int TypeCode {
                 get { return (int)NodeType.Assembly; }

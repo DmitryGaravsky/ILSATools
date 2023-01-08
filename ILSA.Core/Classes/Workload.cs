@@ -2,6 +2,7 @@
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using ILSA.Core.Sources;
@@ -17,10 +18,14 @@
                     .Select(factory.Create)
                     .ToList();
                 var workload = new Workload(nodes);
-                await LoadAsync(workload);
+                await LoadAsync(workload, workload.Nodes);
                 return workload;
             }
-            protected override void Advance(Node node) {
+            public static async Task<Workload> LoadBackTraceAsync(Workload workload) {
+                await LoadAsync(workload, workload.BackTrace);
+                return workload;
+            }
+            protected sealed override void Advance(Node node) {
                 node.Reset();
                 switch(node) {
                     case AssemblyNode a:
@@ -34,25 +39,37 @@
                         break;
                 }
             }
-            public override bool CanNavigate {
+            public sealed override bool CanNavigate {
                 get { return !IsEmpty && branchesCore.Count > 0; }
             }
-            readonly ConcurrentDictionary<int, Branch> branchesCore = new ConcurrentDictionary<int, Branch>();
             readonly List<Node> backTraceCore = new List<Node>();
             public List<Node> BackTrace {
                 get { return backTraceCore; }
             }
+            readonly ConcurrentDictionary<int, Branch> branchesCore = new ConcurrentDictionary<int, Branch>();
             int? analysisCompletion;
             int methodsProcessed;
-            protected override Branch[] BeforeAnalyze(WorkloadBase effects) {
+            readonly ConcurrentDictionary<MethodBase, HashSet<MethodBase>> callers = new ConcurrentDictionary<MethodBase, HashSet<MethodBase>>();
+            protected sealed override Branch[] BeforeAnalyze(WorkloadBase effects) {
                 analysisCompletion = 0;
                 methodsProcessed = 0;
                 branchesCore.Clear();
                 backTraceCore.Clear();
+                callers.Clear();
+                var scope = new HashSet<Assembly>();
+                foreach(AssemblyNode a in Nodes)
+                    scope.Add(a.GetSource());
+                effects.SetScope(scope, callers);
                 RaiseAnalysisProgress(0);
-                return base.BeforeAnalyze(effects);
+                var branches = new Branch[Nodes.Count];
+                for(int i = 0; i < branches.Length; i++)
+                    branches[i] = new Branch(Nodes[i], effects, callers);
+                return branches;
             }
-            protected override void Advance(Node node, Branch branch) {
+            protected internal sealed override void SetScope(HashSet<Assembly> scope, ConcurrentDictionary<MethodBase, HashSet<MethodBase>> callers) {
+                throw new System.NotImplementedException();
+            }
+            protected sealed override void Advance(Node node, Branch branch) {
                 node.Reset();
                 switch(node) {
                     case AssemblyNode a:
@@ -63,16 +80,13 @@
                         break;
                     case MethodNode m:
                         branch.Apply(m, m.GetSource());
-                        UpdateProgress();
+                        int progress = (Interlocked.Increment(ref methodsProcessed) * 100) / methods;
+                        if(progress != analysisCompletion.GetValueOrDefault())
+                            RaiseAnalysisProgress((analysisCompletion = progress).Value);
                         break;
                 }
             }
-            void UpdateProgress() {
-                int progress = (Interlocked.Increment(ref methodsProcessed) * 100) / methods;
-                if(progress != analysisCompletion.GetValueOrDefault())
-                    RaiseAnalysisProgress((analysisCompletion = progress).Value);
-            }
-            protected override void EndAnalyze(Branch[] branches) {
+            protected sealed override void EndAnalyze(Branch[] branches) {
                 branchesCore.Clear();
                 backTraceCore.Clear();
                 var effectiveBranches = branches.Where(x => x.HasMatches);
@@ -84,7 +98,7 @@
                 analysisCompletion = null;
                 RaiseAnalysisProgress(100);
             }
-            public override Node Next(Node node, IClassesFactory factory) {
+            public sealed override Node Next(Node node, IClassesFactory factory) {
                 int? rootId = factory.GetRootNodeID(node, out Node? navigationOrigin);
                 if(rootId.HasValue && navigationOrigin != null) {
                     if(branchesCore.TryGetValue(rootId.Value, out var branch))
@@ -92,7 +106,7 @@
                 }
                 return node;
             }
-            public override Node Previous(Node node, IClassesFactory factory) {
+            public sealed override Node Previous(Node node, IClassesFactory factory) {
                 int? rootId = factory.GetRootNodeID(node, out Node? navigationOrigin);
                 if(rootId.HasValue && navigationOrigin != null) {
                     if(branchesCore.TryGetValue(rootId.Value, out var branch))
@@ -100,7 +114,7 @@
                 }
                 return node;
             }
-            public override string ToString() {
+            public sealed override string ToString() {
                 return $"Assemblies: {methods} methods and {types} types from {assemblies} assemblies";
             }
         }

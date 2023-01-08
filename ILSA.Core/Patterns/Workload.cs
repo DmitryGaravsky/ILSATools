@@ -1,13 +1,18 @@
 ﻿namespace ILSA.Core.Patterns {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Text;
     using System.Threading.Tasks;
+    using ILSA.Core.Classes;
     using ILSA.Core.Sources;
 
     public partial class PatternsFactory {
         public sealed class Workload : WorkloadBase {
+            readonly static StringBuilder CalleeBuilder = new StringBuilder();
+            //
             readonly List<MetadataPattern> metadataPatterns = new List<MetadataPattern>();
             readonly List<MethodBodyPattern> methodBodyPatterns = new List<MethodBodyPattern>();
             Workload(List<Node> nodes)
@@ -18,11 +23,10 @@
                     .OrderBy(x => x.GetName().Name)
                     .Select(factory.Create).ToList();
                 var workload = new Workload(nodes);
-                await LoadAsync(workload);
+                await LoadAsync(workload, workload.Nodes);
                 return workload;
             }
-            //
-            public override bool IsEmpty {
+            public sealed override bool IsEmpty {
                 get { return (metadataPatterns.Count == 0) && (methodBodyPatterns.Count == 0); }
             }
             protected sealed override void Advance(Node node) {
@@ -44,6 +48,25 @@
             protected sealed override void Advance(Node node, Branch branch) {
                 throw new NotImplementedException();
             }
+            protected sealed override Branch[] BeforeAnalyze(WorkloadBase effects) {
+                throw new NotImplementedException();
+            }
+            protected sealed override void EndAnalyze(Branch[] branches) {
+                throw new NotImplementedException();
+            }
+            public sealed override Node Next(Node node, IClassesFactory factory) {
+                throw new NotImplementedException();
+            }
+            public sealed override Node Previous(Node node, IClassesFactory factory) {
+                throw new NotImplementedException();
+            }
+            //
+            HashSet<Assembly>? scope = new HashSet<Assembly>();
+            ConcurrentDictionary<MethodBase, HashSet<MethodBase>>? callers;
+            protected internal sealed override void SetScope(HashSet<Assembly> scope, ConcurrentDictionary<MethodBase, HashSet<MethodBase>> callers) {
+                this.scope = scope ?? new HashSet<Assembly>();
+                this.callers = callers ?? new ConcurrentDictionary<MethodBase, HashSet<MethodBase>>();
+            }
             protected internal sealed override bool Apply(Node node, Type type) {
                 var errors = node.GetErrorsBuilder();
                 bool hasMatches = false;
@@ -64,8 +87,16 @@
                     if(hasMatches |= pattern.Match(reader, errors, out int[] captures))
                         node.OnPatternMatch(pattern, captures);
                 }
+                CalleeBuilder.Clear();
+                if(MethodBodyPattern.Callee.Match(reader, CalleeBuilder, out int[] calleeCaptures)) {
+                    for(int i = 0; i < calleeCaptures.Length; i++) {
+                        var callee = reader[calleeCaptures[i]].Operand as MethodBase;
+                        MethodBodyPattern.EnsureCallers(method, callee, scope!, callers!);
+                    }
+                }
                 return hasMatches;
             }
+            //
             public sealed override string ToString() {
                 return $"Patterns: {methods} patterns from {assemblies} assemblies";
             }

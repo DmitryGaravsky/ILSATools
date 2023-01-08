@@ -16,6 +16,8 @@
         Node Namespace(Tuple<string, Assembly, IEnumerable<Node>> types);
         int? GetRootNodeID(Node node, out Node? navigationNode);
         Node BackTrace(Node assembly, WorkloadBase.Branch branch);
+        Node Callee(Node method, WorkloadBase.Branch branch);
+        Node Caller(Node method, Node callee, WorkloadBase.Branch branch);
     }
     //
     public partial class ClassesFactory : IClassesFactory {
@@ -35,6 +37,8 @@
             baseTypesCache = new ConcurrentDictionary<Type, BaseTypes>();
             createBaseTypesRoot = x => new BaseTypes(this, x, true);
             baseTypesRootsCache = new ConcurrentDictionary<Type, BaseTypes>();
+            calleeCache = new ConcurrentDictionary<MethodBase, Callee>();
+            callersCache = new ConcurrentDictionary<Tuple<MethodBase, MethodBase>, Caller>();
         }
         readonly ConcurrentDictionary<Assembly, AssemblyNode> assembliesCache;
         readonly Func<Assembly, AssemblyNode> createAssemblyNode;
@@ -75,28 +79,37 @@
         Node IClassesFactory.BackTrace(Node assembly, WorkloadBase.Branch branch) {
             return new BackTrace(this, (assembly as AssemblyNode)!, branch);
         }
+        readonly ConcurrentDictionary<MethodBase, Callee> calleeCache;
+        Node IClassesFactory.Callee(Node method, WorkloadBase.Branch branch) {
+            var mNode = (method as MethodNode)!;
+            return calleeCache.GetOrAdd(mNode.GetSource(), c => new Callee(this, mNode, branch));
+        }
+        readonly ConcurrentDictionary<Tuple<MethodBase, MethodBase>, Caller> callersCache;
+        Node IClassesFactory.Caller(Node method, Node callee, WorkloadBase.Branch branch) {
+            var mNode = (method as MethodNode)!;
+            var mCalee = (callee as BackTraceMethodNode)!;
+            return callersCache.GetOrAdd(Tuple.Create(mNode.GetSource(), mCalee.GetSource()), c => new Caller(this, mNode, mCalee, branch));
+        }
         int? IClassesFactory.GetRootNodeID(Node node, out Node? navigationNode) {
             navigationNode = node as AssemblyNode;
             if(navigationNode != null)
                 return navigationNode.NodeID;
             Assembly? assembly = null;
-            if(node is BackTrace b)
-                assembly = b.GetSource();
-            if(node is References rs)
-                assembly = rs.GetSource();
+            if(node is Node<Assembly> a)
+                assembly = a.GetSource();
+            if(node is TypeNode t) {
+                navigationNode = node;
+                assembly = t.GetSource().Assembly;
+            }
+            if(node is Node<MethodBase> m) {
+                navigationNode = node;
+                assembly = m.GetSource().DeclaringType.Assembly;
+            }
             if(node is Reference r)
                 assembly = r.GetAssembly();
             if(node is Namespace ns) {
                 navigationNode = ns.Nodes.FirstOrDefault();
                 assembly = ns.GetAssembly();
-            }
-            if(node is TypeNode t) {
-                navigationNode = node;
-                assembly = t.GetSource().Assembly;
-            }
-            if(node is MethodNode m) {
-                navigationNode = node;
-                assembly = m.GetSource().DeclaringType.Assembly;
             }
             if(assembly == null || !assembliesCache.TryGetValue(assembly, out AssemblyNode aNode))
                 return null;
@@ -115,7 +128,7 @@
             return string.Empty;
         }
         public static string[] GetAssemblies(WorkloadBase workload) {
-            List<string> assemblies = new List<string>();
+            List<string> assemblies = new List<string>(workload.Nodes.Count);
             foreach(AssemblyNode aNode in workload.Nodes) {
                 if(aNode == null)
                     continue;
@@ -126,10 +139,7 @@
         }
         public static Node CreateBackTrace(WorkloadBase.Branch branch) {
             var root = branch.GetRoot();
-            if(root is AssemblyNode a) {
-                return a.BackTrace(branch);
-            }
-            return root;
+            return (root is AssemblyNode a) ? a.BackTrace(branch) : root;
         }
     }
 }

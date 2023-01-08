@@ -1,5 +1,6 @@
 ﻿namespace ILSA.Core {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Reflection;
@@ -34,12 +35,12 @@
         protected void OnMethod(MethodBase method) {
             Interlocked.Increment(ref methods);
         }
-        protected static async Task LoadAsync<TWorkload>(TWorkload workload)
+        protected static async Task LoadAsync<TWorkload>(TWorkload workload, List<Node> nodes)
             where TWorkload : WorkloadBase {
             Action<Node> advance = workload.Advance;
-            Task[] visits = new Task[workload.nodesCore.Count];
+            Task[] visits = new Task[nodes.Count];
             for(int i = 0; i < visits.Length; i++) {
-                var node = workload.nodesCore[i];
+                var node = nodes[i];
                 visits[i] = Task.Run(() => node.Visit(advance));
             }
             await Task.WhenAll(visits);
@@ -56,12 +57,6 @@
             await Task.WhenAll(visits);
             target.EndAnalyze(branches);
         }
-        protected virtual Branch[] BeforeAnalyze(WorkloadBase effects) {
-            var branches = new Branch[nodesCore.Count];
-            for(int i = 0; i < branches.Length; i++)
-                branches[i] = new Branch(nodesCore[i], effects);
-            return branches;
-        }
         EventHandler<ProgressChangedEventArgs>? AnalysisProgressCore;
         public event EventHandler<ProgressChangedEventArgs> AnalysisProgress {
             add { AnalysisProgressCore += value; }
@@ -70,10 +65,10 @@
         protected void RaiseAnalysisProgress(int percent) {
             AnalysisProgressCore?.Invoke(this, new ProgressChangedEventArgs(percent, null));
         }
-        protected virtual void EndAnalyze(Branch[] brunches) { }
+        protected abstract Branch[] BeforeAnalyze(WorkloadBase effects);
+        protected abstract void EndAnalyze(Branch[] branches);
         protected abstract void Advance(Node node);
         protected abstract void Advance(Node node, Branch branch);
-        // Effects
         protected internal virtual bool Apply(Node node, Assembly assembly) {
             return false;
         }
@@ -83,12 +78,9 @@
         protected internal virtual bool Apply(Node node, MethodBase method) {
             return false;
         }
-        public virtual Node Next(Node node, IClassesFactory factory) {
-            return node;
-        }
-        public virtual Node Previous(Node node, IClassesFactory factory) {
-            return node;
-        }
+        public abstract Node Next(Node node, IClassesFactory factory);
+        public abstract Node Previous(Node node, IClassesFactory factory);
+        protected internal abstract void SetScope(HashSet<Assembly> scope, ConcurrentDictionary<MethodBase, HashSet<MethodBase>> callers);
         //
         public sealed class Branch {
             readonly Node root;
@@ -97,9 +89,11 @@
             readonly Dictionary<Node, int> nodeIdToIndex = new Dictionary<Node, int>();
             readonly HashSet<int> matchedNodeIndices = new HashSet<int>();
             readonly List<Node> matches = new List<Node>();
-            public Branch(Node root, WorkloadBase effects) {
+            readonly ConcurrentDictionary<MethodBase, HashSet<MethodBase>> callers;
+            public Branch(Node root, WorkloadBase effects, ConcurrentDictionary<MethodBase, HashSet<MethodBase>> callers) {
                 this.root = root;
                 this.effects = effects;
+                this.callers = callers;
             }
             public void Apply(Node node, Assembly assembly) {
                 int index = EnsureNodeIndexAndNavigationOrder(node);
@@ -134,6 +128,10 @@
             }
             public IReadOnlyCollection<Node> GetMatches() {
                 return matches;
+            }
+            readonly static HashSet<MethodBase> NoCallers = new HashSet<MethodBase>();
+            public HashSet<MethodBase> GetCallers(MethodBase callee) {
+                return callers.TryGetValue(callee, out HashSet<MethodBase> c) ? c : NoCallers;
             }
             public bool HasMatches {
                 get { return matchedNodeIndices.Count > 0; }

@@ -1,5 +1,6 @@
 ﻿namespace ILSA.Core.Patterns {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Reflection;
     using System.Text;
@@ -115,6 +116,35 @@
             if(allCaptures != null)
                 captures = allCaptures.ToArray();
             return (captures != null) && captures.Length > 0;
+        }
+        //
+        public static readonly MethodBodyPattern Callee = new MethodBodyPattern(new MatchMethodBody(CalleeImpl.Match).Method);
+        static class CalleeImpl {
+            static readonly Func<IInstruction, bool>[] matches = new Func<IInstruction, bool>[] {
+                    new Func<IInstruction, bool>(i => Diagnostics.Security.Call.IsCallOrIsNewObj(i.OpCode)),
+                };
+            public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
+                return MethodBodyPattern.Match(matches, instructions, errors, out captures);
+            }
+            readonly static Type objectType = typeof(object);
+            readonly static Type valueType = typeof(ValueType);
+            internal static bool IsCallee(MethodBase? callee, HashSet<Assembly> scope) {
+                if(callee == null)
+                    return false;
+                var declaringType = callee.DeclaringType;
+                if(declaringType == null || declaringType == objectType || declaringType == valueType)
+                    return false;
+                return scope.Contains(declaringType.Assembly);
+            }
+        }
+        public static void EnsureCallers(MethodBase caller, MethodBase? callee, HashSet<Assembly> scope,
+            ConcurrentDictionary<MethodBase, HashSet<MethodBase>> callers) {
+            if(CalleeImpl.IsCallee(callee, scope)) {
+                callers.AddOrUpdate(callee!, 
+                        (c) => new HashSet<MethodBase>() { caller }, 
+                        (c, callers) => { callers.Add(caller); return callers; }
+                    );
+            }
         }
     }
 }

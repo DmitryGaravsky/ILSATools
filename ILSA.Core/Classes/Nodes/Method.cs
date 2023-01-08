@@ -8,12 +8,16 @@
 
     partial class ClassesFactory {
         public static MethodBase? GetMethod(Node node) {
-            var methodNode = node as MethodNode;
-            return (methodNode != null) ? methodNode.GetSource() : null;
+            if(node is Node<MethodBase> m)
+                return m.GetSource();
+            return null;
         }
         public static Dictionary<string, ProcessingSeverity>? GetSeverityMap(Node node, IILReader instructions) {
-            var methodNode = node as MethodNode;
-            return (methodNode != null) ? methodNode.GetSeverityMap(instructions) : null;
+            if(node is MethodNode m)
+                return m.GetSeverityMap(instructions);
+            if(node is BackTraceMethodNode bm)
+                return bm.GetSeverityMap(instructions);
+            return null;
         }
         sealed class MethodNode : Node<MethodBase> {
             public MethodNode(IClassesFactory factory, MethodBase method)

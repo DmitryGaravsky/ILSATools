@@ -108,9 +108,11 @@
         }
         sealed class SeverityPainter : TextEdit.TextEditBlockPainter {
             public readonly static SeverityPainter Instance = new SeverityPainter();
+            //
             readonly static SvgBitmap Error = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Error)]);
             readonly static SvgBitmap Warning = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Warning)]);
             readonly static SvgBitmap Information = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Information)]);
+            readonly static SvgBitmap Callee = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Callee)]);
             //
             public sealed override bool DrawBackground(TextEdit.Block block) {
                 if(!(block.Tag is ProcessingSeverity))
@@ -126,6 +128,9 @@
                         break;
                     case ProcessingSeverity.Informational:
                         DrawSvgBitmap(Information, imgBounds);
+                        break;
+                    case ProcessingSeverity.Callee:
+                        DrawSvgBitmap(Callee, imgBounds);
                         break;
                 }
                 return true;

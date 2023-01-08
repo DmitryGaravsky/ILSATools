@@ -15,7 +15,8 @@
         Ignore,
         Informational,
         Warning,
-        Error
+        Error,
+        Callee
     }
     public abstract class Pattern {
         protected readonly MethodInfo match;
@@ -116,7 +117,6 @@
         #endregion
         #region Empty
         public readonly static Pattern Empty = new EmptyPattern();
-        //
         sealed class EmptyPattern : Pattern {
             internal EmptyPattern()
                 : base(new Func<string, Type>(Type.GetType).Method) {

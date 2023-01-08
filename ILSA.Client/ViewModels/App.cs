@@ -247,8 +247,8 @@
             Messenger.Default.Send(message, "classes");
         }
         [Command(CanExecuteMethodName = nameof(CanNavigate))]
-        public void ShowBackTrace() {
-            var message = (ClassesFactory.Workload)classesWorkload;
+        public async Task ShowBackTrace() {
+            var message = await ClassesFactory.Workload.LoadBackTraceAsync((ClassesFactory.Workload)classesWorkload);
             Messenger.Default.Send(message, "backtrace");
         }
         NodesViewModel EnsureAssembliesPageIsActive() {
