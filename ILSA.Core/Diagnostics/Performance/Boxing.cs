@@ -1,4 +1,4 @@
-﻿namespace ILSA.Core.Diagnostics.Performance {
+﻿namespace ILSA.Core.Diagnostics {
     using System;
     using System.Linq;
     using System.Reflection;
@@ -14,8 +14,8 @@
             return opCodeValue == box_Value || opCodeValue == unbox_Value;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsValueType(Type? type) {
-            return (type != null) && type.IsValueType;
+        public static bool IsValueType(object? operand) {
+            return (operand is Type type) && type.IsValueType;
         }
         //
         public static bool HasBoxingOfKeyParameter(MethodInfo method) {

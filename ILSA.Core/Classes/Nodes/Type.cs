@@ -38,8 +38,10 @@
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
                 var flags = BF.Instance | BF.Static | BF.Public | BF.NonPublic | BF.DeclaredOnly;
                 var methods = source.GetMethods(flags);
+                Array.Sort(methods, Diagnostics.MethodNamesComparer.Instance);
                 var ctors = source.GetConstructors(flags);
                 var nestedTypes = source.GetNestedTypes(BF.Public | BF.NonPublic);
+                Array.Sort(nestedTypes, Diagnostics.TypeNamesComparer.Instance);
                 int methodsCount = nestedTypes.Length + ctors.Length + methods.Length;
                 bool hasBaseTypes = (source.BaseType != null) && (source.BaseType != typeof(object));
                 var nodes = new Node[methodsCount + (hasBaseTypes ? 1 : 0)];

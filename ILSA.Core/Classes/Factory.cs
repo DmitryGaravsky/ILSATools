@@ -141,5 +141,10 @@
             var root = branch.GetRoot();
             return (root is AssemblyNode a) ? a.BackTrace(branch) : root;
         }
+        //
+        static Type[] GetTypes(Assembly assembly) {
+            try { return assembly.GetTypes(); }
+            catch(ReflectionTypeLoadException e) { return e.Types; }
+        }
     }
 }

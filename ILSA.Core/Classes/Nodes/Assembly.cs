@@ -45,22 +45,22 @@
                 ErrorsBuilder.Clear();
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
-                var types = GetTypes(source).OfType<Type>().Select(factory.Create);
-                var namespaces = types.GroupBy(x => x.Group)
+                var types = GetTypes(source).OfType<Type>()
+                    .Select(factory.Create);
+                var namespaces = types
+                    .GroupBy(x => x.Group)
                     .Select(x => Tuple.Create(x.Key, source, (IEnumerable<Node>)x))
-                    .Select(factory.Namespace).ToArray();
+                    .Select(factory.Namespace)
+                    .ToArray();
                 var nodes = new Node[namespaces.Length + 1];
                 nodes[0] = factory.References(source);
                 for(int i = 0; i < namespaces.Length; i++)
                     nodes[i + 1] = namespaces[i];
+                Array.Sort(nodes, 1, nodes.Length - 1, NodeNamesComparer.Default);
                 return nodes;
             }
             public sealed override int TypeCode {
                 get { return (int)NodeType.Assembly; }
-            }
-            static Type[] GetTypes(Assembly assembly) {
-                try { return assembly.GetTypes(); }
-                catch(ReflectionTypeLoadException e) { return e.Types; }
             }
             public Node BackTrace(WorkloadBase.Branch branch) {
                 return factory.BackTrace(this, branch);

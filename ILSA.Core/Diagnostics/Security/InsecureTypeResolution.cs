@@ -12,7 +12,7 @@
     using BF = System.Reflection.BindingFlags;
 
     public static class InsecureTypeResolution {
-        readonly internal static HashSet<MethodBase> getTypeMethods = new HashSet<MethodBase>(new Call.MethodBaseComparer());
+        readonly internal static HashSet<MethodBase> getTypeMethods = new HashSet<MethodBase>();
         static InsecureTypeResolution() {
             var typeGetTypeMethods = typeof(Type).GetMember(nameof(Type.GetType), BF.Public | BF.Static);
             RegisterMembersWithParameters(typeGetTypeMethods);

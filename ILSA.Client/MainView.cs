@@ -4,6 +4,7 @@
     using DevExpress.LookAndFeel;
     using DevExpress.Utils.Html;
     using DevExpress.Utils.MVVM.Services;
+    using DevExpress.XtraBars;
     using DevExpress.XtraBars.Navigation;
     using ILSA.Client.ViewModels;
     using ILSA.Client.Views;
@@ -18,6 +19,10 @@
             }
         }
         void InitializeStyles() {
+            new BarManager(components) {
+                DockingEnabled = false,
+                Form = this
+            };
             this.IconOptions.SvgImage = Assets.Style.SvgImages["Class"];
             this.HtmlImages = Assets.Style.SvgImages;
             toolbar.HtmlImages = Assets.Style.SvgImages;

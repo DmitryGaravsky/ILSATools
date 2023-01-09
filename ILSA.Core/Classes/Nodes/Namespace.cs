@@ -22,14 +22,15 @@
                 return source;
             }
             protected sealed override IReadOnlyCollection<Node> GetNodes() {
-                var typeNodes = types.OfType<TypeNode>();
-                return typeNodes.Where(x => !x.IsNested).ToArray();
+                var typeNodes = types.OfType<TypeNode>().Where(x => !x.IsNested).ToArray();
+                Array.Sort(typeNodes, NodeNamesComparer.Default);
+                return typeNodes;
             }
             public sealed override int TypeCode {
                 get { return (int)NodeType.Namespace; }
             }
             readonly StringBuilder ErrorsBuilder = new StringBuilder();
-            protected internal override StringBuilder GetErrorsBuilder() {
+            protected internal sealed override StringBuilder GetErrorsBuilder() {
                 return ErrorsBuilder;
             }
             string? errors;
@@ -37,7 +38,7 @@
             public string Errors {
                 get { return errors ?? (errors = ErrorsBuilder.ToString()); }
             }
-            protected override void OnVisited() {
+            protected sealed override void OnVisited() {
                 Action<Node> collectErrors = x => CollectTypeErrors(ErrorsBuilder, x);
                 foreach(var child in Nodes)
                     child.Visit(collectErrors);
@@ -46,12 +47,11 @@
                 if(node is TypeNode t) {
                     if(t.HasErrors) {
                         var typeName = t.GetSource().FullName;
-                        errors.Append("# ").AppendLine(typeName)
-                            .Append(t.Errors);
+                        errors.Append("# ").AppendLine(typeName).Append(t.Errors);
                     }
                 }
             }
-            protected internal override void Reset() {
+            protected internal sealed override void Reset() {
                 errors = null;
                 ErrorsBuilder.Clear();
             }

@@ -11,7 +11,7 @@
     using BF = System.Reflection.BindingFlags;
 
     public static class InsecureAssemblyLoading {
-        readonly internal static HashSet<MethodBase> loadMethods = new HashSet<MethodBase>(new Call.MethodBaseComparer());
+        readonly internal static HashSet<MethodBase> loadMethods = new HashSet<MethodBase>();
         static InsecureAssemblyLoading() {
             var loadMethods = typeof(Assembly).GetMember(nameof(Assembly.Load), BF.Public | BF.Static);
             RegisterMembersWithStringParameters(loadMethods, x => x.Name.Contains("assembly"));

@@ -2,6 +2,7 @@
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.CompilerServices;
     using System.Text;
     using ILSA.Core.Patterns;
 
@@ -65,6 +66,15 @@
         }
         public override int GetHashCode() {
             return NodeID;
+        }
+    }
+    sealed class NodeNamesComparer : IComparer<Node> {
+        public readonly static IComparer<Node> Default = new NodeNamesComparer();
+        NodeNamesComparer() { }
+        //
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int Compare(Node x, Node y) {
+            return string.CompareOrdinal(x.Name, y.Name);
         }
     }
 }

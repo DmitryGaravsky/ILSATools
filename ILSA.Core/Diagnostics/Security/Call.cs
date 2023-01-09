@@ -1,4 +1,5 @@
-﻿namespace ILSA.Core.Diagnostics.Security {
+﻿namespace ILSA.Core.Diagnostics {
+    using System;
     using System.Collections.Generic;
     using System.Reflection;
     using System.Reflection.Emit;
@@ -7,6 +8,7 @@
     static class Call {
         readonly static short call_Value = OpCodes.Call.Value;
         readonly static short callvirt_Value = OpCodes.Callvirt.Value;
+        //
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsCall(OpCode opCode) {
             short opCodeValue = opCode.Value;
@@ -24,22 +26,25 @@
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSameMethod(MethodBase source, MethodBase target) {
-            if(source == target)
-                return true;
-            if(source.DeclaringType != target.DeclaringType)
-                return false;
-            return source.MethodHandle == target.MethodHandle;
+            return source == target;
         }
+    }
+    sealed class TypeNamesComparer : IComparer<Type> {
+        public readonly static IComparer<Type> Instance = new TypeNamesComparer();
+        TypeNamesComparer() { }
         //
-        public struct MethodBaseComparer : IEqualityComparer<MethodBase> {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public bool Equals(MethodBase source, MethodBase target) {
-                return IsSameMethod(source, target);
-            }
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public int GetHashCode(MethodBase source) {
-                return source.GetHashCode();
-            }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int Compare(Type x, Type y) {
+            return string.CompareOrdinal(x.Name, y.Name);
+        }
+    }
+    sealed class MethodNamesComparer : IComparer<MethodBase> {
+        public readonly static IComparer<MethodBase> Instance = new MethodNamesComparer();
+        MethodNamesComparer() { }
+        //
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int Compare(MethodBase x, MethodBase y) {
+            return string.CompareOrdinal(x.Name, y.Name);
         }
     }
 }

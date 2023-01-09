@@ -121,7 +121,7 @@
         public static readonly MethodBodyPattern Callee = new MethodBodyPattern(new MatchMethodBody(CalleeImpl.Match).Method);
         static class CalleeImpl {
             static readonly Func<IInstruction, bool>[] matches = new Func<IInstruction, bool>[] {
-                    new Func<IInstruction, bool>(i => Diagnostics.Security.Call.IsCallOrIsNewObj(i.OpCode)),
+                    new Func<IInstruction, bool>(i => Diagnostics.Call.IsCallOrIsNewObj(i.OpCode)),
                 };
             public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
                 return MethodBodyPattern.Match(matches, instructions, errors, out captures);

@@ -2,6 +2,7 @@
     using System.Collections.Generic;
     using System.Reflection;
     using ILReader.Readers;
+    using ILSA.Core.Diagnostics;
     using ILSA.Core.Diagnostics.Security;
     using ILSA.Core.Patterns;
 
