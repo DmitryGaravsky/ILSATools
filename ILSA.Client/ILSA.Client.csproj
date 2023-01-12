@@ -39,6 +39,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="ILSA.Core">
+      <HintPath>..\..\Lib\ILSA.Core.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Data.Desktop.v22.2">
       <HintPath>..\..\Lib\DevExpress.Data.Desktop.v22.2.dll</HintPath>
     </Reference>
@@ -47,39 +50,28 @@
     </Reference>
     <Reference Include="DevExpress.Drawing.v22.2">
       <HintPath>..\..\Lib\DevExpress.Drawing.v22.2.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Mvvm.v22.2">
       <HintPath>..\..\Lib\DevExpress.Mvvm.v22.2.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Printing.v22.2.Core">
       <HintPath>..\..\Lib\DevExpress.Printing.v22.2.Core.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.Utils.v22.2">
       <HintPath>..\..\Lib\DevExpress.Utils.v22.2.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.XtraBars.v22.2">
       <HintPath>..\..\Lib\DevExpress.XtraBars.v22.2.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.XtraEditors.v22.2">
       <HintPath>..\..\Lib\DevExpress.XtraEditors.v22.2.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.XtraTreeList.v22.2">
       <HintPath>..\..\Lib\DevExpress.XtraTreeList.v22.2.dll</HintPath>
-      <Private>True</Private>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ILSA.Core\ILSA.Core.csproj">
-      <Project>{dfd88bdb-b347-48d6-a72f-f5499ee74614}</Project>
-      <Name>ILSA.Core</Name>
-    </ProjectReference>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Costura.Fody" Version="5.7.0">
       <PrivateAssets>all</PrivateAssets>

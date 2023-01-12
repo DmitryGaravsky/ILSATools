@@ -25,7 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ILSA.Core">
-      <HintPath>..\bin\ILSA.Core.dll</HintPath>
+      <HintPath>..\..\Lib\ILSA.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
 

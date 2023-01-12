@@ -48,7 +48,7 @@ em {
 .code-inline-element {
 	display: inline;
 	background-color: #E8F1FB;
-	padding: 3px;
+	padding: 1px 3px;
 }
 
 .code-block {
@@ -74,6 +74,7 @@ em {
 	width: 16px;
 	height: 16px;
 	opacity: 0;
+	user-select: none;
 }
 
 .code-block:hover .copy {

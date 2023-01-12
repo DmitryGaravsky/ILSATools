@@ -58,6 +58,7 @@
             this.RaiseCanExecuteChanged(x => x.RunAnalysis());
             this.RaiseCanExecuteChanged(x => x.SaveAssembliesWorkload());
             this.RaiseCanExecuteChanged(x => x.SavePatternsWorkload());
+            this.RaiseCanExecuteChanged(x => x.LoadAssembliesOrPatternsWorkload());
             this.RaiseCanExecuteChanged(x => x.NavigateNext());
             this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
             this.RaiseCanExecuteChanged(x => x.ShowClasses());
@@ -88,6 +89,7 @@
             SetClassesWorkloadCore(workload);
             this.RaisePropertyChanged(x => x.AssembliesWorkload);
             this.RaiseCanExecuteChanged(x => x.SaveAssembliesWorkload());
+            this.RaiseCanExecuteChanged(x => x.LoadAssembliesOrPatternsWorkload());
             this.RaiseCanExecuteChanged(x => x.RunAnalysis());
             this.RaiseCanExecuteChanged(x => x.NavigateNext());
             this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
@@ -106,6 +108,7 @@
             this.patternsWorkload = workload;
             this.RaisePropertyChanged(x => x.PatternsWorkload);
             this.RaiseCanExecuteChanged(x => x.SavePatternsWorkload());
+            this.RaiseCanExecuteChanged(x => x.LoadAssembliesOrPatternsWorkload());
             this.RaiseCanExecuteChanged(x => x.RunAnalysis());
             this.RaiseCanExecuteChanged(x => x.NavigateNext());
             this.RaiseCanExecuteChanged(x => x.NavigatePrevious());
@@ -114,11 +117,25 @@
         }
         void SetPatternsWorkloadCore(PatternsFactory.Workload workload) {
             this.patternsWorkload = workload;
-            if(patternsWorkload != null) {
-                var patternInfos = AppSettings.CurrentAppSettings.PatternInfos;
-                foreach(var pInfo in patternInfos)
-                    PatternsFactory.SetSeverity(patternsWorkload, pInfo.Name, pInfo.Severity);
+            if(patternsWorkload != null) 
+                SetSeverity(AppSettings.CurrentAppSettings.PatternInfos);
+        }
+        void SetSeverity(AppSettings.PatternInfo[] patternInfos) {
+            foreach(var pInfo in patternInfos)
+                PatternsFactory.SetSeverity(patternsWorkload, pInfo.Name, pInfo.Severity);
+        }
+        void LoadAndApplySettings(string path) {
+            var settings = AppSettings.LoadAppSettings(path);
+            if(settings.Assemblies != null && settings.Assemblies.Length > 0) {
+                classesSource.Reset();
+                Loader.LoadAssemblies(settings.Assemblies, classesSource.Load);
             }
+            if(settings.Patterns != null && settings.Patterns.Length > 0) {
+                patternsSource.Reset();
+                Loader.LoadAssemblies(settings.Patterns, patternsSource.Load);
+            }
+            if(settings.PatternInfos != null && settings.PatternInfos.Length > 0)
+                SetSeverity(settings.PatternInfos);
         }
         public void AddAssembly() {
             bool isAssemblies = GetIsAssembliesPageActive();
@@ -200,7 +217,7 @@
             return (classesWorkload != null) && !classesWorkload.IsEmpty;
         }
         public void SaveAssembliesWorkload() {
-            const string filter = "Settings (*.settings)|*.settings|Settings Xml (*.xml)|*.xml";
+            const string filter = "Assemblies (*.assemblies)|*.assemblies|Assemblies Xml (*.xml)|*.xml";
             var saveFile = this.GetService<ISaveFileDialogService>();
             saveFile.Title = "Save Assemblies";
             saveFile.CheckPathExists = true;
@@ -214,7 +231,7 @@
             return (patternsWorkload != null) && !patternsWorkload.IsEmpty;
         }
         public void SavePatternsWorkload() {
-            const string filter = "Settings (*.settings)|*.settings|Settings Xml (*.xml)|*.xml";
+            const string filter = "Patterns (*.patterns)|*.patterns|Patterns Xml (*.xml)|*.xml";
             var saveFile = this.GetService<ISaveFileDialogService>();
             saveFile.Title = "Save Patterns";
             saveFile.CheckPathExists = true;
@@ -223,6 +240,19 @@
                 var patterns = PatternsFactory.GetPatterns(patternsWorkload);
                 AppSettings.SaveAppSettings(saveFile.GetFullFileName(), new string[0], patterns);
             }
+        }
+        public bool CanLoadAssembliesOrPatternsWorkload() {
+            return (classesWorkload != null) && (patternsWorkload != null);
+        }
+        public void LoadAssembliesOrPatternsWorkload() {
+            const string filter = "Patterns (*.patterns)|*.patterns|Assemblies (*.assemblies)|*.assemblies|Settings Xml (*.xml)|*.xml";
+            var openFile = this.GetService<IOpenFileDialogService>();
+            openFile.Title = "Save Assemblies";
+            openFile.CheckFileExists = true;
+            openFile.CheckPathExists = true;
+            openFile.Filter = filter;
+            if(openFile.ShowDialog()) 
+                LoadAndApplySettings(openFile.GetFullFileName());
         }
         public bool CanNavigate() {
             return (classesWorkload != null) && classesWorkload.CanNavigate;

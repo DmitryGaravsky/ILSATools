@@ -21,6 +21,7 @@
             RegisterMembersWithStringParameters(loadFromMethods);
             var loadWithPartialNameMethods = typeof(Assembly).GetMember(nameof(Assembly.LoadWithPartialName), BF.Public | BF.Static);
             RegisterMembersWithStringParameters(loadWithPartialNameMethods);
+            InsecureAssemblyLoading.loadMethods.Add(typeof(Assembly).GetMethod(nameof(Assembly.UnsafeLoadFrom), BF.Public | BF.Static));
         }
         static void RegisterMembersWithStringParameters(MemberInfo[] methods, Predicate<ParameterInfo>? filter = null) {
             for(int i = 0; i < methods.Length; i++) {
@@ -38,7 +39,6 @@
                 }
             }
         }
-        //
         static readonly Func<IInstruction, bool>[] matches = new Func<IInstruction, bool>[] {
             new Func<IInstruction, bool>(i => Call.IsCall(i.OpCode) && IsGetTypeMethod(i.Operand)),
         };
@@ -62,7 +62,7 @@
         }
         //
         [Display(Order = (int)ProcessingSeverity.Informational, 
-            Description = "ILSA.Core.Assets.MD.HardCodedAssemblyLoading.md")]
+            Description = "ILSA.Core.Assets.MD.InsecureAssemblyLoading.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);
         }

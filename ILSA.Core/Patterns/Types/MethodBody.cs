@@ -19,7 +19,7 @@
             return ProcessingSeverity.Warning;
         }
         MatchMethodBody? matchMethodBody;
-        readonly static int[] NoCaptures = new int[0];
+        public readonly static int[] NoCaptures = new int[0];
         public bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             captures = NoCaptures;
             if(Severity == ProcessingSeverity.Ignore || Target == ProcessingTarget.None)

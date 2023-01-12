@@ -45,6 +45,11 @@
         public static AppSettings LoadAppSettings() {
             return MergeUserSettings(CurrentAppSettings, UserSettingsPath);
         }
+        public static AppSettings LoadAppSettings(string path) {
+            var userSettings = LoadUserAppSettings(path);
+            CurrentAppSettings.Merge(userSettings, path);
+            return userSettings;
+        }
         public static void SaveAppSettings(string path, string[] assemblies, Pattern[] patterns) {
             var settings = new AppSettings();
             settings.PathToUserSettings = path;

@@ -24,8 +24,7 @@
                 Form = this
             };
             this.IconOptions.SvgImage = Assets.Style.SvgImages["Class"];
-            this.HtmlImages = Assets.Style.SvgImages;
-            toolbar.HtmlImages = Assets.Style.SvgImages;
+            this.HtmlImages = toolbar.HtmlImages = Assets.Style.SvgImages;
             Styles.Toolbar.Apply(toolbar.HtmlTemplate);
         }
         void InitializeBindings() {
@@ -50,6 +49,7 @@
             fluent.BindCommandToElement(toolbar, "backtrace-button", x => x.ShowBackTrace);
             fluent.BindCommandToElement(this, "assemblies-workload-button", x => x.SaveAssembliesWorkload);
             fluent.BindCommandToElement(this, "patterns-workload-button", x => x.SavePatternsWorkload);
+            fluent.BindCommandToElement(this, "load-button", x => x.LoadAssembliesOrPatternsWorkload);
         }
         void InitializeNavigation() {
             var viewService = DocumentManagerService.Create(navigationFrame);

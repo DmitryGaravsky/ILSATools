@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Drawing;
+    using System.Windows.Forms;
     using DevExpress.Utils.Html;
     using DevExpress.XtraEditors;
 
@@ -10,6 +11,7 @@
     public class MarkdownViewer : HtmlContentControl {
         public MarkdownViewer() {
             HtmlImages = Assets.Style.SvgImages;
+            AllowContentSelection = DevExpress.Utils.DefaultBoolean.True;
         }
         string markdownCore;
         [DefaultValue(null)]
@@ -106,16 +108,24 @@
         }
         void ResetScroll() {
             var scrollInfo = ((IHtmlContentControl)this).ScrollInfo;
-            if(scrollInfo != null && scrollInfo.VScrollBar != null) {
+            if(scrollInfo != null && scrollInfo.VScrollBar != null) 
                 scrollInfo.VScrollBar.Value = 0;
-            }
         }
         public void PerformClick(DxHtmlElementMouseEventArgs args) {
             string id = args.ElementId ?? string.Empty;
             if(id.StartsWith("block-img:", StringComparison.OrdinalIgnoreCase)) {
-                int elementId;
-                if(int.TryParse(id.Substring("block-img:".Length), out elementId)) 
+                if(int.TryParse(id.Substring("block-img:".Length), out int elementId)) 
                     markdownParserResult.PerformElementClick(elementId);
+            }
+        }
+        protected override void OnKeyDown(KeyEventArgs e) {
+            base.OnKeyDown(e);
+            if(e.Control && (e.KeyCode == Keys.C || e.KeyCode == Keys.Insert)) {
+                try {
+                    if(!string.IsNullOrEmpty(SelectedText))
+                        Clipboard.SetText(SelectedText);
+                }
+                catch { }
             }
         }
         sealed class MarkdownStyle : Assets.Style {

@@ -11,8 +11,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <DefaultItemExcludes>$(DefaultItemExcludes);*.vspscc;*.scc</DefaultItemExcludes>
-    <OutputPath>..\bin</OutputPath>
-    <BaseOutputPath>..\bin</BaseOutputPath>
+    <OutputPath>..\..\Lib</OutputPath>
+    <BaseOutputPath>..\..\Lib</BaseOutputPath>
     <BaseIntermediateOutputPath>obj</BaseIntermediateOutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>

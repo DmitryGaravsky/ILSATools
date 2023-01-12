@@ -30,7 +30,10 @@
                                 continue;
                             builder.AppendLine(element.Content);
                         }
-                        System.Windows.Forms.Clipboard.SetText(builder.ToString());
+                        try {
+                            System.Windows.Forms.Clipboard.SetText(builder.ToString());
+                        }
+                        catch { }
                         break;
                 }
             }
@@ -41,6 +44,7 @@
             const int requiredTabs = 1;
             const int requiredSpaces = 2;
             const int requiredQuotes = 3;
+            //
             enum BlockPrefixParserState {
                 None,
                 Indent,

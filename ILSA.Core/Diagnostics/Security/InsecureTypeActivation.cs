@@ -11,9 +11,15 @@
     public static class InsecureTypeActivation {
         readonly internal static HashSet<MethodBase> activationAPI = new HashSet<MethodBase>();
         static InsecureTypeActivation() {
+            var invokeMemberMethods = typeof(Type).GetMember(nameof(Type.InvokeMember), BF.Public | BF.Instance);
+            for(int i = 0; i < invokeMemberMethods.Length; i++)
+                activationAPI.Add((MethodBase)invokeMemberMethods[i]);
             var activatorCreateInstanceMethods = typeof(Activator).GetMember(nameof(Activator.CreateInstance), BF.Public | BF.Instance | BF.Static);
             for(int i = 0; i < activatorCreateInstanceMethods.Length; i++)
                 activationAPI.Add((MethodBase)activatorCreateInstanceMethods[i]);
+            var activatorCreateInstanceFromMethods = typeof(Activator).GetMember(nameof(Activator.CreateInstanceFrom), BF.Public | BF.Instance | BF.Static);
+            for(int i = 0; i < activatorCreateInstanceFromMethods.Length; i++)
+                activationAPI.Add((MethodBase)activatorCreateInstanceFromMethods[i]);
             var assemblyCreateInstanceMethods = typeof(Assembly).GetMember(nameof(Assembly.CreateInstance), BF.Public | BF.Instance | BF.Static);
             for(int i = 0; i < assemblyCreateInstanceMethods.Length; i++)
                 activationAPI.Add((MethodBase)assemblyCreateInstanceMethods[i]);
