@@ -18,6 +18,10 @@
                     pattern = new MethodBodyPattern(method);
                 pattern = pattern ?? Pattern.Empty;
             }
+            public MethodNode(IPatternsFactory factory, MethodBodyPattern pattern)
+                : base(factory, pattern.match) {
+                this.pattern = pattern;
+            }
             public MethodBase GetSource() {
                 return source;
             }

@@ -12,22 +12,27 @@
         </div>
         <div class="content" id="content"></div>
         <div class="horz-separator"></div>
-        <progress-indicator id="progress" 
-                            Value="${AnalysisProgress}" 
+        <progress-indicator id="progress"
+                            Value="${AnalysisProgress}"
                             ProgressColor="#176BD1">
         </progress-indicator>
         <div class="footer" id="footer">
-            <div id="assemblies-workload-button" class="action">
+            <div id="assemblies-workload-button" class="action" title="Save loaded assemblies configuration">
                 <img src="Workload" class="action-glyph" />
                 <span class="action-caption">${AssembliesWorkload}</span>
             </div>
-            <div id="patterns-workload-button" class="action">
+            <div id="patterns-workload-button" class="action" title="Save patterns configuration">
                 <img src="Workload" class="action-glyph" />
                 <span class="action-caption">${PatternsWorkload}</span>
             </div>
-            <div id="load-button" class="action">
+            <div id="load-button" class="action" title="Load assemblies or patterns configuration">
                 <img src="Load" class="action-glyph" />
                 <span class="action-caption">Load Assemblies or Patterns</span>
+            </div>
+            <div style="flex-grow:1"></div>
+            <div class="about">
+                <img src="GitHub" class="about-glyph" />
+                <a href="https://github.com/DmitryGaravsky/ILSATools" class="action-caption">Copyright (c) Dmitry Garavsky</a>
             </div>
         </div>
     </div>

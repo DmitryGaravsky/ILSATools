@@ -117,13 +117,15 @@
                 captures = allCaptures.ToArray();
             return (captures != null) && captures.Length > 0;
         }
-        //
-        public static readonly MethodBodyPattern Callee = new MethodBodyPattern(new MatchMethodBody(CalleeImpl.Match).Method);
-        static class CalleeImpl {
+        public static readonly MethodBodyPattern Callee = new CalleeImpl();
+        sealed class CalleeImpl : MethodBodyPattern {
+            public CalleeImpl()
+                : base(new MatchMethodBody(MatchImpl).Method) {
+            }
             static readonly Func<IInstruction, bool>[] matches = new Func<IInstruction, bool>[] {
                     new Func<IInstruction, bool>(i => Diagnostics.Call.IsCallOrIsNewObj(i.OpCode)),
                 };
-            public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
+            static bool MatchImpl(IILReader instructions, StringBuilder errors, out int[] captures) {
                 return MethodBodyPattern.Match(matches, instructions, errors, out captures);
             }
             readonly static Type objectType = typeof(object);
@@ -140,10 +142,38 @@
         public static void EnsureCallers(MethodBase caller, MethodBase? callee, HashSet<Assembly> scope,
             ConcurrentDictionary<MethodBase, HashSet<MethodBase>> callers) {
             if(CalleeImpl.IsCallee(callee, scope)) {
-                callers.AddOrUpdate(callee!, 
-                        (c) => new HashSet<MethodBase>() { caller }, 
-                        (c, callers) => { callers.Add(caller); return callers; }
-                    );
+                callers.AddOrUpdate(callee!,
+                        (c) => new HashSet<MethodBase>() { caller },
+                        (c, callers) => { callers.Add(caller); return callers; });
+            }
+        }
+        public static readonly MethodBodyPattern Tracking = new TrackingPattern();
+        sealed class TrackingPattern : MethodBodyPattern {
+            public TrackingPattern()
+                : base(new MatchMethodBody(MatchImpl).Method) {
+            }
+            public override string Group {
+                get { return "Interactive Analysis"; }
+            }
+            public override string Description {
+                get { return PatternsFactory.TrackedMembersDescription; }
+            }
+            static readonly Func<IInstruction, bool>[] matches = new Func<IInstruction, bool>[] {
+                    new Func<IInstruction, bool>(i => Diagnostics.Call.IsCallOrIsNewObj(i.OpCode) && IsTracked(i.Operand)),
+                };
+            static bool IsTracked(object? operand) {
+                if(!(operand is MethodBase method))
+                    return false;
+                var tracked = PatternsFactory.TrackedMembers;
+                if(tracked.Contains(method))
+                    return true;
+                var type = method.DeclaringType;
+                if(tracked.Contains(type))
+                    return true;
+                return type.IsGenericType && tracked.Contains(type.GetGenericTypeDefinition());
+            }
+            static bool MatchImpl(IILReader instructions, StringBuilder errors, out int[] captures) {
+                return Match(matches, instructions, errors, out captures);
             }
         }
     }

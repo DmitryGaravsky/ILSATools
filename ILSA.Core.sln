@@ -15,6 +15,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILSA.Client", "ILSA.Client\
 		{DFD88BDB-B347-48D6-A72F-F5499EE74614} = {DFD88BDB-B347-48D6-A72F-F5499EE74614}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{10A2C6F7-F67E-4EA9-942C-2DE9B2E46EFD}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.TXT = LICENSE.TXT
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IMGS", "IMGS", "{CB86B69C-31E8-439E-A18C-2EC4FA6431A5}"
+	ProjectSection(SolutionItems) = preProject
+		IMGS\BackTrace.png = IMGS\BackTrace.png
+		IMGS\Classes.png = IMGS\Classes.png
+		IMGS\Patterns.png = IMGS\Patterns.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +49,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CB86B69C-31E8-439E-A18C-2EC4FA6431A5} = {10A2C6F7-F67E-4EA9-942C-2DE9B2E46EFD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {47A3A7E2-A502-41FF-A404-EB121224A285}

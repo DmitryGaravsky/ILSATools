@@ -118,3 +118,17 @@
 .action-caption {
 	margin: 0 8px 0 0;
 }
+
+.about {
+	align-self: center;
+	display: flex;
+	align-items: center;
+}
+
+.about-glyph {
+	width: 24px;
+	height: 24px;
+	min-width: 24px;
+	min-height: 24px;
+	margin: 0 8px 0 0;
+}

@@ -2,13 +2,16 @@
     using System;
     using System.Drawing;
     using System.Linq;
+    using System.Reflection;
     using System.Windows.Forms;
     using DevExpress.LookAndFeel;
     using DevExpress.Mvvm.Native;
     using DevExpress.Utils;
+    using DevExpress.Utils.Menu;
     using DevExpress.Utils.Svg;
     using DevExpress.XtraEditors;
     using DevExpress.XtraTreeList;
+    using DevExpress.XtraTreeList.Menu;
     using ILSA.Client.ViewModels;
     using ILSA.Core;
     using ILSA.Core.Classes;
@@ -41,7 +44,7 @@
                 .KeyToCommand(x => x.Remove);
         }
         internal void AttachToSearchControl(SearchControl searchControl) {
-            if(searchControl != null) 
+            if(searchControl != null)
                 searchControl.Client = classesTree;
         }
         void SynchronizeFocusedNode(TreeList treeList, Node node) {
@@ -56,7 +59,40 @@
             var node = classesTree.GetRow(e.Node.Id) as Node;
             if(node != null) e.NodeImageIndex = node.TypeCode;
         }
+        void OnNodeMenu(object sender, PopupMenuShowingEventArgs e) {
+            if(e.MenuType == TreeListMenuType.Node) {
+                var nodeMenu = e.Menu as TreeListNodeMenu;
+                if(nodeMenu != null) {
+                    var node = classesTree.GetDataRecordByNode(nodeMenu.Node) as Node;
+                    MemberInfo trackingMember;
+                    if(node != null && ClassesFactory.AllowTracking(node, out trackingMember)) {
+                        e.Menu.Items.Clear();
+                        var svg = CoreSvgImages.SvgImages;
+                        bool isTracked = PatternsFactory.IsTracked(trackingMember);
+                        e.Menu.Items.Add(new DXMenuItem(
+                            isTracked ? "Stop tracking" : "Start tracking",
+                            isTracked ? OnStopTracking : OnStartTracking,
+                            svg[isTracked ? nameof(ClassesFactory.NodeType.Stop) : nameof(ClassesFactory.NodeType.Start)],
+                            DXMenuItemPriority.Normal) {
+                            Tag = trackingMember
+                        });
+                    }
+                }
+            }
+        }
+        static void OnStartTracking(object sender, EventArgs args) {
+            var member = (sender as DXMenuItem).Tag as MemberInfo;
+            PatternsFactory.StartTracking(member);
+        }
+        static void OnStopTracking(object sender, EventArgs args) {
+            var member = (sender as DXMenuItem).Tag as MemberInfo;
+            PatternsFactory.StopTracking(member);
+        }
         void OnCodeBoxCustomHighlightText(object sender, TextEditCustomHighlightTextEventArgs e) {
+            if(e.Text.StartsWith("instance", StringComparison.Ordinal))
+                e.HighlightRange(0, 8, Color.DarkGreen);
+            if(e.Text.StartsWith("static", StringComparison.Ordinal))
+                e.HighlightRange(0, 6, Color.DarkGreen);
             if(e.Text.StartsWith(".", StringComparison.Ordinal))
                 e.HighlightRange(0, e.Text.IndexOf(' '), Color.Green);
             if(e.Text.StartsWith("#", StringComparison.Ordinal))
@@ -113,7 +149,6 @@
             readonly static SvgBitmap Warning = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Warning)]);
             readonly static SvgBitmap Information = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Information)]);
             readonly static SvgBitmap Callee = SvgBitmap.Create(CoreSvgImages.SvgImages[nameof(Callee)]);
-            //
             public sealed override bool DrawBackground(TextEdit.Block block) {
                 if(!(block.Tag is ProcessingSeverity))
                     return true;

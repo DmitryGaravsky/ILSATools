@@ -3,7 +3,11 @@
 
     partial class ClassesFactory {
         public enum NodeType {
-            None,
+            // Serviced
+            None, 
+            Start, 
+            Stop,
+            //
             Assembly,
             References,
             Reference,
