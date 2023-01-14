@@ -58,11 +58,16 @@
             }
             public sealed override int TypeCode {
                 get {
-                    if(source.IsValueType)
-                        return source.IsEnum ? (int)NodeType.Enumeration : (int)NodeType.ValueType;
+                    if(source.IsValueType) {
+                        if(source.IsEnum)
+                            return source.IsPublic ? (int)NodeType.Enumeration : (int)NodeType.EnumerationPrivate;
+                        else
+                            return source.IsPublic ? (int)NodeType.ValueType : (int)NodeType.ValueTypePrivate;
+                    }
                     if(source.IsInterface)
-                        return (int)NodeType.Interface;
-                    return (int)NodeType.Type;
+                        return source.IsPublic ? (int)NodeType.Interface : (int)NodeType.InterfacePrivate;
+                    else
+                        return source.IsPublic ? (int)NodeType.Type : (int)NodeType.TypePrivate;
                 }
             }
         }

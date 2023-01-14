@@ -1,6 +1,7 @@
 ﻿namespace ILSA.Client {
     using System;
     using System.Drawing;
+    using System.Windows.Forms;
     using DevExpress.LookAndFeel;
     using DevExpress.Utils.Html;
     using DevExpress.Utils.MVVM.Services;
@@ -24,7 +25,8 @@
                 Form = this
             };
             this.IconOptions.SvgImage = Assets.Style.SvgImages["Class"];
-            this.HtmlImages = toolbar.HtmlImages = Assets.Style.SvgImages;
+            this.HtmlImages = Assets.Style.SvgImages;
+            toolbar.HtmlImages = Assets.Style.SvgImages;
             Styles.Toolbar.Apply(toolbar.HtmlTemplate);
         }
         void InitializeBindings() {
@@ -137,6 +139,9 @@
         protected override void OnLookAndFeelChangedCore() {
             base.OnLookAndFeelChangedCore();
             UpdateSearchBoxBackground();
+        }
+        protected override Padding MaximizedContentMargin {
+            get { return new Padding(0, 0, 0, 80); }
         }
         protected override HtmlTemplate CreateHtmlTemplate() {
             return new HtmlTemplate(Styles.App.Html, Styles.App.Css);

@@ -28,11 +28,16 @@
                 get {
                     if(isGroup)
                         return (int)NodeType.BaseTypes;
-                    if(source.IsValueType)
-                        return source.IsEnum ? (int)NodeType.Enumeration : (int)NodeType.ValueType;
+                    if(source.IsValueType) {
+                        if(source.IsEnum)
+                            return source.IsPublic ? (int)NodeType.Enumeration : (int)NodeType.EnumerationPrivate;
+                        else
+                            return source.IsPublic ? (int)NodeType.ValueType : (int)NodeType.ValueTypePrivate;
+                    }
                     if(source.IsInterface)
-                        return (int)NodeType.Interface;
-                    return (int)NodeType.Class;
+                        return source.IsPublic ? (int)NodeType.Interface : (int)NodeType.InterfacePrivate;
+                    else
+                        return source.IsPublic ? (int)NodeType.Class : (int)NodeType.ClassPrivate;
                 }
             }
         }
