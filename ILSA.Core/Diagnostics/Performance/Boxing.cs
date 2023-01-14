@@ -8,6 +8,7 @@
     static class Boxing {
         readonly static short box_Value = OpCodes.Box.Value;
         readonly static short unbox_Value = OpCodes.Unbox.Value;
+        //
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBoxing(OpCode opCode) {
             short opCodeValue = opCode.Value;
@@ -17,7 +18,6 @@
         public static bool IsValueType(object? operand) {
             return (operand is Type type) && type.IsValueType;
         }
-        //
         public static bool HasBoxingOfKeyParameter(MethodInfo method) {
             var parameters = method.GetParameters();
             if(parameters.Length == 0)
@@ -27,19 +27,19 @@
                 return false;
             if(!HasBasicHashCodeImpl(keyType))
                 return false;
-            return parameters.Any(x => x.ParameterType == keyType);
-        }
-        public static bool IsMethodOfGenericType(MethodInfo method, Type genericType) {
-            var declaringType = method.DeclaringType;
-            return
-                declaringType.IsGenericType &&
-                declaringType.GetGenericTypeDefinition() != genericType;
+            return parameters.Any(x => IsSameType(x.ParameterType, keyType));
         }
         //
         readonly static Type ValueTypeType = typeof(ValueType);
         static bool HasBasicHashCodeImpl(Type type) {
             var hashCodeMethod = type.GetMethod("GetHashCode", Type.EmptyTypes);
-            return hashCodeMethod.DeclaringType == ValueTypeType;
+            return IsSameType(hashCodeMethod.DeclaringType, ValueTypeType);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool IsSameType(Type source, Type target) {
+            if(target == source)
+                return true;
+            return target.AssemblyQualifiedName == source.AssemblyQualifiedName;
         }
     }
 }

@@ -8,7 +8,6 @@
     static class Call {
         readonly static short call_Value = OpCodes.Call.Value;
         readonly static short callvirt_Value = OpCodes.Callvirt.Value;
-        //
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsCall(OpCode opCode) {
             short opCodeValue = opCode.Value;
@@ -26,7 +25,43 @@
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSameMethod(MethodBase source, MethodBase target) {
-            return source == target;
+            if(target == source)
+                return true;
+            return IsSameType(target.DeclaringType, source.DeclaringType) && target.ToString() == source.ToString();
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsMethodOfGenericType(MethodBase method, Type genericType) {
+            var declaringType = method.DeclaringType;
+            return declaringType.IsGenericType && IsSameType(declaringType.GetGenericTypeDefinition(), genericType);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsSameType(Type source, Type target) {
+            if(target == source)
+                return true;
+            return target.AssemblyQualifiedName == source.AssemblyQualifiedName;
+        }
+        //
+        public readonly static IEqualityComparer<MethodBase> MethodsComparer = new MethodBaseComparer();
+        public readonly static IEqualityComparer<Type> TypesComparer = new TypeComparer();
+        sealed class MethodBaseComparer : IEqualityComparer<MethodBase> {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            bool IEqualityComparer<MethodBase>.Equals(MethodBase x, MethodBase y) {
+                return IsSameMethod(x, y);
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            int IEqualityComparer<MethodBase>.GetHashCode(MethodBase obj) {
+                return obj.ToString().GetHashCode();
+            }
+        }
+        sealed class TypeComparer : IEqualityComparer<Type> {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            bool IEqualityComparer<Type>.Equals(Type x, Type y) {
+                return IsSameType(x, y);
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            int IEqualityComparer<Type>.GetHashCode(Type obj) {
+                return obj.ToString().GetHashCode();
+            }
         }
     }
     sealed class TypeNamesComparer : IComparer<Type> {

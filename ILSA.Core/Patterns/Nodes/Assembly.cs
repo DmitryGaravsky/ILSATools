@@ -35,9 +35,14 @@
                 var namespaces = matchMethods
                     .GroupBy(x => x.Group)
                     .Select(g => Tuple.Create(g.Key, source, (IEnumerable<Node>)g))
-                    .Select(factory.Namespace).ToArray();
-                var nodes = new Node[namespaces.Length];
-                for(int i = 0; i < namespaces.Length; i++)
+                    .Select(factory.Namespace).ToList();
+                if(source == typeof(Node).Assembly) {
+                    var pTracking = MethodBodyPattern.Tracking;
+                    var tMethods = new Node[] { new MethodNode(factory, pTracking) } as IEnumerable<Node>;
+                    namespaces.Add(factory.Namespace(Tuple.Create(pTracking.Group, source, tMethods)));
+                }
+                var nodes = new Node[namespaces.Count];
+                for(int i = 0; i < namespaces.Count; i++)
                     nodes[i] = namespaces[i];
                 return nodes;
             }

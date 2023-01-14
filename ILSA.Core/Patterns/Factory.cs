@@ -51,5 +51,40 @@
             }
             return patterns.ToArray();
         }
+        internal static readonly HashSet<MemberInfo> TrackedMembers = new HashSet<MemberInfo>();
+        public static bool IsTracked(MemberInfo member) {
+            return TrackedMembers.Contains(member);
+        }
+        public static void StartTracking(MemberInfo member) {
+            TrackedMembers.Add(member);
+            trackedMemberDescriptionCore = null;
+        }
+        public static void StopTracking(MemberInfo member) {
+            TrackedMembers.Remove(member);
+            trackedMemberDescriptionCore = null;
+        }
+        static string? trackedMemberDescriptionCore;
+        internal static string TrackedMembersDescription {
+            get { return trackedMemberDescriptionCore ?? (trackedMemberDescriptionCore = BuildTrackedMembersDescription()); }
+        }
+        static string BuildTrackedMembersDescription() {
+            var builder = new StringBuilder();
+            var tracked = PatternsFactory.TrackedMembers;
+            builder.AppendLine("# Dynamically tracked members").AppendLine();
+            builder.AppendLine("You can perform interactive analysis via dynamically created subsets of dangerous members.");
+            builder.AppendLine();
+            if(tracked.Count > 0) {
+                builder.AppendLine("### Tracked API").AppendLine();
+                builder.AppendLine("```");
+                foreach(var member in tracked) {
+                    if(member is Type t)
+                        builder.AppendLine(t.FullName);
+                    if(member is MethodBase m)
+                        builder.Append(m.DeclaringType.FullName).Append('.').AppendLine(m.Name);
+                }
+                builder.AppendLine("```");
+            }
+            return builder.ToString();
+        }
     }
 }

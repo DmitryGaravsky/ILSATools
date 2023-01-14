@@ -117,7 +117,7 @@
         }
         void SetPatternsWorkloadCore(PatternsFactory.Workload workload) {
             this.patternsWorkload = workload;
-            if(patternsWorkload != null) 
+            if(patternsWorkload != null && AppSettings.CurrentAppSettings.PatternInfos != null)
                 SetSeverity(AppSettings.CurrentAppSettings.PatternInfos);
         }
         void SetSeverity(AppSettings.PatternInfo[] patternInfos) {
@@ -251,7 +251,7 @@
             openFile.CheckFileExists = true;
             openFile.CheckPathExists = true;
             openFile.Filter = filter;
-            if(openFile.ShowDialog()) 
+            if(openFile.ShowDialog())
                 LoadAndApplySettings(openFile.GetFullFileName());
         }
         public bool CanNavigate() {

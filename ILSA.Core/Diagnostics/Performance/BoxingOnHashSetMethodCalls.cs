@@ -16,8 +16,8 @@
         readonly static Type sortedSetType = typeof(SortedSet<>);
         static bool IsHashSetMethodWithBoxingOfKey(object? operand) {
             if(operand is MethodInfo method) {
-                if(Boxing.IsMethodOfGenericType(method, hashSetType) ||
-                    Boxing.IsMethodOfGenericType(method, sortedSetType)) {
+                if(Call.IsMethodOfGenericType(method, hashSetType) ||
+                    Call.IsMethodOfGenericType(method, sortedSetType)) {
                     return Boxing.HasBoxingOfKeyParameter(method);
                 }
             }

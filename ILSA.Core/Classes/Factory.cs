@@ -139,7 +139,17 @@
         }
         public static Node CreateBackTrace(WorkloadBase.Branch branch) {
             var root = branch.GetRoot();
-            return (root is AssemblyNode a) ? a.BackTrace(branch) : root;
+            if(root is AssemblyNode a)
+                return a.BackTrace(branch);
+            return root;
+        }
+        public static bool AllowTracking(Node node, out MemberInfo? trackingMember) {
+            trackingMember = null;
+            if(node is Node<Type> t)
+                trackingMember = t.GetSource();
+            if(node is Node<MethodBase> m)
+                trackingMember = m.GetSource();
+            return trackingMember != null;
         }
         //
         static Type[] GetTypes(Assembly assembly) {

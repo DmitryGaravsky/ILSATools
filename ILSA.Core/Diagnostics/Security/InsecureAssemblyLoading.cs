@@ -11,17 +11,27 @@
     using BF = System.Reflection.BindingFlags;
 
     public static class InsecureAssemblyLoading {
-        readonly internal static HashSet<MethodBase> loadMethods = new HashSet<MethodBase>();
+        readonly internal static HashSet<MethodBase> loadMethods = new HashSet<MethodBase>(Call.MethodsComparer);
         static InsecureAssemblyLoading() {
             var loadMethods = typeof(Assembly).GetMember(nameof(Assembly.Load), BF.Public | BF.Static);
-            RegisterMembersWithStringParameters(loadMethods, x => x.Name.Contains("assembly"));
+            RegisterMembersWithParameters(loadMethods);
             var loadFromMethods = typeof(Assembly).GetMember(nameof(Assembly.LoadFrom), BF.Public | BF.Static);
             RegisterMembersWithStringParameters(loadFromMethods, x => x.Name.Contains("assembly"));
             var loadFileMethods = typeof(Assembly).GetMember(nameof(Assembly.LoadFile), BF.Public | BF.Static);
-            RegisterMembersWithStringParameters(loadFromMethods);
+            RegisterMembersWithStringParameters(loadFileMethods);
             var loadWithPartialNameMethods = typeof(Assembly).GetMember(nameof(Assembly.LoadWithPartialName), BF.Public | BF.Static);
             RegisterMembersWithStringParameters(loadWithPartialNameMethods);
             InsecureAssemblyLoading.loadMethods.Add(typeof(Assembly).GetMethod(nameof(Assembly.UnsafeLoadFrom), BF.Public | BF.Static));
+        }
+        static void RegisterMembersWithParameters(MemberInfo[] methods) {
+            for(int i = 0; i < methods.Length; i++) {
+                var method = methods[i] as MethodBase;
+                if(method != null) {
+                    var mParam = method.GetParameters();
+                    if(mParam.Length > 0)
+                        loadMethods.Add(method);
+                }
+            }
         }
         static void RegisterMembersWithStringParameters(MemberInfo[] methods, Predicate<ParameterInfo>? filter = null) {
             for(int i = 0; i < methods.Length; i++) {

@@ -17,10 +17,10 @@
         readonly static Type sortedListType = typeof(System.Collections.Generic.SortedList<,>);
         static bool IsDictionaryMethodWithBoxingOfKey(object? operand) {
             if(operand is MethodInfo method) {
-                if(Boxing.IsMethodOfGenericType(method, dictionaryType) ||
-                    Boxing.IsMethodOfGenericType(method, cDictionaryType) ||
-                     Boxing.IsMethodOfGenericType(method, sortedDictionaryType) ||
-                      Boxing.IsMethodOfGenericType(method, sortedListType)) {
+                if(Call.IsMethodOfGenericType(method, dictionaryType) ||
+                    Call.IsMethodOfGenericType(method, cDictionaryType) ||
+                     Call.IsMethodOfGenericType(method, sortedDictionaryType) ||
+                      Call.IsMethodOfGenericType(method, sortedListType)) {
                     return Boxing.HasBoxingOfKeyParameter(method);
                 }
             }

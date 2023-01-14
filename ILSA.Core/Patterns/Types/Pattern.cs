@@ -19,7 +19,7 @@
         Callee
     }
     public abstract class Pattern {
-        protected readonly MethodInfo match;
+        protected internal readonly MethodInfo match;
         ProcessingSeverity? severityCore, defaultSeverityCore;
         protected Pattern(MethodInfo match) {
             this.match = match;
@@ -56,11 +56,11 @@
             get;
             private set;
         }
-        public string Group {
+        public virtual string Group {
             get;
             private set;
         }
-        public string Description {
+        public virtual string Description {
             get;
             private set;
         }

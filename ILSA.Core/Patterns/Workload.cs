@@ -87,6 +87,11 @@
                     if(hasMatches |= pattern.Match(reader, errors, out int[] captures))
                         node.OnPatternMatch(pattern, captures);
                 }
+                if(TrackedMembers.Count > 0) {
+                    var pattern = MethodBodyPattern.Tracking;
+                    if(hasMatches |= pattern.Match(reader, errors, out int[] captures))
+                        node.OnPatternMatch(pattern, captures);
+                }
                 CalleeBuilder.Clear();
                 if(MethodBodyPattern.Callee.Match(reader, CalleeBuilder, out int[] calleeCaptures)) {
                     for(int i = 0; i < calleeCaptures.Length; i++) {

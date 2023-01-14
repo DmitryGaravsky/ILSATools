@@ -9,7 +9,7 @@
     using BF = System.Reflection.BindingFlags;
 
     public static class InsecureTypeActivation {
-        readonly internal static HashSet<MethodBase> activationAPI = new HashSet<MethodBase>();
+        readonly internal static HashSet<MethodBase> activationAPI = new HashSet<MethodBase>(Call.MethodsComparer);
         static InsecureTypeActivation() {
             var invokeMemberMethods = typeof(Type).GetMember(nameof(Type.InvokeMember), BF.Public | BF.Instance);
             for(int i = 0; i < invokeMemberMethods.Length; i++)

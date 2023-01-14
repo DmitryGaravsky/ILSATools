@@ -10,8 +10,8 @@
     using BF = System.Reflection.BindingFlags;
 
     public static class NET6Compatibility {
-        readonly internal static HashSet<MethodBase> incompatibleAPI = new HashSet<MethodBase>();
-        readonly internal static HashSet<Type> incompatibleTypes = new HashSet<Type>() {
+        readonly internal static HashSet<MethodBase> incompatibleAPI = new HashSet<MethodBase>(Call.MethodsComparer);
+        readonly internal static HashSet<Type> incompatibleTypes = new HashSet<Type>(Call.TypesComparer) {
                 typeof(System.Net.WebClient),
                 typeof(System.Net.WebRequest),
                 typeof(System.Net.ServicePoint),

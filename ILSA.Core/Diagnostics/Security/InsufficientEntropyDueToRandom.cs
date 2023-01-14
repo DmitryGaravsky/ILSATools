@@ -13,7 +13,7 @@
             new Func<IInstruction, bool>(i => Call.IsCall(i.OpCode) && IsRandomMethod(i.Operand)),
         };
         static bool IsRandomMethod(object? operand) {
-            return operand is MethodBase method && method.DeclaringType == systemRandom;
+            return operand is MethodBase method && Call.IsSameType(method.DeclaringType, systemRandom);
         }
         //
         [Display(Order = (int)ProcessingSeverity.Informational,

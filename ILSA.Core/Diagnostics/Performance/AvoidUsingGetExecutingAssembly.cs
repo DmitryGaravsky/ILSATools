@@ -16,7 +16,7 @@
             return (operand is MethodBase method) && Call.IsSameMethod(method, m_GetExecutingAssembly);
         }
         //
-        [Display(Order = (int)ProcessingSeverity.Informational, 
+        [Display(Order = (int)ProcessingSeverity.Informational,
             Description = "ILSA.Core.Assets.MD.AvoidUsingGetExecutingAssembly.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);

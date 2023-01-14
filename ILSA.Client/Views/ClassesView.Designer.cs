@@ -65,6 +65,7 @@
             this.classesTree.TreeViewColumn = this.colName;
             this.classesTree.ViewStyle = DevExpress.XtraTreeList.TreeListViewStyle.TreeView;
             this.classesTree.GetStateImage += new DevExpress.XtraTreeList.GetStateImageEventHandler(this.GetStateImage);
+            this.classesTree.PopupMenuShowing += new DevExpress.XtraTreeList.PopupMenuShowingEventHandler(this.OnNodeMenu);
             // 
             // colName
             // 
