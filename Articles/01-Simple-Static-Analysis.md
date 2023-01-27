@@ -101,8 +101,9 @@ With the use of the annotation attribute `Display`, you can decorate your diagno
 for further displaying in visual client.
 
 ```cs
-[Display(Order = (int)ProcessingSeverity.Informational, Name = @"Avoid using HashSet.Add\HashSet.Remove after HashSet.Contains call",
-    Description = "ILSA.Core.Assets.MD.AvoidUsingHashSetAddRemoveAfterContainsCheck.md")]
+[Display(Order = (int)ProcessingSeverity.Informational, 
+  Name = @"Avoid using HashSet.Add\HashSet.Remove after HashSet.Contains call",
+  Description = "ILSA.Core.Assets.MD.AvoidUsingHashSetAddRemoveAfterContainsCheck.md")]
 public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) { ... }
 ```
 

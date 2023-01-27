@@ -1,19 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>ILSA.Core</AssemblyName>
     <TargetFramework>net472</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>Latest</LangVersion>
-    <Platforms>AnyCPU;x86</Platforms>
     <RootNamespace>ILSA.Core</RootNamespace>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <AssemblyName>ILSA.Core</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <EmbeddedResourceUseDependentUponConvention>False</EmbeddedResourceUseDependentUponConvention>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Simple static analysis(SA) library for .Net</Title>
+    <Version>1.0.0.1</Version>
+    <Authors>Dmitry Garavsky</Authors>
+    <Description>Library for creating simple static analysis(SA) diagnostics and analyzing .Net assemblies at the IL-code level.</Description>
+    <Copyright>Dmitry Garavsky, ©2023</Copyright>
+    <PackageProjectUrl>https://github.com/DmitryGaravsky/ILSATools</PackageProjectUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/DmitryGaravsky/ILSATools</RepositoryUrl>
+    <PackageTags>StaticAnalysis;IL;MSIL;.NET</PackageTags>
+    <PackageOutputPath>..\bin</PackageOutputPath>
+    <PackageLicenseFile>LICENSE.TXT</PackageLicenseFile>
     <DefaultItemExcludes>$(DefaultItemExcludes);*.vspscc;*.scc</DefaultItemExcludes>
     <OutputPath>..\..\Lib</OutputPath>
     <BaseOutputPath>..\..\Lib</BaseOutputPath>
     <BaseIntermediateOutputPath>obj</BaseIntermediateOutputPath>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
@@ -21,9 +32,21 @@
     <EmbeddedResource Include="Assets\Svg\*.svg" />
     <EmbeddedResource Include="Assets\MD\*.md" />
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="ILReader.Core" Version="1.0.0.*" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\LICENSE.TXT">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

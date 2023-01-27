@@ -5,7 +5,7 @@
     using System.Reflection.Emit;
     using System.Runtime.CompilerServices;
 
-    static class Boxing {
+    public static class Boxing {
         readonly static short box_Value = OpCodes.Box.Value;
         readonly static short unbox_Value = OpCodes.Unbox.Value;
         //
@@ -27,19 +27,14 @@
                 return false;
             if(!HasBasicHashCodeImpl(keyType))
                 return false;
-            return parameters.Any(x => IsSameType(x.ParameterType, keyType));
+            return parameters.Any(x => Call.IsSameType(x.ParameterType, keyType));
         }
         //
         readonly static Type ValueTypeType = typeof(ValueType);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool HasBasicHashCodeImpl(Type type) {
             var hashCodeMethod = type.GetMethod("GetHashCode", Type.EmptyTypes);
-            return IsSameType(hashCodeMethod.DeclaringType, ValueTypeType);
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static bool IsSameType(Type source, Type target) {
-            if(target == source)
-                return true;
-            return target.AssemblyQualifiedName == source.AssemblyQualifiedName;
+            return Call.IsSameType(hashCodeMethod.DeclaringType, ValueTypeType);
         }
     }
 }

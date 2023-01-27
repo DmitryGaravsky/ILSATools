@@ -5,7 +5,7 @@
     using System.Reflection.Emit;
     using System.Runtime.CompilerServices;
 
-    static class Call {
+    public static class Call {
         readonly static short call_Value = OpCodes.Call.Value;
         readonly static short callvirt_Value = OpCodes.Callvirt.Value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

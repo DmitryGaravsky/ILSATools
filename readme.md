@@ -14,15 +14,18 @@ Powered by [ILReader](https://github.com/DmitryGaravsky/ILReader) and exiting [H
 - method-by-method navigation and backtrace analysis
 - interactive analysis via dynamically created subsets of dangerous members
 
-Read the [Why simple Static Analysys tools are important and how easy to use they are](/Articles/01-Simple-Static-Analysis.md) article to learn how it works and how to use this tool effectively.
+Read the [Why simple Static Analysys tools are important and how easy to use they are](/Articles/01-Simple-Static-Analysis.md) article to learn
+how it works and how to use this tool effectively.
 
 ## Options for ILSA.Tools users
 
+<a href="https://www.nuget.org/packages/ILSA.Core/"><img alt="Nuget Version" src="https://img.shields.io/nuget/v/ILSA.Core.svg" data-canonical-src="https://img.shields.io/nuget/v/ILSA.Core.svg" style="max-width:100%;" /></a>
+
 Available for free:
 
-- Downloading a nuget package of `ILSA.Core` library for your own needs (TODO),
-- Downloading a Visual Client and analysing your libraries with predefined set of diagnostics,
-- Creating your own diagnostics with `ILSA.Core` library (TODO).
+- [Downloading a nuget package](https://www.nuget.org/packages/ILSA.Core/) of `ILSA.Core` library for your own needs,
+- [Downloading a Visual Client](https://github.com/DmitryGaravsky/ILSATools/releases/tag/EAP) and analysing your libraries with predefined set of diagnostics,
+- [Creating your own diagnostics](https://github.com/DmitryGaravsky/ILSATools/tree/main/ILSA.Core) with `ILSA.Core` library.
 
 Available for professional users:
 
