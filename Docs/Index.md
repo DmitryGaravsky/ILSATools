@@ -1,23 +1,27 @@
 ## Security
 
-- [Insecure Assembly Loading](InsecureAssemblyLoading.md) 
-- [Hard Coded Assembly Loading](HardCodedAssemblyLoading.md) 
-- [Insecure Type Activation](InsecureTypeActivation.md) 
-- [Insecure Type Resolution](InsecureTypeResolution.md) 
-- [Hard Coded Type Resolution](HardCodedTypeResolution.md) 
-- [Insufficient Entropy Due To Random](InsufficientEntropyDueToRandom.md) 
+- [Insecure assembly loading](InsecureAssemblyLoading.md) 
+- [Hardcoded assembly loading](HardCodedAssemblyLoading.md) 
+- [Insecure type activation](InsecureTypeActivation.md) 
+- [Insecure type resolution](InsecureTypeResolution.md) 
+- [Hardcoded type resolution](HardCodedTypeResolution.md) 
+- [Insufficient Entropy due to Random](InsufficientEntropyDueToRandom.md) 
+- [Possible PathTraversal point](PossiblePathTraversalPoint.md)
 
 ## Performance
 
-- [Avoid Using Get Executing Assembly](AvoidUsingGetExecutingAssembly.md) 
+- [Avoid cultural-dependent string comparison](AvoidCulturalDependentStringComparison.md)
+- [Avoid using GetExecutingAssembly](AvoidUsingGetExecutingAssembly.md) 
 - [Avoid using HashSet.Add\HashSet.Remove after HashSet.Contains call](AvoidUsingHashSetAddRemoveAfterContainsCheck.md) 
-- [Boxing On Dictionary Method Calls](BoxingOnDictionaryMethodCalls.md) 
-- [Boxing On Enum Method Calls](BoxingOnEnumMethodCalls.md) 
-- [Boxing On Hash Set Method Calls](BoxingOnHashSetMethodCalls.md) 
-- [Boxing On String Method Calls](BoxingOnStringMethodCalls.md) 
-- [Weak Hash Code Implementation](WeakHashCodeImplementation.md) 
+- [Boxing on Dictionary method calls](BoxingOnDictionaryMethodCalls.md) 
+- [Boxing on Enum method calls](BoxingOnEnumMethodCalls.md) 
+- [Boxing on HashSet method calls](BoxingOnHashSetMethodCalls.md) 
+- [Boxing on String method calls](BoxingOnStringMethodCalls.md) 
+- [Boxing on non-generic collection method calls](BoxingOnNonGenericCollectionMethodCalls.md) 
+- [Weak GetHashCode implementation](WeakHashCodeImplementation.md) 
 
 ## Compatibility
 
 - [.NET 6 Compatibility](NET6Compatibility.md) 
 - [.NET 7 Compatibility](NET7Compatibility.md) 
+- [.NET 8 Compatibility](NET8Compatibility.md)

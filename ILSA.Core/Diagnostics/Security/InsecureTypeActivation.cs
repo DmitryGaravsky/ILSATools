@@ -32,6 +32,7 @@
         }
         //
         [Display(Order = (int)ProcessingSeverity.Error,
+            Name = "Insecure type activation",
             Description = "ILSA.Core.Assets.MD.InsecureTypeActivation.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);

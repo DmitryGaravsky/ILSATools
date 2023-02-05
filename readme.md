@@ -9,7 +9,7 @@ Powered by [ILReader](https://github.com/DmitryGaravsky/ILReader) and exiting [H
 ## The main features
 
 - navigation between classes and methods within loaded assemblies with no source code needed
-- predefined subset of patterns for analyzing security\performance or compatibility threats
+- [predefined subset of patterns for analyzing security\performance or compatibility threats](/Docs/Index.md)
 - threats highlighting and reporting with different level of details
 - method-by-method navigation and backtrace analysis
 - interactive analysis via dynamically created subsets of dangerous members

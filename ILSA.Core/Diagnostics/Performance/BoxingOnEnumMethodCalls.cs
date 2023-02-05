@@ -16,6 +16,7 @@
         }
         //
         [Display(Order = (int)ProcessingSeverity.Warning, 
+            Name = "Boxing on Enum method calls",
             Description = "ILSA.Core.Assets.MD.BoxingOnEnumMethodCalls.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);

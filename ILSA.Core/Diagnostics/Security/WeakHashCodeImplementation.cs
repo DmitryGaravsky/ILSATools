@@ -13,6 +13,7 @@
         };
         //
         [Display(Order = (int)ProcessingSeverity.Informational,
+            Name = "Weak GetHashCode implementation",
             Description = "ILSA.Core.Assets.MD.WeakHashCodeImplementation.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             if(instructions.Name != nameof(GetHashCode)) {

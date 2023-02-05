@@ -23,7 +23,7 @@
                     var pattern = m.GetPattern();
                     toc.Append("- ")
                       .Append('[').Append(pattern.Name).Append(']')
-                      .Append('(').Append(m.NodeID).AppendLine(") ");
+                      .Append('(').Append(m.GetReadMeLinkUrl()).AppendLine(") ");
                 }
                 toc.AppendLine();
             }

@@ -21,7 +21,8 @@
             return operand is MethodBase method && Call.IsMethodOfGenericType(method, hashsetType) && (method.Name == "Add" || method.Name == "Remove");
         }
         //
-        [Display(Order = (int)ProcessingSeverity.Informational, Name = @"Avoid using HashSet.Add\HashSet.Remove after HashSet.Contains call",
+        [Display(Order = (int)ProcessingSeverity.Informational, 
+            Name = @"Avoid using HashSet.Add\HashSet.Remove after HashSet.Contains call",
             Description = "ILSA.Core.Assets.MD.AvoidUsingHashSetAddRemoveAfterContainsCheck.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);

@@ -18,6 +18,7 @@
         }
         //
         [Display(Order = (int)ProcessingSeverity.Informational, 
+            Name = "Boxing on String method calls",
             Description = "ILSA.Core.Assets.MD.BoxingOnStringMethodCalls.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);

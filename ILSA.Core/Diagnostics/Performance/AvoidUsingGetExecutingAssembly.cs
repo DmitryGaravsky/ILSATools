@@ -17,6 +17,7 @@
         }
         //
         [Display(Order = (int)ProcessingSeverity.Informational,
+            Name = "Avoid using GetExecutingAssembly",
             Description = "ILSA.Core.Assets.MD.AvoidUsingGetExecutingAssembly.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);

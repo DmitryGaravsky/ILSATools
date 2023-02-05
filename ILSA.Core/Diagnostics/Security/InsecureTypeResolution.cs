@@ -57,6 +57,7 @@
         }
         //
         [Display(Order = (int)ProcessingSeverity.Error,
+            Name = "Insecure type resolution",
             Description = "ILSA.Core.Assets.MD.InsecureTypeResolution.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);
@@ -72,6 +73,7 @@
         }
         //
         [Display(Order = (int)ProcessingSeverity.Informational, 
+            Name = "Hard-coded type resolution",
             Description = "ILSA.Core.Assets.MD.HardCodedTypeResolution.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);

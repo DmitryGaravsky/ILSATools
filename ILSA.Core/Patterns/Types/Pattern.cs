@@ -21,6 +21,7 @@
     public abstract class Pattern {
         protected internal readonly MethodInfo match;
         ProcessingSeverity? severityCore, defaultSeverityCore;
+        protected readonly string descriptionResource;
         protected Pattern(MethodInfo match) {
             this.match = match;
             var sourceType = match.DeclaringType;
@@ -30,9 +31,13 @@
             int? order = display?.GetOrder();
             if(order.HasValue)
                 this.defaultSeverityCore = (ProcessingSeverity)order.GetValueOrDefault();
-            var descriptionResource = display?.GetDescription() ?? 
+            descriptionResource = display?.GetDescription() ?? 
                 GetDescriptionResource(sourceType.FullName);
             Description = ReadText(descriptionResource, sourceType.Assembly);
+        }
+        internal string GetReadMeFileName() {
+            var sourceType = match.DeclaringType;
+            return Path.GetFileName(descriptionResource) ?? sourceType.Name + ".md";
         }
         static string GetName(string name) {
             var camelCaseSplit = new StringBuilder(name.Length);

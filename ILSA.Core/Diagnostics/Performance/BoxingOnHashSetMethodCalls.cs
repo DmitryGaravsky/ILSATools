@@ -3,14 +3,13 @@
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Reflection;
-    using System.Reflection.Emit;
     using System.Text;
     using ILReader.Readers;
     using ILSA.Core.Patterns;
 
     public static class BoxingOnHashSetMethodCalls {
         static readonly Func<IInstruction, bool>[] matches = new Func<IInstruction, bool>[] {
-            new Func<IInstruction, bool>(i => i.OpCode == OpCodes.Callvirt && IsHashSetMethodWithBoxingOfKey(i.Operand)),
+            new Func<IInstruction, bool>(i => Call.IsCall(i.OpCode) && IsHashSetMethodWithBoxingOfKey(i.Operand)),
         };
         readonly static Type hashSetType = typeof(HashSet<>);
         readonly static Type sortedSetType = typeof(SortedSet<>);
@@ -24,7 +23,9 @@
             return false;
         }
         //
-        [Display(Order = (int)ProcessingSeverity.Error, Description = "ILSA.Core.Assets.MD.BoxingOnHashSetMethodCalls.md")]
+        [Display(Order = (int)ProcessingSeverity.Error, 
+            Name = "Boxing on HashSet<T> method calls",
+            Description = "ILSA.Core.Assets.MD.BoxingOnHashSetMethodCalls.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);
         }

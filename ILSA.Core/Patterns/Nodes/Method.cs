@@ -40,6 +40,11 @@
             public sealed override int TypeCode {
                 get { return (int)NodeType.Pattern + (int)pattern.Severity; }
             }
+            public string GetReadMeLinkUrl() {
+                var fileName = pattern.GetReadMeFileName();
+                int fileNameStart = fileName.LastIndexOf('.', fileName.Length - 4);
+                return "https://github.com/DmitryGaravsky/ILSATools/tree/main/Docs/" + fileName.Substring(fileNameStart > 0 ? fileNameStart + 1 : 0);
+            }
         }
     }
 }

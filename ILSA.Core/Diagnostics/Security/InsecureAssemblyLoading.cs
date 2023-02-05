@@ -57,6 +57,7 @@
         }
         //
         [Display(Order = (int)ProcessingSeverity.Error,
+            Name = "Insecure assembly loading",
             Description = "ILSA.Core.Assets.MD.InsecureAssemblyLoading.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);
@@ -71,7 +72,8 @@
             return (operand is MethodBase method) && InsecureAssemblyLoading.loadMethods.Contains(method);
         }
         //
-        [Display(Order = (int)ProcessingSeverity.Informational, 
+        [Display(Order = (int)ProcessingSeverity.Informational,
+            Name = "Hard-coded assembly loading",
             Description = "ILSA.Core.Assets.MD.HardCodedAssemblyLoading.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);
