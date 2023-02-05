@@ -52,7 +52,7 @@
         static string GetDescriptionResource(string name) {
             return name + ".md";
         }
-        public string Name {
+        public virtual string Name {
             get;
             private set;
         }

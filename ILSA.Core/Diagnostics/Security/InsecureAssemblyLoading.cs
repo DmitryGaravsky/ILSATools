@@ -72,7 +72,7 @@
         }
         //
         [Display(Order = (int)ProcessingSeverity.Informational, 
-            Description = "ILSA.Core.Assets.MD.InsecureAssemblyLoading.md")]
+            Description = "ILSA.Core.Assets.MD.HardCodedAssemblyLoading.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);
         }

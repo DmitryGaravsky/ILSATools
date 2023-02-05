@@ -59,11 +59,8 @@
         static AppDomain CreateIsolatedDomain() {
             return AppDomain.CreateDomain("ReflectionOnlyLoadContext");
         }
+        readonly static NetCoreAssemblyResolver netCoreAssemblyResolver = new NetCoreAssemblyResolver();
         Assembly OnReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args) {
-            try {
-                return Assembly.ReflectionOnlyLoad(args.Name);
-            }
-            catch { }
             var aqnParser = ParseAssemblyQualifiedName(args.Name);
             string asmFileName = aqnParser.BuildAssemblyShortName() + ".dll";
             foreach(string directory in referencePaths) {
@@ -75,15 +72,25 @@
             var assembly = LoadAssemblyFrom(asmFileName, startupDirectory);
             if(assembly != null)
                 return assembly;
+            assembly = netCoreAssemblyResolver.Load(asmFileName, aqnParser);
+            if(assembly != null)
+                return assembly;
+            try {
+                var alreadyLoaded = appDomain.Value.ReflectionOnlyGetAssemblies();
+                for(int i = 0; i < alreadyLoaded.Length; i++) {
+                    if(Path.GetFileName(alreadyLoaded[i].Location) == asmFileName)
+                        return alreadyLoaded[i];
+                }
+                return Assembly.ReflectionOnlyLoad(args.Name);
+            }
+            catch { }
             return args.RequestingAssembly;
         }
         static Assembly? LoadAssemblyFrom(string assemblyFileName, string directory) {
             if(Directory.Exists(directory)) {
                 var fileName = Path.Combine(directory, assemblyFileName);
                 if(File.Exists(fileName)) {
-                    try {
-                        return Assembly.ReflectionOnlyLoadFrom(fileName);
-                    }
+                    try { return Assembly.ReflectionOnlyLoadFrom(fileName); }
                     catch { }
                 }
             }
@@ -100,6 +107,54 @@
                     return;
                 try { Assembly.ReflectionOnlyLoadFrom(path); }
                 catch { }
+            }
+        }
+        sealed class NetCoreAssemblyResolver {
+            static readonly string CoreRoot;
+            static readonly string WinDesktopRoot;
+            static readonly string AspNetRoot;
+            static NetCoreAssemblyResolver() {
+                var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + Path.DirectorySeparatorChar;
+                CoreRoot = Path.Combine(programFiles, "dotnet\\shared\\Microsoft.NETCore.App\\");
+                WinDesktopRoot = Path.Combine(programFiles, "dotnet\\shared\\Microsoft.WindowsDesktop.App\\");
+                AspNetRoot = Path.Combine(programFiles, "dotnet\\shared\\Microsoft.AspNetCore.App\\");
+            }
+            public Assembly? Load(string asmFileName, AssemblyQualifiedNameParser aqnParser) {
+                var asmVersionShort = aqnParser.GetVersion(2);
+                if(!string.IsNullOrEmpty(asmVersionShort)) {
+                    string maxCoreVDir = FindMaxVersion(asmVersionShort, CoreRoot);
+                    if(!string.IsNullOrEmpty(maxCoreVDir)) {
+                        var assembly = LoadAssemblyFrom(asmFileName, maxCoreVDir);
+                        if(assembly != null)
+                            return assembly;
+                    }
+                    string maxWinDesktopVDir = FindMaxVersion(asmVersionShort, WinDesktopRoot);
+                    if(!string.IsNullOrEmpty(maxWinDesktopVDir)) {
+                        var assembly = LoadAssemblyFrom(asmFileName, maxWinDesktopVDir);
+                        if(assembly != null)
+                            return assembly;
+                    }
+                    string maxAspNetVDir = FindMaxVersion(asmVersionShort, AspNetRoot);
+                    if(!string.IsNullOrEmpty(maxAspNetVDir)) {
+                        var assembly = LoadAssemblyFrom(asmFileName, maxAspNetVDir);
+                        if(assembly != null)
+                            return assembly;
+                    }
+                }
+                return null;
+            }
+            static string FindMaxVersion(string asmVersion, string root) {
+                var versionDirs = Directory.GetDirectories(root, asmVersion + ".*");
+                Version max = new Version(asmVersion);
+                string maxDir = string.Empty;
+                for(int i = 0; i < versionDirs.Length; i++) {
+                    var vDir = Path.GetFileName(versionDirs[i]);
+                    if(Version.TryParse(vDir, out Version v) && v > max) {
+                        max = v; 
+                        maxDir = versionDirs[i];
+                    }
+                }
+                return maxDir;
             }
         }
     }
@@ -128,7 +183,7 @@
                 return;
             var appDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach(var assembly in appDomainAssemblies) {
-                if(assembly.Location == path) {
+                if(!assembly.IsDynamic && assembly.Location == path) {
                     assemblies.Add(assembly);
                     assembliyPaths.Add(path);
                     return;

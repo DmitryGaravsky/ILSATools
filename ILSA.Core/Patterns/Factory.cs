@@ -73,17 +73,22 @@
             builder.AppendLine("# Dynamically tracked members").AppendLine();
             builder.AppendLine("You can perform interactive analysis via dynamically created subsets of dangerous members.");
             builder.AppendLine();
+            builder.AppendLine("### Tracked API");
+            builder.AppendLine();
+            builder.AppendLine("```");
             if(tracked.Count > 0) {
-                builder.AppendLine("### Tracked API").AppendLine();
-                builder.AppendLine("```");
                 foreach(var member in tracked) {
                     if(member is Type t)
                         builder.AppendLine(t.FullName);
                     if(member is MethodBase m)
                         builder.Append(m.DeclaringType.FullName).Append('.').AppendLine(m.Name);
                 }
-                builder.AppendLine("```");
             }
+            else {
+                builder.AppendLine("There are no tracked types or methods.");
+                builder.AppendLine("Use the Classes tree and \"Start Tracking\" action in context menu to add some.");
+            }
+            builder.AppendLine("```");
             return builder.ToString();
         }
     }

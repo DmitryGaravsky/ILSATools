@@ -1,16 +1,15 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ILSA.Client")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle(".NET Static Application Security Testing (Visual Client)")]
+[assembly: AssemblyDescription("Visual Client for .NET Static Application Security Testing (SAST) to analyze and detect potential vulnerabilities at the IL-code level.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ILSA.Client")]
-[assembly: AssemblyCopyright("Copyright ©  2022")]
+[assembly: AssemblyCompany("Garavsky Dmitry")]
+[assembly: AssemblyProduct("SAST.NET.Windows")]
+[assembly: AssemblyCopyright("Copyright © 2022, Garavsky Dmitry")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

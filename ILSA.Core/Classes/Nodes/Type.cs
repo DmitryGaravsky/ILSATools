@@ -13,11 +13,26 @@
             protected sealed override string GetName() {
                 return source.Name;
             }
-            protected override string GetGroup() {
-                return source.Namespace ?? string.Empty;
+            protected sealed override string GetGroup() {
+                try {
+                    return source.Namespace ?? string.Empty;
+                }
+                catch(TypeLoadException) {
+                    string fullName = source.FullName;
+                    int nameStart = fullName.IndexOf(source.Name, StringComparison.Ordinal);
+                    if(nameStart > 1 && fullName[nameStart - 1] == '+')
+                        return fullName.Substring(0, nameStart - 2);
+                    else
+                        return fullName.Substring(0, nameStart - 1);
+                }
             }
             public bool IsNested {
-                get { return source.IsNested; }
+                get {
+                    try { return source.IsNested; }
+                    catch(TypeLoadException) { 
+                        return source.FullName.Contains("+"); 
+                    }
+                }
             }
             readonly StringBuilder ErrorsBuilder = new StringBuilder();
             protected internal override StringBuilder GetErrorsBuilder() {

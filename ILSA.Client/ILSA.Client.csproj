@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>ILSA.Client</AssemblyName>
+    <AssemblyName>SAST.NET.Windows</AssemblyName>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net472</TargetFramework>
     <Nullable>annotations</Nullable>

@@ -117,6 +117,7 @@
                 captures = allCaptures.ToArray();
             return (captures != null) && captures.Length > 0;
         }
+        #region embedded patterns
         public static readonly MethodBodyPattern Callee = new CalleeImpl();
         sealed class CalleeImpl : MethodBodyPattern {
             public CalleeImpl()
@@ -126,7 +127,7 @@
                     new Func<IInstruction, bool>(i => Diagnostics.Call.IsCallOrIsNewObj(i.OpCode)),
                 };
             static bool MatchImpl(IILReader instructions, StringBuilder errors, out int[] captures) {
-                return MethodBodyPattern.Match(matches, instructions, errors, out captures);
+                return Match(matches, instructions, errors, out captures);
             }
             readonly static Type objectType = typeof(object);
             readonly static Type valueType = typeof(ValueType);
@@ -152,6 +153,9 @@
             public TrackingPattern()
                 : base(new MatchMethodBody(MatchImpl).Method) {
             }
+            public override string Name {
+                get { return "Tracked Types and Methods"; }
+            }
             public override string Group {
                 get { return "Interactive Analysis"; }
             }
@@ -176,5 +180,6 @@
                 return Match(matches, instructions, errors, out captures);
             }
         }
+        #endregion embedded patterns
     }
 }

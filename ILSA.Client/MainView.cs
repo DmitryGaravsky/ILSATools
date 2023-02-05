@@ -4,9 +4,11 @@
     using System.Windows.Forms;
     using DevExpress.LookAndFeel;
     using DevExpress.Utils.Html;
+    using DevExpress.Utils.Html.Base;
     using DevExpress.Utils.MVVM.Services;
     using DevExpress.XtraBars;
     using DevExpress.XtraBars.Navigation;
+    using ILSA.Client.Assets;
     using ILSA.Client.ViewModels;
     using ILSA.Client.Views;
 
@@ -36,7 +38,7 @@
                 .EventToCommand(x => x.OnLoad);
             fluent.WithEvent(this, nameof(FormClosed))
                 .EventToCommand(x => x.OnClose);
-            fluent.SetBinding(this, frm => frm.Text, x => x.Title);
+            fluent.SetBinding(this, frm => frm.Text, x => x.UITexts.AppTitle);
             fluent.SetBinding(this, frm => frm.AssembliesWorkload, x => x.AssembliesWorkload);
             fluent.SetBinding(this, frm => frm.PatternsWorkload, x => x.PatternsWorkload);
             fluent.SetBinding(this, frm => frm.AnalysisProgress, x => x.AnalysisProgress);
@@ -52,6 +54,11 @@
             fluent.BindCommandToElement(this, "assemblies-workload-button", x => x.SaveAssembliesWorkload);
             fluent.BindCommandToElement(this, "patterns-workload-button", x => x.SavePatternsWorkload);
             fluent.BindCommandToElement(this, "load-button", x => x.LoadAssembliesOrPatternsWorkload);
+            fluent.KeyToCommand(this, Keys.Control | Keys.N, x => x.AddAssembly);
+            fluent.KeyToCommand(this, Keys.Control | Keys.R, x => x.Reset);
+            fluent.KeyToCommand(this, Keys.Control | Keys.Left, x => x.NavigatePrevious);
+            fluent.KeyToCommand(this, Keys.Control | Keys.Right, x => x.NavigateNext);
+            fluent.KeyToCommand(this, Keys.F3, x => x.NavigateNext);
         }
         void InitializeNavigation() {
             var viewService = DocumentManagerService.Create(navigationFrame);
@@ -114,23 +121,41 @@
         void OnFooterLayoutChanged() {
             if(IsHandleCreated) {
                 var root = ((IDxHtmlClient)FormPainter).Element;
-                root?.LayoutChanged(DevExpress.Utils.Html.Base.DxHtmlLayoutChangeActions.BindingDataChanged);
+                root?.LayoutChanged(DxHtmlLayoutChangeActions.BindingDataChanged);
                 FormPainter.UpdateHtmlTemplate();
                 DevExpress.Skins.XtraForm.FormPainter.InvalidateNC(this);
                 Update();
             }
         }
         protected override object GetHtmlValue(string fieldName, DxHtmlElementBase element) {
+            if(Disposing || IsDisposed)
+                return string.Empty;
+            if(fieldName == nameof(Text))
+                return Text;
             if(fieldName == nameof(AnalysisProgress))
                 return AnalysisProgress;
-            return base.GetHtmlValue(fieldName, element);
+            var fluent = mvvmContext.OfType<AppViewModel>();
+            if(fieldName == nameof(UITexts.SaveAssembliesDescription))
+                return fluent.ViewModel.UITexts.SaveAssembliesDescription;
+            if(fieldName == nameof(UITexts.SavePatternsDescription))
+                return fluent.ViewModel.UITexts.SavePatternsDescription;
+            if(fieldName == nameof(UITexts.LoadDescription))
+                return fluent.ViewModel.UITexts.LoadDescription;
+            return string.Empty;
         }
         protected override string GetHtmlText(string fieldName, DxHtmlElementBase element) {
+            if(Disposing || IsDisposed)
+                return string.Empty;
+            if(fieldName == nameof(Text))
+                return Text;
             if(fieldName == nameof(AssembliesWorkload))
                 return AssembliesWorkload;
             if(fieldName == nameof(PatternsWorkload))
                 return PatternsWorkload;
-            return base.GetHtmlText(fieldName, element);
+            var fluent = mvvmContext.OfType<AppViewModel>();
+            if(fieldName == nameof(UITexts.LoadName))
+                return fluent.ViewModel.UITexts.LoadName;
+            return string.Empty;
         }
         protected override void OnHandleCreated(EventArgs e) {
             base.OnHandleCreated(e);
@@ -169,11 +194,11 @@
                 Views.ChipGroup.Register();
                 Views.TabPane.Register();
             }
-            public static Assets.Style App = new AppStyle();
-            public static Assets.Style Toolbar = new ToolbarStyle();
+            public static Style App = new AppStyle();
+            public static Style Toolbar = new ToolbarStyle();
             //
-            sealed class AppStyle : Assets.Style { }
-            sealed class ToolbarStyle : Assets.Style { }
+            sealed class AppStyle : Style { }
+            sealed class ToolbarStyle : Style { }
         }
         #endregion Theme
     }

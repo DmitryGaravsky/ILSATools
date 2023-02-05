@@ -1,7 +1,6 @@
 ﻿namespace ILSA.Core.Sources {
     using System;
     using System.Collections.Generic;
-    using System.Text;
 
     public sealed partial class AssembliesSourceForClasses {
         static AssemblyQualifiedNameParser ParseAssemblyQualifiedName(string name) {
@@ -74,35 +73,21 @@
                     bounds.Add(Part.AssemblyName, new Tuple<int, int>(start, end - start));
                     parts |= Part.AssemblyName;
                 }
-                else if((parts & Part.Unknown) == Part.None) {
-                    // throw
+                else if((parts & Part.Unknown) == Part.None) 
                     parts |= Part.Unknown;
+            }
+            public string GetVersion(int partsCount) {
+                if((parts & Part.Version) == Part.Version) {
+                    var section = bounds[Part.Version];
+                    if(Version.TryParse(name.Substring(section.Item1 + 8, section.Item2 - 8), out Version v))
+                        return v.ToString(partsCount);
                 }
+                return string.Empty;
             }
             public string BuildAssemblyShortName() {
                 if((parts & Part.AssemblyName) == Part.AssemblyName) {
                     var section = bounds[Part.AssemblyName];
                     return name.Substring(section.Item1, section.Item2);
-                }
-                return name;
-            }
-            public string BuildAssemblyFullName() {
-                if((parts & Part.AssemblyName) == Part.AssemblyName) {
-                    var section = bounds[Part.AssemblyName];
-                    var asmNameBuilder = new StringBuilder(name, section.Item1, section.Item2, name.Length);
-                    if((parts & Part.Version) == Part.Version) {
-                        section = bounds[Part.Version];
-                        asmNameBuilder.Append(", ").Append(name, section.Item1, section.Item2);
-                    }
-                    if((parts & Part.Culture) == Part.Culture) {
-                        section = bounds[Part.Culture];
-                        asmNameBuilder.Append(", ").Append(name, section.Item1, section.Item2);
-                    }
-                    if((parts & Part.PublicKeyToken) == Part.PublicKeyToken) {
-                        section = bounds[Part.PublicKeyToken];
-                        asmNameBuilder.Append(", ").Append(name, section.Item1, section.Item2);
-                    }
-                    return asmNameBuilder.ToString();
                 }
                 return name;
             }

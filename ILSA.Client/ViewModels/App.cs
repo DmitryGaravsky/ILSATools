@@ -6,6 +6,7 @@
     using DevExpress.Mvvm;
     using DevExpress.Mvvm.DataAnnotations;
     using DevExpress.Mvvm.POCO;
+    using ILSA.Client.Assets;
     using ILSA.Core;
     using ILSA.Core.Classes;
     using ILSA.Core.Patterns;
@@ -29,8 +30,9 @@
             Messenger.Default.Unregister(this);
             GC.SuppressFinalize(this);
         }
-        public string Title {
-            get { return "IL Static Analysis Tool"; }
+        readonly UITexts uiTexts = new UITexts();
+        public UITexts UITexts {
+            get { return uiTexts; }
         }
         public string AssembliesWorkload {
             get { return classesWorkload?.ToString() ?? "No assemblies loaded."; }
@@ -147,6 +149,19 @@
             openFile.CheckFileExists = true;
             openFile.Filter = filter;
             if(openFile.ShowDialog()) {
+                if(!isAssemblies) {
+                    var confirmation = this.GetService<IMessageBoxService>();
+                    var loadAsPatters = confirmation.ShowMessage(
+                        "You are about to load assembly that should contain diagnostic patterns rather than classes for analysis."
+                        + Environment.NewLine +
+                        "Either press \"Yes\" to confirm patterns loading or press \"No\" to load this assembly for analysis.",
+                        "Patterns library loading",
+                        MessageButton.YesNoCancel, MessageIcon.Question, MessageResult.No);
+                    if(loadAsPatters == MessageResult.No)
+                        isAssemblies = true;
+                    if(loadAsPatters == MessageResult.Cancel)
+                        return;
+                }
                 var aSource = isAssemblies ? classesSource : patternsSource;
                 var token = isAssemblies ? "classes" : "patterns";
                 foreach(var fileInfo in openFile.Files)

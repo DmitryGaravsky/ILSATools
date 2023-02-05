@@ -100,6 +100,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ChildControls.Add(this.rootContainer);
             this.ClientSize = new System.Drawing.Size(1200, 800);
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(1000, 650);

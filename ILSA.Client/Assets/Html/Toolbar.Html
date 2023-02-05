@@ -16,36 +16,50 @@
         <img src="Search" class="button-glyph" />
     </div>
     <input name="searchControl" class="searchInput">
-    <div id="add-assembly" class="action no-text">
+    <div id="add-assembly" class="action no-text"  title="${UITexts.AddDescription}">
         <img src="Add" class="action-glyph" />
     </div>
     <div class="divider"></div>
-    <div id="reset" class="action no-text">
+    <div id="reset" class="action no-text"  title="${UITexts.ResetDescription}">
         <img src="Reset" class="action-glyph" />
     </div>
     <div class="separator"></div>
-    <div id="run-analysis" class="action call-to-action">
-        Run Analysis
+    <div id="run-analysis" class="action call-to-action" title="${UITexts.RunAnalysisDescription}">
+        ${UITexts.RunAnalysisName}
     </div>
     <div class="divider"></div>
-    <div id="navigate-prev" class="action no-text no-right-border">
+    <div id="navigate-prev" class="action no-text no-right-border" title="${UITexts.PrevResultDescription}">
         <img src="Prev" class="action-glyph" />
     </div>
-    <div id="navigate-next" class="action no-text no-left-border">
+    <div id="navigate-next" class="action no-text no-left-border" title="${UITexts.NextResultDescription}">
         <img src="Next" class="action-glyph" />
     </div>
     <div class="divider"></div>
     <chip-group class="modes-chip-group"
                 ItemClass="modes-chip-group-button"
                 ItemTemplate="modes-chip-group-button-template">
-        <chip-group-button id="classes-button" Caption="Classes"></chip-group-button>
-        <chip-group-button id="backtrace-button" Caption="Backtrace"></chip-group-button>
+        <chip-group-button id="classes-button" 
+                           Caption="${UITexts.ClassesName}" 
+                           title="${UITexts.ClassesDescription}">
+        </chip-group-button>
+        <chip-group-button id="backtrace-button" 
+                           Caption="${UITexts.BacktraceName}" 
+                           title="${UITexts.BacktraceDescription}">
+        </chip-group-button>
     </chip-group>
     <div class="spacer"></div>
     <tab-pane class="views-tab-pane"
               ItemClass="views-tab-pane-button"
               ItemTemplate="views-tab-pane-button-template">
-        <tab-pane-button id="assemblies-button" Icon="Assemblies" Caption="Assemblies"></tab-pane-button>
-        <tab-pane-button id="patterns-button" Icon="Patterns" Caption="Patterns"></tab-pane-button>
+        <tab-pane-button id="assemblies-button" 
+                         Icon="Assemblies" 
+                         Caption="${UITexts.AssembliesName}" 
+                         title="${UITexts.AssembliesDescription}">
+        </tab-pane-button>
+        <tab-pane-button id="patterns-button" 
+                         Icon="Patterns" 
+                         Caption="${UITexts.PatternsName}" 
+                         title="${UITexts.PatternsDescription}">
+        </tab-pane-button>
     </tab-pane>
 </div>

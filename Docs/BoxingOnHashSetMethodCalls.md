@@ -11,31 +11,37 @@ In relation to simple assignments, boxing and unboxing are computationally expen
 When a value type is boxed, a new object must be allocated and constructed. To a lesser degree, 
 the cast required for unboxing is also expensive computationally.
 
-## Typical boxing patterns on Enum operations:
+## Typical boxing patterns on HashSet\SortedSet operations:
 
 ```cs
-[Flags]
-public enum State { One, Two }
+HashSet<Key> cache = new HashSet<Key>();
 //..
-public bool IsOne(State state) {
-    return state.HasFlag(State.One); // boxing here
+struct Key {
+    public Key(int value){
+        this.value = value;
+    }
+    int value;
 }
+//
+cache.Contains(new Key(42)); // boxing inside Contains
 ```
 
-This is how it looks in MSIL:
+You can avoid boxing if you provide the Key struct with `GetHashCode\Equals` implementation:
 
-```
-IL_0000: ldarg.1
-IL_0001: box C/State
-IL_0006: ldc.i4.0
-IL_0007: box C/State
-IL_000c: call instance bool System.Enum::HasFlag(class System.Enum)
-IL_0011: ret
-```
-
-You can use the following code to avoid boxing:
 ```cs
-public bool IsOne(State state) {
-    return (state & State.One) == State.One; // No boxing here
+struct Key : IEquatable<Key>{
+    readonly int value;
+    public Key(int value){
+        this.value = value;
+    }
+    public override int GetHashCode() {
+        return value;
+    }
+    public override bool Equals(object obj) {
+        return (obj is Key key) && Equals(key);
+    }
+    public bool Equals(Key other) {
+        return value == other.value;
+    }
 }
 ```

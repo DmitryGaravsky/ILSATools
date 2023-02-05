@@ -41,7 +41,7 @@
             return (operand is MethodBase method) && (incompatibleAPI.Contains(method) || incompatibleTypes.Contains(method.DeclaringType));
         }
         //
-        [Display(Name = ".NET6 Compatibility", Order = (int)ProcessingSeverity.Warning,
+        [Display(Name = ".NET 6 Compatibility", Order = (int)ProcessingSeverity.Warning,
             Description = "ILSA.Core.Assets.MD.NET6Compatibility.md")]
         public static bool Match(IILReader instructions, StringBuilder errors, out int[] captures) {
             return MethodBodyPattern.Match(matches, instructions, errors, out captures);
