@@ -199,6 +199,11 @@
             Messenger.Default.Send(classesSource, "classes");
             Messenger.Default.Send(patternsSource, "patterns");
         }
+        public async Task CleanUpClasses() {
+            classesSource.Reset();
+            await UpdateWorkloads();
+            Messenger.Default.Send(classesSource, "classes");
+        }
         protected IDocumentManagerService DocumentManagerService {
             get { return this.GetService<IDocumentManagerService>(); }
         }
@@ -211,7 +216,7 @@
                 var classesViewModel = ViewModelSource.Create<ClassesViewModel>();
                 classesViewModel.SetParentViewModel(this);
                 ((ISupportParameter)classesViewModel).Parameter = classesWorkload;
-                var document = x.CreateDocument("ClassesView", classesViewModel);
+                var document = x.CreateDocument("ClassesView", classesViewModel, classesWorkload, this);
                 document.Id = nameof(ShowAssemblies);
                 return document;
             });
@@ -222,7 +227,7 @@
                 var patternsViewModel = ViewModelSource.Create<PatternsViewModel>();
                 patternsViewModel.SetParentViewModel(this);
                 ((ISupportParameter)patternsViewModel).Parameter = patternsWorkload;
-                var document = x.CreateDocument("PatternsView", patternsViewModel);
+                var document = x.CreateDocument("PatternsView", patternsViewModel, patternsWorkload, this);
                 document.Id = nameof(ShowPatterns);
                 return document;
             });

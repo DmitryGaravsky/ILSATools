@@ -6,6 +6,7 @@
     using System.Windows.Forms;
     using DevExpress.LookAndFeel;
     using DevExpress.Mvvm.Native;
+    using DevExpress.Mvvm.POCO;
     using DevExpress.Utils;
     using DevExpress.Utils.Menu;
     using DevExpress.Utils.Svg;
@@ -64,8 +65,7 @@
                 var nodeMenu = e.Menu as TreeListNodeMenu;
                 if(nodeMenu != null) {
                     var node = classesTree.GetDataRecordByNode(nodeMenu.Node) as Node;
-                    MemberInfo trackingMember;
-                    if(node != null && ClassesFactory.AllowTracking(node, out trackingMember)) {
+                    if(node != null && ClassesFactory.AllowTracking(node, out MemberInfo trackingMember)) {
                         e.Menu.Items.Clear();
                         var svg = CoreSvgImages.SvgImages;
                         bool isTracked = PatternsFactory.IsTracked(trackingMember);
@@ -79,6 +79,16 @@
                     }
                 }
             }
+            if(e.MenuType == TreeListMenuType.User) {
+                var fluent = mvvmContext.OfType<ClassesViewModel>();
+                e.Menu.Items.Add(new DXMenuItem("Clean Up", OnCleanUp) {
+                    Tag = fluent.ViewModel.GetParentViewModel<AppViewModel>()
+                });
+            }
+        }
+        static async void OnCleanUp(object sender, EventArgs args) {
+            var appViewModel = (sender as DXMenuItem).Tag as AppViewModel;
+            await appViewModel?.CleanUpClasses();
         }
         static void OnStartTracking(object sender, EventArgs args) {
             var member = (sender as DXMenuItem).Tag as MemberInfo;
